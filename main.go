@@ -2,6 +2,7 @@ package main
 
 import (
 	"app/accounts"
+	"app/database/postgres"
 	"app/router"
 	"fmt"
 	"log"
@@ -11,11 +12,14 @@ import (
 const httpPort = 3000
 
 func main() {
+	// Gets database connection
+	db := postgres.Get()
+
 	// Gets router
 	router := router.Get()
 
 	// Inits modules
-	accounts.Init(router)
+	accounts.Init(router, db)
 
 	// Creates server
 	server := &http.Server{

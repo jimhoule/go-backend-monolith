@@ -4,14 +4,17 @@ import (
 	"app/accounts/controllers"
 	"app/accounts/persistence/repositories"
 	"app/accounts/services"
+	"app/database/postgres"
 	"app/router"
 )
 
 // NOTE: Not working
-func Init(router *router.Router) {
+func Init(router *router.Router, db *postgres.Db) {
 	accountsController := controllers.AccountsController{
 		AccountsService: services.AccountsService{
-			AccountsRepository: &repositories.FakeAccountsRepository{},
+			AccountsRepository: &repositories.PostgresAccountsRepository{
+				Db: db,
+			},
 		},
 	}
 

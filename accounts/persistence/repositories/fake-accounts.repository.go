@@ -31,9 +31,9 @@ func (far *FakeAccountsRepository) FindById(id string) (*models.Account, error) 
 	return nil, fmt.Errorf("the account with id %s does not exist", id)
 }
 
-func (far *FakeAccountsRepository) Save(account *models.Account) (*models.Account, error) {
-	accountEntity := mappers.ToEntity(account)
+func (far *FakeAccountsRepository) Save(accountModel *models.Account) (*models.Account, error) {
+	accountEntity := mappers.ToEntity(accountModel)
 	accountEntities = append(accountEntities, accountEntity);
 
-	return account, nil
+	return accountModel, nil
 }
