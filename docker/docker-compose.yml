@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  application:
+    depends_on:
+      - postgres
+    build:
+      context: ../
+      dockerfile: ./docker/application.dockerfile
+    ports:
+      - 3000:80
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      PORT: 3000
+    
+  postgres:
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: go-backend-monolith
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data/

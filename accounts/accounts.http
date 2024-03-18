@@ -1,0 +1,18 @@
+### NOTE: To use this file VSC REST Client extension must be installed 
+
+### Finds all Accounts
+GET http://localhost:3000/accounts
+
+### Finds an Account by id
+GET http://localhost:3000/accounts/2217ff28-0315-4b02-a381-9d52cff70893
+
+### Creates an Account
+POST http://localhost:3000/accounts
+Content-Type: application/json
+
+{
+    "firstName": "Marc",
+    "lastName": "Laurin",
+    "email": "marc@example.com",
+    "password": "1234"
+}
