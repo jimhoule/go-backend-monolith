@@ -17,6 +17,7 @@ func (par *PostgresAccountsRepository) FindAll() ([]*models.Account, error) {
 	result := par.Db.Find(&accountEntities)
 	if result.Error != nil {
 		log.Panicf("Error finding all Acounts: %s", result.Error.Error())
+		return nil, result.Error
 	}
 
 	var accountModels []*models.Account = []*models.Account{}
@@ -33,6 +34,7 @@ func (par *PostgresAccountsRepository) FindById(id string) (*models.Account, err
 	result := par.Db.Where("Id = ?", id).Find(&accountEntities)
 	if result.Error != nil {
 		log.Panicf("Error finding Account with id %s: %s", id, result.Error.Error())
+		return nil, result.Error
 	}
 
 	return mappers.ToDomainModel(accountEntities[0]), nil
@@ -43,6 +45,7 @@ func  (par *PostgresAccountsRepository) Save(accountModel *models.Account) (*mod
 	result := par.Db.Create(accountEntity)
 	if result.Error != nil {
 		log.Panicf("Error saving an Acount: %s", result.Error.Error())
+		return nil, result.Error
 	}
 
 	return accountModel, nil
