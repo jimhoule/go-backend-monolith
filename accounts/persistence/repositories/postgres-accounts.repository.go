@@ -41,7 +41,7 @@ func (par *PostgresAccountsRepository) FindById(id string) (*models.Account, err
 	return par.AccountsMapper.ToDomainModel(accountEntities[0]), nil
 }
 
-func  (par *PostgresAccountsRepository) Save(accountModel *models.Account) (*models.Account, error) {
+func  (par *PostgresAccountsRepository) Create(accountModel *models.Account) (*models.Account, error) {
 	accountEntity := par.AccountsMapper.ToEntity(accountModel)
 	result := par.Db.Create(accountEntity)
 	if result.Error != nil {

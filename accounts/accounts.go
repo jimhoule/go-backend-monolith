@@ -30,5 +30,5 @@ func Init(router *router.Router, db *postgres.Db) {
 	router.Get("/accounts", accountsController.FindAll)
 	router.Get("/accounts/{id}", accountsController.FindById)
 
-	router.Post("/accounts", accountsController.Save)
+	router.Post("/accounts", accountsController.Create)
 }

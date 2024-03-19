@@ -17,6 +17,7 @@ func (ac *AccountsController) FindAll(writer http.ResponseWriter, request *http.
 	accounts, err := ac.AccountsService.FindAll();
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusBadRequest, err)
+		return
 	}
 
 	json.WriteHttpResponse(writer, http.StatusOK, accounts)
@@ -27,24 +28,27 @@ func (ac *AccountsController) FindById(writer http.ResponseWriter, request *http
 	account, err := ac.AccountsService.FindById(id);
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusBadRequest, err)
+		return
 	}
 
 	json.WriteHttpResponse(writer, http.StatusOK, account)
 }
 
-func (ac *AccountsController) Save(writer http.ResponseWriter, request *http.Request) {
+func (ac *AccountsController) Create(writer http.ResponseWriter, request *http.Request) {
 	var createAccountDto dtos.CreateAccountDto
 
 	// Gets request body
 	err := json.ReadHttpRequestBody(writer, request, &createAccountDto)
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusBadRequest, err)
+		return
 	}
 
-	// Saves account
-	account, err := ac.AccountsService.Save(createAccountDto)
+	// Creates account
+	account, err := ac.AccountsService.Create(createAccountDto)
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusNotFound, err)
+		return
 	}
 
 	json.WriteHttpResponse(writer, http.StatusOK, account)

@@ -20,7 +20,7 @@ func (as *AccountsService) FindById(id string) (*models.Account, error) {
 	return as.AccountsRepository.FindById(id)
 }
 
-func (as *AccountsService) Save(createAccountDto dtos.CreateAccountDto) (*models.Account, error) {
+func (as *AccountsService) Create(createAccountDto dtos.CreateAccountDto) (*models.Account, error) {
 	account := as.AccountsFactory.Create(
 		createAccountDto.FirstName,
 		createAccountDto.LastName,
@@ -28,5 +28,5 @@ func (as *AccountsService) Save(createAccountDto dtos.CreateAccountDto) (*models
 		createAccountDto.Password,
 	)
 
-	return as.AccountsRepository.Save(account)
+	return as.AccountsRepository.Create(account)
 }

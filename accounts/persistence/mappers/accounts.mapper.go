@@ -7,7 +7,7 @@ import (
 
 type AccountsMapper struct {}
 
-func (am *AccountsMapper) ToDomainModel(accountEntity *entities.Account) *models.Account {
+func (*AccountsMapper) ToDomainModel(accountEntity *entities.Account) *models.Account {
 	return &models.Account{
 		Id: accountEntity.Id,
 		FirstName: accountEntity.FirstName,
@@ -17,7 +17,7 @@ func (am *AccountsMapper) ToDomainModel(accountEntity *entities.Account) *models
 	}
 }
 
-func (am *AccountsMapper) ToEntity(accountModel *models.Account) *entities.Account {
+func (*AccountsMapper) ToEntity(accountModel *models.Account) *entities.Account {
 	return &entities.Account{
 		Id: accountModel.Id,
 		FirstName: accountModel.FirstName,
