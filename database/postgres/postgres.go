@@ -1,7 +1,8 @@
 package postgres
 
 import (
-	"app/accounts/persistence/entities"
+	accountEntities "app/accounts/persistence/entities"
+	planEntities "app/plans/persistence/entities"
 	"log"
 
 	"gorm.io/driver/postgres"
@@ -25,7 +26,7 @@ func Get() *Db {
 		}
 
 		// Auto migrates the necessary tables based on the defined models/structs
-		err = db.AutoMigrate(&entities.Account{})
+		err = db.AutoMigrate(&accountEntities.Account{}, &planEntities.Plan{})
 		if err != nil {
 			panic("failed to perform migrations: " + err.Error())
 		}

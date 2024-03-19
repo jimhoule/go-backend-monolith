@@ -1,0 +1,17 @@
+### NOTE: To use this file VSC REST Client extension must be installed 
+
+### Finds all Plans
+GET http://localhost:3000/plans
+
+### Finds a Plan by id
+GET http://localhost:3000/plans/5fd06508-d497-4ec3-9e85-2e70b676339e
+
+### Creates a Plan
+POST http://localhost:3000/plans
+Content-Type: application/json
+
+{
+    "name": "familial",
+    "description": "Familil plan description",
+    "price": 12.50
+}

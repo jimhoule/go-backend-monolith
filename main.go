@@ -3,6 +3,7 @@ package main
 import (
 	"app/accounts"
 	"app/database/postgres"
+	"app/plans"
 	"app/router"
 	"fmt"
 	"log"
@@ -20,6 +21,7 @@ func main() {
 
 	// Inits modules
 	accounts.Init(router, db)
+	plans.Init(router, db)
 
 	// Creates server
 	server := &http.Server{
