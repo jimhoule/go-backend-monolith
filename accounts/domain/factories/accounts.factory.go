@@ -6,15 +6,17 @@ import (
 	uuidService "app/uuid/services"
 )
 
-var nativeUuidservice = uuidService.NativeUuidService{}
-var brcyptCryptoService = cryptoService.BcryptCryptoService{}
+type AccountsFactory struct{
+	UuidService uuidService.UuidService
+	CryptoService cryptoService.CryptoService
+}
 
-func CreateAccount(firstName string, lastName string, email string, password string) *models.Account {
+func (af *AccountsFactory) Create(firstName string, lastName string, email string, password string) *models.Account {
 	return &models.Account{
-		Id: nativeUuidservice.Generate(),
+		Id: af.UuidService.Generate(),
 		FirstName: firstName,
 		LastName: lastName,
 		Email: email,
-		Password: brcyptCryptoService.GenerateHashedPassword(password),
+		Password: af.CryptoService.GenerateHashedPassword(password),
 	}
 }

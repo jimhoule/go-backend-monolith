@@ -8,6 +8,7 @@ import (
 )
 
 type AccountsService struct {
+	AccountsFactory factories.AccountsFactory
 	AccountsRepository repositories.AccountsRepository
 }
 
@@ -20,7 +21,7 @@ func (as *AccountsService) FindById(id string) (*models.Account, error) {
 }
 
 func (as *AccountsService) Save(createAccountDto dtos.CreateAccountDto) (*models.Account, error) {
-	account := factories.CreateAccount(
+	account := as.AccountsFactory.Create(
 		createAccountDto.FirstName,
 		createAccountDto.LastName,
 		createAccountDto.Email,

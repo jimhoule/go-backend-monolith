@@ -2,18 +2,27 @@ package accounts
 
 import (
 	"app/accounts/controllers"
+	"app/accounts/domain/factories"
+	"app/accounts/persistence/mappers"
 	"app/accounts/persistence/repositories"
 	"app/accounts/services"
 	"app/database/postgres"
 	"app/router"
+
+	cryptoService "app/crypto/services"
+	uuidService "app/uuid/services"
 )
 
-// NOTE: Not working
 func Init(router *router.Router, db *postgres.Db) {
 	accountsController := controllers.AccountsController{
 		AccountsService: services.AccountsService{
-			AccountsRepository: &repositories.PostgresAccountsRepository{
-				Db: db,
+			AccountsFactory: factories.AccountsFactory{
+				UuidService: &uuidService.NativeUuidService{},
+				CryptoService: &cryptoService.BcryptCryptoService{},
+			},
+			AccountsRepository: &repositories.FakeAccountsRepository{
+				AccountsMapper: mappers.AccountsMapper{},
+				//Db: db,
 			},
 		},
 	}

@@ -7,14 +7,16 @@ import (
 	"fmt"
 )
 
-type FakeAccountsRepository struct{}
+type FakeAccountsRepository struct{
+	AccountsMapper mappers.AccountsMapper
+}
 
 var accountEntities []*entities.Account = []*entities.Account{}
 
 func (far *FakeAccountsRepository) FindAll() ([]*models.Account, error) {
 	var accountModels []*models.Account = []*models.Account{}
 	for _, accountEntity := range accountEntities {
-		acountModel := mappers.ToDomainModel(accountEntity)
+		acountModel := far.AccountsMapper.ToDomainModel(accountEntity)
 		accountModels = append(accountModels, acountModel)
 	}
 
@@ -24,7 +26,7 @@ func (far *FakeAccountsRepository) FindAll() ([]*models.Account, error) {
 func (far *FakeAccountsRepository) FindById(id string) (*models.Account, error) {
 	for _, accountEntity := range accountEntities {
 		if accountEntity.Id == id {
-			return mappers.ToDomainModel(accountEntity), nil
+			return far.AccountsMapper.ToDomainModel(accountEntity), nil
 		}
 	}
 
@@ -32,7 +34,7 @@ func (far *FakeAccountsRepository) FindById(id string) (*models.Account, error) 
 }
 
 func (far *FakeAccountsRepository) Save(accountModel *models.Account) (*models.Account, error) {
-	accountEntity := mappers.ToEntity(accountModel)
+	accountEntity := far.AccountsMapper.ToEntity(accountModel)
 	accountEntities = append(accountEntities, accountEntity);
 
 	return accountModel, nil

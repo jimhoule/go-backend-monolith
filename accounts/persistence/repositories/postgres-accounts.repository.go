@@ -9,6 +9,7 @@ import (
 )
 
 type PostgresAccountsRepository struct{
+	AccountsMapper mappers.AccountsMapper
 	Db *postgres.Db
 }
 
@@ -22,7 +23,7 @@ func (par *PostgresAccountsRepository) FindAll() ([]*models.Account, error) {
 
 	var accountModels []*models.Account = []*models.Account{}
 	for _, accountEntity := range accountEntities {
-		acountModel := mappers.ToDomainModel(accountEntity)
+		acountModel := par.AccountsMapper.ToDomainModel(accountEntity)
 		accountModels = append(accountModels, acountModel)
 	}
 
@@ -37,11 +38,11 @@ func (par *PostgresAccountsRepository) FindById(id string) (*models.Account, err
 		return nil, result.Error
 	}
 
-	return mappers.ToDomainModel(accountEntities[0]), nil
+	return par.AccountsMapper.ToDomainModel(accountEntities[0]), nil
 }
 
 func  (par *PostgresAccountsRepository) Save(accountModel *models.Account) (*models.Account, error) {
-	accountEntity := mappers.ToEntity(accountModel)
+	accountEntity := par.AccountsMapper.ToEntity(accountModel)
 	result := par.Db.Create(accountEntity)
 	if result.Error != nil {
 		log.Panicf("Error saving an Acount: %s", result.Error.Error())

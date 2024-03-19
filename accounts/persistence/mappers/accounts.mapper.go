@@ -5,7 +5,9 @@ import (
 	"app/accounts/persistence/entities"
 )
 
-func ToDomainModel(accountEntity *entities.Account) *models.Account {
+type AccountsMapper struct {}
+
+func (am *AccountsMapper) ToDomainModel(accountEntity *entities.Account) *models.Account {
 	return &models.Account{
 		Id: accountEntity.Id,
 		FirstName: accountEntity.FirstName,
@@ -15,7 +17,7 @@ func ToDomainModel(accountEntity *entities.Account) *models.Account {
 	}
 }
 
-func ToEntity(accountModel *models.Account) *entities.Account {
+func (am *AccountsMapper) ToEntity(accountModel *models.Account) *entities.Account {
 	return &entities.Account{
 		Id: accountModel.Id,
 		FirstName: accountModel.FirstName,
