@@ -20,9 +20,9 @@ func Init(router *router.Router, db *postgres.Db) {
 				UuidService: &uuidService.NativeUuidService{},
 				CryptoService: &cryptoService.BcryptCryptoService{},
 			},
-			AccountsRepository: &repositories.FakeAccountsRepository{
+			AccountsRepository: &repositories.PostgresAccountsRepository{
 				AccountsMapper: mappers.AccountsMapper{},
-				//Db: db,
+				Db: db,
 			},
 		},
 	}
