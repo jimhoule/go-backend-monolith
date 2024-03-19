@@ -15,6 +15,7 @@ services:
       replicas: 1
     environment:
       PORT: 3000
+      DSN: 'host=postgres user=postgres password=password dbname=go-backend-monolith port=5432'
     
   postgres:
     image: postgres:latest

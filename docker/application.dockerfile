@@ -4,7 +4,7 @@ FROM golang:1.22-alpine as builder
 # creates app folder
 RUN mkdir /app
 
-# copies everything from current folder into app folder
+# copies everything from the root folder into app folder
 COPY ../ /app
 
 # sets app folder as working directory for nest instructions
