@@ -13,17 +13,21 @@ import (
 	uuidService "app/uuid/services"
 )
 
+func GetService(db *postgres.Db) *services.PlansService {
+	return &services.PlansService{
+		PlansFactory: factories.PlansFactory{
+			UuidService: &uuidService.NativeUuidService{},
+		},
+		PlansRepository: &repositories.PostgresPlansRepository{
+			PlansMapper: mappers.PlansMapper{},
+			Db: db,
+		},
+	}
+}
+
 func Init(mainRouter *router.MainRouter, db *postgres.Db) {
 	plansController := controllers.PlansController{
-		PlansService: services.PlansService{
-			PlansFactory: factories.PlansFactory{
-				UuidService: &uuidService.NativeUuidService{},
-			},
-			PlansRepository: &repositories.PostgresPlansRepository{
-				PlansMapper: mappers.PlansMapper{},
-				Db: db,
-			},
-		},
+		PlansService: *GetService(db),
 	}
 
 	// NOTE: In a mux, all middleware must be defined before routes so we have to wrap the routes around a Group

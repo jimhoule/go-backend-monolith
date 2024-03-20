@@ -2,6 +2,7 @@ package main
 
 import (
 	"app/accounts"
+	"app/authentication"
 	"app/database/postgres"
 	"app/plans"
 	"app/router"
@@ -20,6 +21,7 @@ func main() {
 	mainRouter := router.Get()
 
 	// Inits modules
+	authentication.Init(mainRouter, db)
 	accounts.Init(mainRouter, db)
 	plans.Init(mainRouter, db)
 

@@ -41,6 +41,17 @@ func (par *PostgresAccountsRepository) FindById(id string) (*models.Account, err
 	return par.AccountsMapper.ToDomainModel(accountEntities[0]), nil
 }
 
+func (par *PostgresAccountsRepository) FindByEmail(email string) (*models.Account, error) {
+	var accountEntities []*entities.Account
+	result := par.Db.Where("Email = ?", email).Find(&accountEntities)
+	if result.Error != nil {
+		log.Panicf("Error finding Account with email %s: %s", email, result.Error.Error())
+		return nil, result.Error
+	}
+	
+	return par.AccountsMapper.ToDomainModel(accountEntities[0]), nil
+}
+
 func  (par *PostgresAccountsRepository) Create(accountModel *models.Account) (*models.Account, error) {
 	accountEntity := par.AccountsMapper.ToEntity(accountModel)
 	result := par.Db.Create(accountEntity)

@@ -33,6 +33,16 @@ func (far *FakeAccountsRepository) FindById(id string) (*models.Account, error) 
 	return nil, fmt.Errorf("the account with id %s does not exist", id)
 }
 
+func (far *FakeAccountsRepository) FindByEmail(email string) (*models.Account, error) {
+	for _, accountEntity := range accountEntities {
+		if accountEntity.Email == email {
+			return far.AccountsMapper.ToDomainModel(accountEntity), nil
+		}
+	}
+
+	return nil, fmt.Errorf("the account with email %s does not exist", email)
+}
+
 func (far *FakeAccountsRepository) Create(accountModel *models.Account) (*models.Account, error) {
 	accountEntity := far.AccountsMapper.ToEntity(accountModel)
 	accountEntities = append(accountEntities, accountEntity);
