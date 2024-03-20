@@ -5,15 +5,16 @@ import (
 	"github.com/go-chi/cors"
 )
 
-type Router = chi.Mux
+type MainRouter = chi.Mux
+type GroupRouter = chi.Router
 
-var router *Router
+var mainRouter *MainRouter
 
-func Get() *Router {
-	if router == nil {
-		router := chi.NewRouter()
+func Get() *MainRouter {
+	if mainRouter == nil {
+		mainRouter := chi.NewRouter()
 
-		router.Use(cors.Handler(cors.Options{
+		mainRouter.Use(cors.Handler(cors.Options{
 			AllowedOrigins: []string{
 				"https://*",
 				"http://*",
@@ -38,8 +39,8 @@ func Get() *Router {
 			MaxAge: 300,
 		}))
 
-		return router
+		return mainRouter
 	}
 
-	return router;
+	return mainRouter;
 }

@@ -17,16 +17,16 @@ func main() {
 	db := postgres.Get()
 
 	// Gets router
-	router := router.Get()
+	mainRouter := router.Get()
 
 	// Inits modules
-	accounts.Init(router, db)
-	plans.Init(router, db)
+	accounts.Init(mainRouter, db)
+	plans.Init(mainRouter, db)
 
 	// Creates server
 	server := &http.Server{
 		Addr: fmt.Sprintf(":%d", httpPort),
-		Handler: router,
+		Handler: mainRouter,
 	}
 
 	// Starts server

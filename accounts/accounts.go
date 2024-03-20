@@ -13,7 +13,7 @@ import (
 	uuidService "app/uuid/services"
 )
 
-func Init(router *router.Router, db *postgres.Db) {
+func Init(mainRouter *router.MainRouter, db *postgres.Db) {
 	accountsController := controllers.AccountsController{
 		AccountsService: services.AccountsService{
 			AccountsFactory: factories.AccountsFactory{
@@ -27,8 +27,8 @@ func Init(router *router.Router, db *postgres.Db) {
 		},
 	}
 
-	router.Get("/accounts", accountsController.FindAll)
-	router.Get("/accounts/{id}", accountsController.FindById)
+	mainRouter.Get("/accounts", accountsController.FindAll)
+	mainRouter.Get("/accounts/{id}", accountsController.FindById)
 
-	router.Post("/accounts", accountsController.Create)
+	mainRouter.Post("/accounts", accountsController.Create)
 }
