@@ -5,6 +5,7 @@ go 1.22.0
 require (
 	github.com/go-chi/chi/v5 v5.0.12 // indirect
 	github.com/go-chi/cors v1.2.1 // indirect
+	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
