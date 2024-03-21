@@ -44,7 +44,11 @@ func (pc *PlansController) Create(writer http.ResponseWriter, request *http.Requ
 	}
 
 	// Creates plan
-	plan, err := pc.PlansService.Create(createPlanDto)
+	plan, err := pc.PlansService.Create(
+		createPlanDto.Name,
+		createPlanDto.Description,
+		createPlanDto.Price,
+	)
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusBadRequest, err)
 		return

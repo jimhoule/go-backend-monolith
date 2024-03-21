@@ -74,6 +74,8 @@ func (jts *JwtTokensService) Verify(token string) (bool, error) {
 }
 
 func (jts *JwtTokensService) Decode(token string) (TokenPayload , error) {
+	tokenPayload := TokenPayload{}
+
 	parsedToken, err := jwt.ParseWithClaims(
 		token,
 		&TokenClaims{},
@@ -82,15 +84,13 @@ func (jts *JwtTokensService) Decode(token string) (TokenPayload , error) {
 		},
 	)
 	if err != nil {
-		return TokenPayload{}, err
+		return tokenPayload, err
 	}
 
 	claims := parsedToken.Claims.(*TokenClaims)
-	tokenPayload := TokenPayload{
-		AccountId: claims.AccountId,
-		Email: claims.Email,
-		ExpiresAt: claims.ExpiresAt,
-	}
+	tokenPayload.AccountId = claims.AccountId
+	tokenPayload.Email = claims.Email
+	tokenPayload.ExpiresAt = claims.ExpiresAt
 
 	return tokenPayload, nil
 }

@@ -22,7 +22,7 @@ func (ac *AuthenticationController) Login(writer http.ResponseWriter, request *h
 		return
 	}
 
-	tokens, err := ac.AuthenticationService.Login(loginDto)
+	tokens, err := ac.AuthenticationService.Login(loginDto.Email, loginDto.Password)
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusBadRequest, loginError)
 		return

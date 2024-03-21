@@ -6,18 +6,17 @@ import (
 	"app/accounts/persistence/mappers"
 	"app/accounts/persistence/repositories"
 	"app/accounts/services"
+	"app/crypto"
 	"app/database/postgres"
 	"app/router"
-
-	cryptoService "app/crypto/services"
-	uuidService "app/uuid/services"
+	"app/uuid"
 )
 
 func GetService(db *postgres.Db) *services.AccountsService {
 	return &services.AccountsService{
 		AccountsFactory: factories.AccountsFactory{
-			UuidService: &uuidService.NativeUuidService{},
-			CryptoService: &cryptoService.BcryptCryptoService{},
+			UuidService: uuid.GetService(),
+			CryptoService: crypto.GetService(),
 		},
 		AccountsRepository: &repositories.PostgresAccountsRepository{
 			AccountsMapper: mappers.AccountsMapper{},

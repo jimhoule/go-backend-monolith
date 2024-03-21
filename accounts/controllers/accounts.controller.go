@@ -45,7 +45,12 @@ func (ac *AccountsController) Create(writer http.ResponseWriter, request *http.R
 	}
 
 	// Creates account
-	account, err := ac.AccountsService.Create(createAccountDto)
+	account, err := ac.AccountsService.Create(
+		createAccountDto.FirstName,
+		createAccountDto.LastName,
+		createAccountDto.Email,
+		createAccountDto.Password,
+	)
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusNotFound, err)
 		return

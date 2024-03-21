@@ -9,14 +9,13 @@ import (
 	"app/plans/persistence/repositories"
 	"app/plans/services"
 	"app/router"
-
-	uuidService "app/uuid/services"
+	"app/uuid"
 )
 
 func GetService(db *postgres.Db) *services.PlansService {
 	return &services.PlansService{
 		PlansFactory: factories.PlansFactory{
-			UuidService: &uuidService.NativeUuidService{},
+			UuidService: uuid.GetService(),
 		},
 		PlansRepository: &repositories.PostgresPlansRepository{
 			PlansMapper: mappers.PlansMapper{},

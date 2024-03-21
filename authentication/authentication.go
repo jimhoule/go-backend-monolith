@@ -3,18 +3,18 @@ package authentication
 import (
 	"app/accounts"
 	"app/authentication/controllers"
-	authenticationService "app/authentication/services"
-	cryptoService "app/crypto/services"
+	"app/authentication/services"
+	"app/crypto"
 	"app/database/postgres"
 	"app/router"
-	tokensService "app/tokens/services"
+	"app/tokens"
 )
 
-func GetService(db *postgres.Db) *authenticationService.AuthenticationService {
-	return &authenticationService.AuthenticationService{
+func GetService(db *postgres.Db) *services.AuthenticationService {
+	return &services.AuthenticationService{
 		AccountsService: *accounts.GetService(db),
-		TokensService: &tokensService.JwtTokensService{},
-		CryptoService: &cryptoService.BcryptCryptoService{},
+		TokensService: tokens.GetService(),
+		CryptoService: crypto.GetService(),
 	}
 }
 
