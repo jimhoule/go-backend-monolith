@@ -3,50 +3,61 @@ package repositories
 import (
 	"app/database/postgres"
 	"app/plans/domain/models"
-	"app/plans/persistence/entities"
-	"app/plans/persistence/mappers"
-	"log"
+	"context"
 )
 
 type PostgresPlansRepository struct {
-	PlansMapper mappers.PlansMapper
 	Db *postgres.Db
 }
 
 func (ppr *PostgresPlansRepository) FindAll() ([]*models.Plan, error) {
-	var planEntities []*entities.Plan
-	result := ppr.Db.Find(&planEntities)
-	if result.Error != nil {
-		return nil, result.Error
+	query := "SELECT id, name, description, price FROM plans"
+	rows, err := ppr.Db.Query(context.Background(), query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	plans := []*models.Plan{}
+	for rows.Next() {
+		plan := &models.Plan{}
+
+		err := rows.Scan(&plan.Id, &plan.Name, &plan.Description, &plan.Price)
+		if err != nil {
+			return nil, err
+		}
+
+		plans = append(plans, plan)
 	}
 
-	planModels := []*models.Plan{}
-	for _, planEntity := range planEntities {
-		planModel := ppr.PlansMapper.ToDomainModel(planEntity)
-		planModels = append(planModels, planModel)
-	}
-
-	return planModels, nil
+	return plans, nil
 }
 
 func (ppr *PostgresPlansRepository) FindById(id string) (*models.Plan, error) {
-	var planEntities []*entities.Plan
-	result := ppr.Db.Where("id = ?", id).Find(&planEntities)
-	if result.Error != nil {
-		log.Panicf("Error finding Plan with id %s: %s", id, result.Error.Error())
-		return nil, result.Error
+	query := "SELECT id, name, description, price FROM plans WHERE id = $1"
+	row := ppr.Db.QueryRow(context.Background(), query, id)
+
+	plan := &models.Plan{}
+	err := row.Scan(&plan.Id, &plan.Name, &plan.Description, &plan.Price)
+	if err != nil {
+		return nil, err
 	}
 
-	return ppr.PlansMapper.ToDomainModel(planEntities[0]), nil
+	return plan, nil
 }
 
-func (ppr *PostgresPlansRepository) Create(planModel *models.Plan) (*models.Plan, error) {
-	planEntity := ppr.PlansMapper.ToEntity(planModel)
-	result := ppr.Db.Create(planEntity)
-	if result.Error != nil {
-		log.Panicf("Error saving a Plan: %s", result.Error.Error())
-		return nil, result.Error
+func (ppr *PostgresPlansRepository) Create(plan *models.Plan) (*models.Plan, error) {
+	query := "INSERT INTO plans (id, name, description, price) VALUES (@id, @name, @description, @price)"
+	args := postgres.NamedArgs{
+		"id": plan.Id,
+		"name": plan.Name,
+		"description": plan.Description,
+		"price": plan.Price,
+	}
+	_, err := ppr.Db.Exec(context.Background(), query, args)
+	if err != nil {
+		return nil, err
 	}
 
-	return planModel, nil
+	return plan, nil
 }

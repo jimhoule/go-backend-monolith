@@ -3,7 +3,6 @@ package accounts
 import (
 	"app/accounts/controllers"
 	"app/accounts/domain/factories"
-	"app/accounts/persistence/mappers"
 	"app/accounts/persistence/repositories"
 	"app/accounts/services"
 	"app/crypto"
@@ -19,7 +18,6 @@ func GetService(db *postgres.Db) *services.AccountsService {
 			CryptoService: crypto.GetService(),
 		},
 		AccountsRepository: &repositories.PostgresAccountsRepository{
-			AccountsMapper: mappers.AccountsMapper{},
 			Db: db,
 		},
 	}

@@ -23,12 +23,13 @@ func (as *AccountsService) FindByEmail(email string) (*models.Account, error) {
 	return as.AccountsRepository.FindByEmail(email)
 }
 
-func (as *AccountsService) Create(firstName string, lastName string, email string, password string) (*models.Account, error) {
+func (as *AccountsService) Create(firstName string, lastName string, email string, password string, planId string) (*models.Account, error) {
 	account := as.AccountsFactory.Create(
 		firstName,
 		lastName,
 		email,
 		password,
+		planId,
 	)
 
 	return as.AccountsRepository.Create(account)

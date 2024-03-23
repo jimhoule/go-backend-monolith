@@ -5,7 +5,7 @@ GET http://localhost:3000/plans
 Authorization: Bearer accessToken
 
 ### Finds a Plan by id
-GET http://localhost:3000/plans/5fd06508-d497-4ec3-9e85-2e70b676339e
+GET http://localhost:3000/plans/b1bbf6d6-ac22-49c4-b64b-cd2ed524e948
 Authorization: Bearer accessToken
 
 ### Creates a Plan
@@ -14,7 +14,7 @@ Authorization: Bearer accessToken
 Content-Type: application/json
 
 {
-    "name": "familial",
-    "description": "Familil plan description",
-    "price": 12.50
+    "name": "Standard Plan",
+    "description": "Familial plan description",
+    "price": 9.50
 }

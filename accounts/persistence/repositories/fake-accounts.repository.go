@@ -2,31 +2,21 @@ package repositories
 
 import (
 	"app/accounts/domain/models"
-	"app/accounts/persistence/entities"
-	"app/accounts/persistence/mappers"
 	"fmt"
 )
 
-type FakeAccountsRepository struct{
-	AccountsMapper mappers.AccountsMapper
-}
+type FakeAccountsRepository struct{}
 
-var accountEntities []*entities.Account = []*entities.Account{}
+var accounts []*models.Account = []*models.Account{}
 
 func (far *FakeAccountsRepository) FindAll() ([]*models.Account, error) {
-	var accountModels []*models.Account = []*models.Account{}
-	for _, accountEntity := range accountEntities {
-		acountModel := far.AccountsMapper.ToDomainModel(accountEntity)
-		accountModels = append(accountModels, acountModel)
-	}
-
-	return accountModels, nil
+	return accounts, nil
 }
 
 func (far *FakeAccountsRepository) FindById(id string) (*models.Account, error) {
-	for _, accountEntity := range accountEntities {
-		if accountEntity.Id == id {
-			return far.AccountsMapper.ToDomainModel(accountEntity), nil
+	for _, account := range accounts {
+		if account.Id == id {
+			return account, nil
 		}
 	}
 
@@ -34,18 +24,17 @@ func (far *FakeAccountsRepository) FindById(id string) (*models.Account, error) 
 }
 
 func (far *FakeAccountsRepository) FindByEmail(email string) (*models.Account, error) {
-	for _, accountEntity := range accountEntities {
-		if accountEntity.Email == email {
-			return far.AccountsMapper.ToDomainModel(accountEntity), nil
+	for _, account := range accounts {
+		if account.Email == email {
+			return account, nil
 		}
 	}
 
 	return nil, fmt.Errorf("the account with email %s does not exist", email)
 }
 
-func (far *FakeAccountsRepository) Create(accountModel *models.Account) (*models.Account, error) {
-	accountEntity := far.AccountsMapper.ToEntity(accountModel)
-	accountEntities = append(accountEntities, accountEntity);
+func (far *FakeAccountsRepository) Create(account *models.Account) (*models.Account, error) {
+	accounts = append(accounts, account);
 
-	return accountModel, nil
+	return account, nil
 }

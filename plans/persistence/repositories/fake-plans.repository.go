@@ -2,41 +2,29 @@ package repositories
 
 import (
 	"app/plans/domain/models"
-	"app/plans/persistence/entities"
-	"app/plans/persistence/mappers"
 	"fmt"
 )
 
-type FakePlansRepository struct {
-	PlansMapper mappers.PlansMapper
-}
+type FakePlansRepository struct {}
 
-var planEntities []*entities.Plan = []*entities.Plan{}
+ var plans []*models.Plan = []*models.Plan{}
 
 func (fpr *FakePlansRepository) FindAll() ([]*models.Plan, error) {
-	planModels := []*models.Plan{}
-
-	for _, planEntity := range planEntities {
-		planModel := fpr.PlansMapper.ToDomainModel(planEntity)
-		planModels = append(planModels, planModel)
-	}
-
-	return planModels, nil
+	return plans, nil
 }
 
 func (fpr *FakePlansRepository) FindById(id string) (*models.Plan, error) {
-	for _, planEntity := range planEntities {
-		if planEntity.Id == id {
-			return fpr.PlansMapper.ToDomainModel(planEntity), nil
+	for _, plan := range plans {
+		if plan.Id == id {
+			return plan, nil
 		}
 	}
 
 	return nil, fmt.Errorf("the plan with id %s does not exist", id)
 }
 
-func (fpr *FakePlansRepository) Create(planModel *models.Plan) (*models.Plan, error) {
-	planEntity := fpr.PlansMapper.ToEntity(planModel)
-	planEntities = append(planEntities, planEntity)
+func (fpr *FakePlansRepository) Create(plan *models.Plan) (*models.Plan, error) {
+	plans = append(plans, plan)
 
-	return planModel, nil
+	return plan, nil
 }

@@ -7,4 +7,5 @@ type Account struct {
 	Email                 string
 	Password              string
 	IsMembershipCancelled bool
+	PlanId                string
 }

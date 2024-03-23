@@ -11,7 +11,7 @@ type AccountsFactory struct{
 	CryptoService cryptoService.CryptoService
 }
 
-func (af *AccountsFactory) Create(firstName string, lastName string, email string, password string) *models.Account {
+func (af *AccountsFactory) Create(firstName string, lastName string, email string, password string, planId string) *models.Account {
 	hashedPassword, _ := af.CryptoService.GenerateHashedPassword(password)
 
 	return &models.Account{
@@ -20,5 +20,7 @@ func (af *AccountsFactory) Create(firstName string, lastName string, email strin
 		LastName: lastName,
 		Email: email,
 		Password: hashedPassword,
+		IsMembershipCancelled: false,
+		PlanId: planId,
 	}
 }

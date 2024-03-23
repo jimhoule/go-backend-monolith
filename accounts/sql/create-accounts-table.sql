@@ -1,0 +1,10 @@
+CREATE TABLE accounts (
+  id UUID PRIMARY KEY NOT NULL,
+  firstName VARCHAR(50) NOT NULL,
+  lastName VARCHAR(50) NOT NULL,
+  email VARCHAR(50) UNIQUE NOT NULL,
+  password VARCHAR(200) NOT NULL,
+  isMemberShipCancelled BOOLEAN NOT NULL,
+  planId UUID NOT NULL,
+  CONSTRAINT fk_plan FOREIGN KEY(planId) REFERENCES plans(id)
+);

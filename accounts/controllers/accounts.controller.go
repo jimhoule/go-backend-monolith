@@ -50,6 +50,7 @@ func (ac *AccountsController) Create(writer http.ResponseWriter, request *http.R
 		createAccountDto.LastName,
 		createAccountDto.Email,
 		createAccountDto.Password,
+		createAccountDto.PlanId,
 	)
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusNotFound, err)

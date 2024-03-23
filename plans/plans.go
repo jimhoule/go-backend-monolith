@@ -5,7 +5,6 @@ import (
 	"app/database/postgres"
 	"app/plans/controllers"
 	"app/plans/domain/factories"
-	"app/plans/persistence/mappers"
 	"app/plans/persistence/repositories"
 	"app/plans/services"
 	"app/router"
@@ -18,7 +17,6 @@ func GetService(db *postgres.Db) *services.PlansService {
 			UuidService: uuid.GetService(),
 		},
 		PlansRepository: &repositories.PostgresPlansRepository{
-			PlansMapper: mappers.PlansMapper{},
 			Db: db,
 		},
 	}

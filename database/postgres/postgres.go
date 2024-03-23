@@ -1,16 +1,15 @@
 package postgres
 
 import (
-	accountEntities "app/accounts/persistence/entities"
-	planEntities "app/plans/persistence/entities"
-	"log"
+	"context"
+	"fmt"
+	"os"
 
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	"github.com/jackc/pgx/v5"
 )
 
-type Db = gorm.DB
-type Model = gorm.Model
+type Db = pgx.Conn
+type NamedArgs = pgx.NamedArgs
 
 var db *Db
 
@@ -18,21 +17,16 @@ func Get() *Db {
 	if db == nil {
 		//Creates a new Postgresql database connection
 		dsn := "host=localhost user=postgres password=password dbname=go-backend-monolith port=5432"
-
-		// Opens a connection to the database
-		db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		connection, err := pgx.Connect(context.Background(), dsn)
 		if err != nil {
-			log.Panic("failed to connect to database: " + err.Error())
+			fmt.Printf("Unable to connect to database: %v\n", err)
+			os.Exit(1)
 		}
 
-		// Auto migrates the necessary tables based on the defined models/structs
-		err = db.AutoMigrate(&accountEntities.Account{}, &planEntities.Plan{})
-		if err != nil {
-			panic("failed to perform migrations: " + err.Error())
-		}
+		db = connection
 
 		return db
 	}
 
-	return db;
+	return db
 }
