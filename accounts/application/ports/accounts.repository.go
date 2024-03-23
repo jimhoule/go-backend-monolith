@@ -1,4 +1,4 @@
-package repositories
+package ports
 
 import "app/accounts/domain/models"
 

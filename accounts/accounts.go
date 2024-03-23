@@ -1,10 +1,10 @@
 package accounts
 
 import (
-	"app/accounts/controllers"
+	"app/accounts/application/services"
 	"app/accounts/domain/factories"
-	"app/accounts/persistence/repositories"
-	"app/accounts/services"
+	"app/accounts/persistence/postgres/repositories"
+	"app/accounts/presenters/http/controllers"
 	"app/crypto"
 	"app/database/postgres"
 	"app/router"

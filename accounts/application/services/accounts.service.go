@@ -1,14 +1,15 @@
 package services
 
 import (
+	"app/accounts/application/payloads"
+	"app/accounts/application/ports"
 	"app/accounts/domain/factories"
 	"app/accounts/domain/models"
-	"app/accounts/persistence/repositories"
 )
 
 type AccountsService struct {
 	AccountsFactory factories.AccountsFactory
-	AccountsRepository repositories.AccountsRepository
+	AccountsRepository ports.AccountsRepository
 }
 
 func (as *AccountsService) FindAll() ([]*models.Account, error) {
@@ -23,13 +24,13 @@ func (as *AccountsService) FindByEmail(email string) (*models.Account, error) {
 	return as.AccountsRepository.FindByEmail(email)
 }
 
-func (as *AccountsService) Create(firstName string, lastName string, email string, password string, planId string) (*models.Account, error) {
+func (as *AccountsService) Create(createAccountPayload payloads.CreateAccountPayload) (*models.Account, error) {
 	account := as.AccountsFactory.Create(
-		firstName,
-		lastName,
-		email,
-		password,
-		planId,
+		createAccountPayload.FirstName,
+		createAccountPayload.LastName,
+		createAccountPayload.Email,
+		createAccountPayload.Password,
+		createAccountPayload.PlanId,
 	)
 
 	return as.AccountsRepository.Create(account)

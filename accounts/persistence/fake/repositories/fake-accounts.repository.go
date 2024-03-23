@@ -3,6 +3,8 @@ package repositories
 import (
 	"app/accounts/domain/models"
 	"fmt"
+
+	_ "app/accounts/application/ports"
 )
 
 type FakeAccountsRepository struct{}

@@ -1,8 +1,9 @@
 package controllers
 
 import (
-	"app/accounts/dtos"
-	"app/accounts/services"
+	"app/accounts/application/payloads"
+	"app/accounts/application/services"
+	"app/accounts/presenters/http/dtos"
 	"app/utils/json"
 	"net/http"
 
@@ -45,13 +46,13 @@ func (ac *AccountsController) Create(writer http.ResponseWriter, request *http.R
 	}
 
 	// Creates account
-	account, err := ac.AccountsService.Create(
-		createAccountDto.FirstName,
-		createAccountDto.LastName,
-		createAccountDto.Email,
-		createAccountDto.Password,
-		createAccountDto.PlanId,
-	)
+	account, err := ac.AccountsService.Create(payloads.CreateAccountPayload{
+		FirstName: createAccountDto.FirstName,
+		LastName: createAccountDto.LastName,
+		Email: createAccountDto.Email,
+		Password: createAccountDto.Password,
+		PlanId: createAccountDto.PlanId,
+	})
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusNotFound, err)
 		return

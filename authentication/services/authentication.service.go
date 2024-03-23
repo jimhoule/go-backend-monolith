@@ -1,7 +1,7 @@
 package services
 
 import (
-	accountsService "app/accounts/services"
+	accountsService "app/accounts/application/services"
 	cryptoService "app/crypto/services"
 	tokensService "app/tokens/services"
 )
