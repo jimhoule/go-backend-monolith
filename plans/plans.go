@@ -1,7 +1,7 @@
 package plans
 
 import (
-	"app/authentication/middlewares"
+	"app/authentication/presenters/http/middlewares"
 	"app/database/postgres"
 	"app/plans/application/services"
 	"app/plans/domain/factories"

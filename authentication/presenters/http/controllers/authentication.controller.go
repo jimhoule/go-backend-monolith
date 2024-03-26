@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"app/authentication/dtos"
-	"app/authentication/services"
+	"app/authentication/application/services"
+	"app/authentication/presenters/http/dtos"
 	"app/utils/json"
 	"errors"
 	"net/http"

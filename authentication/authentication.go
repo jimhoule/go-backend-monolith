@@ -2,8 +2,8 @@ package authentication
 
 import (
 	"app/accounts"
-	"app/authentication/controllers"
-	"app/authentication/services"
+	"app/authentication/application/services"
+	"app/authentication/presenters/http/controllers"
 	"app/crypto"
 	"app/database/postgres"
 	"app/router"
