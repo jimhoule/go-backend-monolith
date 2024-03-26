@@ -1,8 +1,9 @@
 package controllers
 
 import (
-	"app/plans/dtos"
-	"app/plans/services"
+	"app/plans/application/payloads"
+	"app/plans/application/services"
+	"app/plans/presenters/http/dtos"
 	"app/utils/json"
 	"net/http"
 
@@ -44,11 +45,11 @@ func (pc *PlansController) Create(writer http.ResponseWriter, request *http.Requ
 	}
 
 	// Creates plan
-	plan, err := pc.PlansService.Create(
-		createPlanDto.Name,
-		createPlanDto.Description,
-		createPlanDto.Price,
-	)
+	plan, err := pc.PlansService.Create(payloads.CreatePlanPayload{
+		Name: createPlanDto.Name,
+		Description: createPlanDto.Description,
+		Price: createPlanDto.Price,
+	})
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusBadRequest, err)
 		return

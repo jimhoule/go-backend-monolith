@@ -3,10 +3,10 @@ package plans
 import (
 	"app/authentication/middlewares"
 	"app/database/postgres"
-	"app/plans/controllers"
+	"app/plans/application/services"
 	"app/plans/domain/factories"
-	"app/plans/persistence/repositories"
-	"app/plans/services"
+	"app/plans/persistence/postgres/repositories"
+	"app/plans/presenters/http/controllers"
 	"app/router"
 	"app/uuid"
 )
