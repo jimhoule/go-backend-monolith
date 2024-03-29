@@ -55,5 +55,5 @@ func (pc *PlansController) Create(writer http.ResponseWriter, request *http.Requ
 		return
 	}
 
-	json.WriteHttpResponse(writer, http.StatusOK, plan)
+	json.WriteHttpResponse(writer, http.StatusCreated, plan)
 }

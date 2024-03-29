@@ -11,6 +11,10 @@ type FakePlansRepository struct{}
 
 var plans []*models.Plan = []*models.Plan{}
 
+func ResetFakePlansRepository() {
+	plans = []*models.Plan{}
+}
+
 func (fpr *FakePlansRepository) FindAll() ([]*models.Plan, error) {
 	return plans, nil
 }
