@@ -11,6 +11,10 @@ type FakeAccountsRepository struct{}
 
 var accounts []*models.Account = []*models.Account{}
 
+func ResetFakeAccountsRepository() {
+	accounts = []*models.Account{}
+}
+
 func (far *FakeAccountsRepository) FindAll() ([]*models.Account, error) {
 	return accounts, nil
 }

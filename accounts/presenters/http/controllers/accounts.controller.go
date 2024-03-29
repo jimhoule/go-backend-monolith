@@ -58,5 +58,5 @@ func (ac *AccountsController) Create(writer http.ResponseWriter, request *http.R
 		return
 	}
 
-	json.WriteHttpResponse(writer, http.StatusOK, account)
+	json.WriteHttpResponse(writer, http.StatusCreated, account)
 }
