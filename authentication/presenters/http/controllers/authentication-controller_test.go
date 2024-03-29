@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	accountPayload "app/accounts/application/payloads"
 	accountsService "app/accounts/application/services"
 	"app/accounts/domain/factories"
 	"app/accounts/domain/models"
 	"app/accounts/persistence/fake/repositories"
+	"app/authentication/application/payloads"
 	authenticationService "app/authentication/application/services"
 	"app/authentication/presenters/http/dtos"
 	"app/crypto"
@@ -33,8 +33,8 @@ func getTestContext() (*AuthenticationController, func(), func() (*models.Accoun
 		},
 	}
 
-	createAccount := func() (*models.Account, error) {
-		return authenticationController.AuthenticationService.AccountsService.Create(accountPayload.CreateAccountPayload{
+	register := func() (*models.Account, error) {
+		return authenticationController.AuthenticationService.Register(payloads.RegisterPayload{
 			FirstName: "Dummy first name",
 			LastName: "Dummy last name",
 			Email: "dummy@dummy.com",
@@ -43,14 +43,52 @@ func getTestContext() (*AuthenticationController, func(), func() (*models.Accoun
 		})
 	}
 
-	return authenticationController, repositories.ResetFakeAccountsRepository, createAccount
+	return authenticationController, repositories.ResetFakeAccountsRepository, register
+}
+
+func TestRegisterController(t *testing.T) {
+	authenticationController, reset, _ := getTestContext()
+	defer reset()
+
+	// Creates request body
+	requestBody, err := json.Marshal(dtos.RegisterDto{
+		FirstName: "Dummy first name",
+		LastName: "Dummy last name",
+		Email: "dummy@dummy.com",
+		Password: "1234",
+		PlanId: "dummyPlanId",
+	})
+	if err != nil {
+		t.Errorf("Expected to create a request body but got %v", err)
+		return
+	}
+
+	// Creates request
+	request, err := http.NewRequest(http.MethodPost, "/authentication/register", bytes.NewReader(requestBody))
+	if err != nil {
+		t.Errorf("Expected to create a new request but got %v", err)
+		return
+	}
+
+	// Creates response recorder (which satisfies http.ResponseWriter) to record the response
+	responseRecorder := httptest.NewRecorder()
+	// Creates handler
+	handler := http.HandlerFunc(authenticationController.Register)
+	// Executes request
+	handler.ServeHTTP(responseRecorder, request)
+
+	// Validates the status code
+	if responseRecorder.Code != http.StatusCreated {
+		t.Errorf("Expected http.StatusCreated but got %d", responseRecorder.Code)
+		return
+	}
 }
 
 func TestLoginController(t *testing.T) {
-	authenticationController, reset, createAccount := getTestContext()
+	authenticationController, reset, register := getTestContext()
 	defer reset()
 
-	newAccount, _ := createAccount()
+	newAccount, _ := register()
 
 	// Creates request body
 	requestBody, err := json.Marshal(dtos.LoginDto{
@@ -63,7 +101,7 @@ func TestLoginController(t *testing.T) {
 	}
 
 	// Creates request
-	request, err := http.NewRequest(http.MethodPost, "/login", bytes.NewReader(requestBody))
+	request, err := http.NewRequest(http.MethodPost, "/authentication/login", bytes.NewReader(requestBody))
 	if err != nil {
 		t.Errorf("Expected to create request but got %v", err)
 		return

@@ -14,7 +14,7 @@ Authorization: Bearer accessToken
 Content-Type: application/json
 
 {
-    "name": "Premium Plan",
+    "name": "Elite Plan",
     "description": "Familial plan description",
-    "price": 14.50
+    "price": 16.50
 }

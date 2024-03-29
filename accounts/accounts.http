@@ -5,15 +5,3 @@ GET http://localhost:3000/accounts
 
 ### Finds an Account by id
 GET http://localhost:3000/accounts/aff25fab-09e1-47c4-bbe0-e8d4b2f35b86
-
-### Creates an Account
-POST http://localhost:3000/accounts
-Content-Type: application/json
-
-{
-    "firstName": "Marc",
-    "lastName": "Laurin",
-    "email": "marc3@example.com",
-    "password": "1234",
-    "planId": "b1bbf6d6-ac22-49c4-b64b-cd2ed524e948"
-}

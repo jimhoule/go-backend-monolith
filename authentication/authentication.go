@@ -24,4 +24,5 @@ func Init(mainRouter *router.MainRouter, db *postgres.Db) {
 	}
 
 	mainRouter.Post("/authentication/login", authenticationController.Login)
+	mainRouter.Post("/authentication/register", authenticationController.Register)
 }

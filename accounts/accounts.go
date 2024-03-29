@@ -30,6 +30,4 @@ func Init(mainRouter *router.MainRouter, db *postgres.Db) {
 
 	mainRouter.Get("/accounts", accountsController.FindAll)
 	mainRouter.Get("/accounts/{id}", accountsController.FindById)
-
-	mainRouter.Post("/accounts", accountsController.Create)
 }

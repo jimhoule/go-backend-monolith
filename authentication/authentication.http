@@ -8,3 +8,15 @@ Content-Type: application/json
     "email": "marc@example.com",
     "password": "1234"
 }
+
+### Registers
+POST http://localhost:3000/authentication/register
+Content-Type: application/json
+
+{
+    "firstName": "Marc",
+    "lastName": "Laurin",
+    "email": "marc4@example.com",
+    "password": "1234",
+    "planId": "b1bbf6d6-ac22-49c4-b64b-cd2ed524e948"
+}

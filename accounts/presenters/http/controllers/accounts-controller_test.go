@@ -6,11 +6,9 @@ import (
 	"app/accounts/domain/factories"
 	"app/accounts/domain/models"
 	"app/accounts/persistence/fake/repositories"
-	"app/accounts/presenters/http/dtos"
 	"app/crypto"
 	"app/router/mock"
 	"app/uuid"
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -40,44 +38,6 @@ func getTestContext() (*AccountsController, func(), func() (*models.Account, err
 	}
 
 	return accountsController, repositories.ResetFakeAccountsRepository, createAccount
-}
-
-func TestCreateAccountController(t *testing.T) {
-	accountsController, reset, _ := getTestContext()
-	defer reset()
-
-	// Creates request body
-	requestBody, err := json.Marshal(dtos.CreateAccountDto{
-		FirstName: "Dummy first name",
-		LastName: "Dummy last name",
-		Email: "dummy@dummy.com",
-		Password: "1234",
-		PlanId: "dummyPlanId",
-	})
-	if err != nil {
-		t.Errorf("Expected to create a request body but got %v", err)
-		return
-	}
-
-	// Creates request
-	request, err := http.NewRequest(http.MethodPost, "/accounts", bytes.NewReader(requestBody))
-	if err != nil {
-		t.Errorf("Expected to create a new request but got %v", err)
-		return
-	}
-
-	// Creates repsonse recorder (which satisfies http.ResponseWriter) to record the response
-	responseRecorder := httptest.NewRecorder()
-	// Creates handler
-	handler := http.HandlerFunc(accountsController.Create)
-	// Executes request
-	handler.ServeHTTP(responseRecorder, request)
-
-	// Validates the status code
-	if responseRecorder.Code != http.StatusCreated {
-		t.Errorf("Expected http.StatusCreated but got %d", responseRecorder.Code)
-		return
-	}
 }
 
 func TestFindAllAccountsController(t *testing.T) {

@@ -1,7 +1,6 @@
 package services
 
 import (
-	accountPayload "app/accounts/application/payloads"
 	"app/accounts/application/services"
 	"app/accounts/domain/factories"
 	"app/accounts/domain/models"
@@ -26,8 +25,8 @@ func getTestContext() (*AuthenticationService, func(), func() (*models.Account, 
 		CryptoService: crypto.GetService(),
 	}
 
-	createAccount := func() (*models.Account, error) {
-		return authenticationService.AccountsService.Create(accountPayload.CreateAccountPayload{
+	register := func() (*models.Account, error) {
+		return authenticationService.Register(payloads.RegisterPayload{
 			FirstName: "Dummy first name",
 			LastName: "Dummy last name",
 			Email: "dummy@dummy.com",
@@ -36,14 +35,24 @@ func getTestContext() (*AuthenticationService, func(), func() (*models.Account, 
 		})
 	}
 
-	return authenticationService, repositories.ResetFakeAccountsRepository, createAccount
+	return authenticationService, repositories.ResetFakeAccountsRepository, register
+}
+
+func TestRegisterService(t *testing.T) {
+	_, reset, register := getTestContext()
+	defer reset()
+
+	_, err := register()
+	if err != nil {
+		t.Errorf("Expected Tokens but got %v", err)
+	}
 }
 
 func TestLoginService(t *testing.T) {
-	authenticationService, reset, createAccount := getTestContext()
+	authenticationService, reset, register := getTestContext()
 	defer reset()
 
-	account, _ := createAccount()
+	account, _ := register()
 
 	_, err := authenticationService.Login(payloads.LoginPayload{
 		Email: account.Email,

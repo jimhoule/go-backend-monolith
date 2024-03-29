@@ -1,8 +1,10 @@
 package services
 
 import (
+	accountPayloads "app/accounts/application/payloads"
 	accountsService "app/accounts/application/services"
-	"app/authentication/application/payloads"
+	"app/accounts/domain/models"
+	authenticationPayloads "app/authentication/application/payloads"
 	cryptoService "app/crypto/services"
 	tokensService "app/tokens/services"
 )
@@ -18,7 +20,7 @@ type Tokens struct{
 	RefreshToken string
 }
 
-func (as *AuthenticationService) Login(loginPayload payloads.LoginPayload) (*Tokens, error) {
+func (as *AuthenticationService) Login(loginPayload authenticationPayloads.LoginPayload) (*Tokens, error) {
 	tokens := &Tokens{}
 
 	account, err := as.AccountsService.FindByEmail(loginPayload.Email)
@@ -45,4 +47,14 @@ func (as *AuthenticationService) Login(loginPayload payloads.LoginPayload) (*Tok
 	tokens.RefreshToken = refreshToken
 
 	return tokens, nil
+}
+
+func (as *AuthenticationService) Register(registerPayload authenticationPayloads.RegisterPayload) (*models.Account, error) {
+	return as.AccountsService.Create(accountPayloads.CreateAccountPayload{
+		FirstName: registerPayload.FirstName,
+		LastName: registerPayload.LastName,
+		Email: registerPayload.Email,
+		Password: registerPayload.Password,
+		PlanId: registerPayload.PlanId,
+	})
 }

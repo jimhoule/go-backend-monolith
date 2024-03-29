@@ -15,6 +15,8 @@ type AuthenticationController struct {
 
 func (ac *AuthenticationController) Login(writer http.ResponseWriter, request *http.Request) {
 	loginError := errors.New("Invalid email or password")
+
+	// Gets request body
 	var loginDto dtos.LoginDto
 
 	err := json.ReadHttpRequestBody(writer, request, &loginDto)
@@ -23,6 +25,7 @@ func (ac *AuthenticationController) Login(writer http.ResponseWriter, request *h
 		return
 	}
 
+	// Logs in
 	tokens, err := ac.AuthenticationService.Login(payloads.LoginPayload{
 		Email: loginDto.Email,
 		Password: loginDto.Password,
@@ -33,4 +36,30 @@ func (ac *AuthenticationController) Login(writer http.ResponseWriter, request *h
 	}
 
 	json.WriteHttpResponse(writer, http.StatusOK, tokens)
+}
+
+func (ac *AuthenticationController) Register(writer http.ResponseWriter, request *http.Request) {
+	// Gets request body
+	var registerDto dtos.RegisterDto
+
+	err := json.ReadHttpRequestBody(writer, request, &registerDto)
+	if err != nil {
+		json.WriteHttpError(writer, http.StatusBadRequest, err)
+		return
+	}
+
+	// Registers
+	account, err := ac.AuthenticationService.Register(payloads.RegisterPayload{
+		FirstName: registerDto.FirstName,
+		LastName: registerDto.LastName,
+		Email: registerDto.Email,
+		Password: registerDto.Password,
+		PlanId: registerDto.PlanId,
+	})
+	if err != nil {
+		json.WriteHttpError(writer, http.StatusNotFound, err)
+		return
+	}
+
+	json.WriteHttpResponse(writer, http.StatusCreated, account)
 }
