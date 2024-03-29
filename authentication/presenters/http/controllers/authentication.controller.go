@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"app/authentication/application/payloads"
 	"app/authentication/application/services"
 	"app/authentication/presenters/http/dtos"
 	"app/utils/json"
@@ -22,7 +23,10 @@ func (ac *AuthenticationController) Login(writer http.ResponseWriter, request *h
 		return
 	}
 
-	tokens, err := ac.AuthenticationService.Login(loginDto.Email, loginDto.Password)
+	tokens, err := ac.AuthenticationService.Login(payloads.LoginPayload{
+		Email: loginDto.Email,
+		Password: loginDto.Password,
+	})
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusBadRequest, loginError)
 		return

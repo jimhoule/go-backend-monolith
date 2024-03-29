@@ -6,6 +6,7 @@ import (
 	"app/accounts/domain/factories"
 	"app/accounts/domain/models"
 	"app/accounts/persistence/fake/repositories"
+	"app/authentication/application/payloads"
 	"app/crypto"
 	"app/tokens"
 	"app/uuid"
@@ -44,7 +45,10 @@ func TestLoginService(t *testing.T) {
 
 	account, _ := createAccount()
 
-	_, err := authenticationService.Login(account.Email, "1234")
+	_, err := authenticationService.Login(payloads.LoginPayload{
+		Email: account.Email,
+		Password: "1234",
+	})
 	if err != nil {
 		t.Errorf("Expected Tokens but got %v", err)
 	}

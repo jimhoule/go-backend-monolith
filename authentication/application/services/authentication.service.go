@@ -2,6 +2,7 @@ package services
 
 import (
 	accountsService "app/accounts/application/services"
+	"app/authentication/application/payloads"
 	cryptoService "app/crypto/services"
 	tokensService "app/tokens/services"
 )
@@ -17,15 +18,15 @@ type Tokens struct{
 	RefreshToken string
 }
 
-func (as *AuthenticationService) Login(email string, password string) (*Tokens, error) {
+func (as *AuthenticationService) Login(loginPayload payloads.LoginPayload) (*Tokens, error) {
 	tokens := &Tokens{}
 
-	account, err := as.AccountsService.FindByEmail(email)
+	account, err := as.AccountsService.FindByEmail(loginPayload.Email)
 	if err != nil {
 		return tokens, err
 	}
 
-	isValid, err := as.CryptoService.ComparePassword(account.Password, password)
+	isValid, err := as.CryptoService.ComparePassword(account.Password, loginPayload.Password)
 	if !isValid {
 		return tokens, err
 	}
