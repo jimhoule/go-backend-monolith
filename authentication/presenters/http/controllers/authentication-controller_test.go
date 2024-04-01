@@ -19,9 +19,9 @@ import (
 
 func getTestContext() (*AuthenticationController, func(), func() (*authenticationService.Tokens, error)) {
 	authenticationController := &AuthenticationController{
-		AuthenticationService: authenticationService.AuthenticationService{
-			AccountsService: accountsService.AccountsService{
-				AccountsFactory: factories.AccountsFactory{
+		AuthenticationService: &authenticationService.AuthenticationService{
+			AccountsService: &accountsService.AccountsService{
+				AccountsFactory: &factories.AccountsFactory{
 					UuidService:   uuid.GetService(),
 					CryptoService: crypto.GetService(),
 				},

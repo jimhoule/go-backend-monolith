@@ -4,8 +4,6 @@ import (
 	"app/accounts/domain/models"
 	"app/database/postgres"
 	"context"
-
-	_ "app/accounts/application/ports"
 )
 
 type PostgresAccountsRepository struct{

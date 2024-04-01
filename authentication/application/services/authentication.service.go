@@ -9,7 +9,7 @@ import (
 )
 
 type AuthenticationService struct{
-	AccountsService accountsService.AccountsService
+	AccountsService *accountsService.AccountsService
 	TokensService   tokensService.TokensService
 	CryptoService   cryptoService.CryptoService
 }

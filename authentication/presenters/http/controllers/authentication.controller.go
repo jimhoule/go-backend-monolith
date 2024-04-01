@@ -10,7 +10,7 @@ import (
 )
 
 type AuthenticationController struct {
-	AuthenticationService services.AuthenticationService
+	AuthenticationService *services.AuthenticationService
 }
 
 func (ac *AuthenticationController) Login(writer http.ResponseWriter, request *http.Request) {

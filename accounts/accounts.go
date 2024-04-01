@@ -13,7 +13,7 @@ import (
 
 func GetService(db *postgres.Db) *services.AccountsService {
 	return &services.AccountsService{
-		AccountsFactory: factories.AccountsFactory{
+		AccountsFactory: &factories.AccountsFactory{
 			UuidService: uuid.GetService(),
 			CryptoService: crypto.GetService(),
 		},
@@ -25,7 +25,7 @@ func GetService(db *postgres.Db) *services.AccountsService {
 
 func Init(mainRouter *router.MainRouter, db *postgres.Db) {
 	accountsController := controllers.AccountsController{
-		AccountsService: *GetService(db),
+		AccountsService: GetService(db),
 	}
 
 	mainRouter.Get("/accounts", accountsController.FindAll)

@@ -13,8 +13,8 @@ import (
 
 func getTestContext() (*AuthenticationService, func(), func(email string) (*Tokens, error)) {
 	authenticationService := &AuthenticationService{
-		AccountsService: services.AccountsService{
-			AccountsFactory: factories.AccountsFactory{
+		AccountsService: &services.AccountsService{
+			AccountsFactory: &factories.AccountsFactory{
 				UuidService:   uuid.GetService(),
 				CryptoService: crypto.GetService(),
 			},

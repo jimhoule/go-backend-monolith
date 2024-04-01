@@ -9,7 +9,7 @@ import (
 )
 
 type AccountsController struct {
-	AccountsService services.AccountsService
+	AccountsService *services.AccountsService
 }
 
 func (ac *AccountsController) FindAll(writer http.ResponseWriter, request *http.Request) {

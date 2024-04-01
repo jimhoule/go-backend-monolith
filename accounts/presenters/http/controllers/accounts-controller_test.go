@@ -18,8 +18,8 @@ import (
 
 func getTestContext() (*AccountsController, func(), func() (*models.Account, error)) {
 	accountsController := &AccountsController{
-		AccountsService: services.AccountsService{
-			AccountsFactory: factories.AccountsFactory{
+		AccountsService: &services.AccountsService{
+			AccountsFactory: &factories.AccountsFactory{
 				UuidService: uuid.GetService(),
 				CryptoService: crypto.GetService(),
 			},

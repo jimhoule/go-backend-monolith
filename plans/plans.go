@@ -24,7 +24,7 @@ func GetService(db *postgres.Db) *services.PlansService {
 
 func Init(mainRouter *router.MainRouter, db *postgres.Db) {
 	plansController := controllers.PlansController{
-		PlansService: *GetService(db),
+		PlansService: GetService(db),
 	}
 
 	// NOTE: In a mux, all middleware must be defined before routes so we have to wrap the routes around a Group

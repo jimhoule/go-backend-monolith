@@ -3,17 +3,15 @@ package repositories
 import (
 	"app/plans/domain/models"
 	"fmt"
-
-	_ "app/plans/application/ports"
 )
-
-type FakePlansRepository struct{}
 
 var plans []*models.Plan = []*models.Plan{}
 
 func ResetFakePlansRepository() {
 	plans = []*models.Plan{}
 }
+
+type FakePlansRepository struct{}
 
 func (fpr *FakePlansRepository) FindAll() ([]*models.Plan, error) {
 	return plans, nil

@@ -11,7 +11,7 @@ import (
 )
 
 type PlansController struct {
-	PlansService services.PlansService
+	PlansService *services.PlansService
 }
 
 func (pc *PlansController) FindAll(writer http.ResponseWriter, request *http.Request) {

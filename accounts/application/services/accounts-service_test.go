@@ -12,7 +12,7 @@ import (
 
 func getTestContext() (*AccountsService, func(), func() (*models.Account, error)) {
 	accountsService := &AccountsService{
-		AccountsFactory: factories.AccountsFactory{
+		AccountsFactory: &factories.AccountsFactory{
 			UuidService:   uuid.GetService(),
 			CryptoService: crypto.GetService(),
 		},

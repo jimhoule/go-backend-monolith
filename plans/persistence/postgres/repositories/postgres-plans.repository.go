@@ -4,8 +4,6 @@ import (
 	"app/database/postgres"
 	"app/plans/domain/models"
 	"context"
-
-	_ "app/plans/application/ports"
 )
 
 type PostgresPlansRepository struct {

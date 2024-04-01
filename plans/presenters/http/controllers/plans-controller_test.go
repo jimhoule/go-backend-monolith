@@ -19,7 +19,7 @@ import (
 
 func getTestContext() (*PlansController, func(), func() (*models.Plan, error)) {
 	plansController := &PlansController{
-		PlansService: services.PlansService{
+		PlansService: &services.PlansService{
 			PlansFactory: &factories.PlansFactory{
 				UuidService: uuid.GetService(),
 			},

@@ -5,13 +5,13 @@ import (
 	"fmt"
 )
 
-type FakeProfilesRepository struct {}
-
 var profiles []*models.Profile = []*models.Profile{}
 
 func ResetFakeProfilesRepository() {
 	profiles = []*models.Profile{}
 }
+
+type FakeProfilesRepository struct {}
 
 func (fpr *FakeProfilesRepository) FindAllByAccountId(accountId string) ([]*models.Profile, error) {
 	accountProfiles := []*models.Profile{}

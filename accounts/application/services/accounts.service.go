@@ -8,7 +8,7 @@ import (
 )
 
 type AccountsService struct {
-	AccountsFactory factories.AccountsFactory
+	AccountsFactory *factories.AccountsFactory
 	AccountsRepository ports.AccountsRepositoryPort
 }
 
