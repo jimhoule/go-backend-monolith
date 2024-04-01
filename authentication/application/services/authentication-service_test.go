@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func getTestContext() (*AuthenticationService, func(), func() (*Tokens, error)) {
+func getTestContext() (*AuthenticationService, func(), func(email string) (*Tokens, error)) {
 	authenticationService := &AuthenticationService{
 		AccountsService: services.AccountsService{
 			AccountsFactory: factories.AccountsFactory{
@@ -24,11 +24,11 @@ func getTestContext() (*AuthenticationService, func(), func() (*Tokens, error)) 
 		CryptoService: crypto.GetService(),
 	}
 
-	register := func() (*Tokens, error) {
+	register := func(email string) (*Tokens, error) {
 		return authenticationService.Register(payloads.RegisterPayload{
 			FirstName: "Dummy first name",
 			LastName: "Dummy last name",
-			Email: "dummy@dummy.com",
+			Email: email,
 			Password: "1234",
 			PlanId: "dummyPlanId",
 		})
@@ -38,12 +38,35 @@ func getTestContext() (*AuthenticationService, func(), func() (*Tokens, error)) 
 }
 
 func TestRegisterService(t *testing.T) {
-	_, reset, register := getTestContext()
+	authenticationService, reset, register := getTestContext()
 	defer reset()
 
-	_, err := register()
+	email := "dummy@dummy.com"
+	tokens, err := register(email)
 	if err != nil {
 		t.Errorf("Expected Tokens but got %v", err)
+		return
+	}
+
+	accessTokenPayload, err := authenticationService.TokensService.Decode(tokens.AccessToken)
+	if err != nil {
+		t.Errorf("Expected Access Token payload but got %v", err)
+		return
+	}
+
+	if accessTokenPayload.Email != email {
+		t.Errorf("Expected Access Token payload email to equal registration email but got %s", email)
+		return
+	}
+
+	refreshTokenPayload, err := authenticationService.TokensService.Decode(tokens.RefreshToken)
+	if err != nil {
+		t.Errorf("Expected Refresh Token payload but got %v", err)
+		return
+	}
+
+	if refreshTokenPayload.Email != email {
+		t.Errorf("Expected Refresh Token payload email to equal registration email but got %s", email)
 	}
 }
 
@@ -51,13 +74,35 @@ func TestLoginService(t *testing.T) {
 	authenticationService, reset, register := getTestContext()
 	defer reset()
 
-	register()
+	email := "dummy@dummy.com"
+	register(email)
 
-	_, err := authenticationService.Login(payloads.LoginPayload{
+	tokens, err := authenticationService.Login(payloads.LoginPayload{
 		Email: "dummy@dummy.com",
 		Password: "1234",
 	})
 	if err != nil {
 		t.Errorf("Expected Tokens but got %v", err)
+	}
+
+	accessTokenPayload, err := authenticationService.TokensService.Decode(tokens.AccessToken)
+	if err != nil {
+		t.Errorf("Expected Access Token payload but got %v", err)
+		return
+	}
+
+	if accessTokenPayload.Email != email {
+		t.Errorf("Expected Access Token payload email to equal registration email but got %s", email)
+		return
+	}
+
+	refreshTokenPayload, err := authenticationService.TokensService.Decode(tokens.RefreshToken)
+	if err != nil {
+		t.Errorf("Expected Refresh Token payload but got %v", err)
+		return
+	}
+
+	if refreshTokenPayload.Email != email {
+		t.Errorf("Expected Refresh Token payload email to equal registration email but got %s", email)
 	}
 }

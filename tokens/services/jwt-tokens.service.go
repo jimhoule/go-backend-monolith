@@ -9,10 +9,11 @@ import (
 type JwtTokensService struct{}
 
 type TokenClaims struct {
-	jwt.Claims
-	AccountId  string `json:"accountId"`
-	Email      string `json:"email"`
-	ExpiresAt  int64  `json:"expiresAt"`
+	jwt.MapClaims
+	Subject   string `json:"subject"`
+	Email     string `json:"email"`
+	IssuedAt  int64  `json:"issuedAt"`
+	ExpiresAt int64  `json:"expiresAt"`
 }
 
 // TODO: To put in env
@@ -23,10 +24,11 @@ func generateToken(accountId string, email string, expiresAt int64) (string, err
 	// Creates token
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256, 
-        jwt.MapClaims{ 
-			"accountId": accountId,
-			"email": email,
-			"expiresAt": expiresAt,
+        TokenClaims{
+			Subject: accountId,
+			Email: email,
+			IssuedAt: time.Now().Unix(),
+			ExpiresAt: expiresAt,
         },
 	)
 
@@ -73,8 +75,8 @@ func (jts *JwtTokensService) Verify(token string) (bool, error) {
 	return true, nil
 }
 
-func (jts *JwtTokensService) Decode(token string) (TokenPayload , error) {
-	tokenPayload := TokenPayload{}
+func (jts *JwtTokensService) Decode(token string) (*TokenPayload , error) {
+	tokenPayload := &TokenPayload{}
 
 	parsedToken, err := jwt.ParseWithClaims(
 		token,
@@ -88,8 +90,9 @@ func (jts *JwtTokensService) Decode(token string) (TokenPayload , error) {
 	}
 
 	claims := parsedToken.Claims.(*TokenClaims)
-	tokenPayload.AccountId = claims.AccountId
+	tokenPayload.Subject = claims.Subject
 	tokenPayload.Email = claims.Email
+	tokenPayload.IssuedAt =claims.IssuedAt
 	tokenPayload.ExpiresAt = claims.ExpiresAt
 
 	return tokenPayload, nil
