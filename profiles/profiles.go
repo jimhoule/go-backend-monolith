@@ -22,7 +22,7 @@ func GetService(db *postgres.Db) *services.ProfilesService {
 }
 
 func Init(mainRouter *router.MainRouter, db *postgres.Db) {
-	profilesController := controllers.ProfilesController{
+	profilesController := &controllers.ProfilesController{
 		ProfilesService: GetService(db),
 	}
 

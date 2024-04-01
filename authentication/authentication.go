@@ -19,7 +19,7 @@ func GetService(db *postgres.Db) *services.AuthenticationService {
 }
 
 func Init(mainRouter *router.MainRouter, db *postgres.Db) {
-	authenticationController := controllers.AuthenticationController{
+	authenticationController := &controllers.AuthenticationController{
 		AuthenticationService: GetService(db),
 	}
 

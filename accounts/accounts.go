@@ -24,7 +24,7 @@ func GetService(db *postgres.Db) *services.AccountsService {
 }
 
 func Init(mainRouter *router.MainRouter, db *postgres.Db) {
-	accountsController := controllers.AccountsController{
+	accountsController := &controllers.AccountsController{
 		AccountsService: GetService(db),
 	}
 
