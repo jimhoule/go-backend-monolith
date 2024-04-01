@@ -25,4 +25,4 @@ Content-Type: application/json
 
 
 ### Deletes a Profile
-DELETE http://localhost:3000/profiles/id
+DELETE http://localhost:3000/profiles/6d9eaaab-8b01-4a21-b4a9-d1fcef9a8fa3
