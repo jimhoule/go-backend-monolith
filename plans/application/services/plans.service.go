@@ -8,8 +8,8 @@ import (
 )
 
 type PlansService struct {
-	PlansFactory factories.PlansFactory
-	PlansRepository ports.PlansRepository
+	PlansFactory *factories.PlansFactory
+	PlansRepository ports.PlansRepositoryPort
 }
 
 func (ps *PlansService) FindAll() ([]*models.Plan, error) {
@@ -20,7 +20,7 @@ func (ps *PlansService) FindById(id string) (*models.Plan, error) {
 	return ps.PlansRepository.FindById(id)
 }
 
-func (ps *PlansService) Create(createPlanPayload payloads.CreatePlanPayload) (*models.Plan, error) {
+func (ps *PlansService) Create(createPlanPayload *payloads.CreatePlanPayload) (*models.Plan, error) {
 	plan := ps.PlansFactory.Create(
 		createPlanPayload.Name,
 		createPlanPayload.Description,

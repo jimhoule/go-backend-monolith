@@ -11,14 +11,14 @@ import (
 
 func getTestContext() (*PlansService, func(), func() (*models.Plan, error)) {
 	plansService := &PlansService{
-		PlansFactory: factories.PlansFactory{
+		PlansFactory: &factories.PlansFactory{
 			UuidService: uuid.GetService(),
 		},
 		PlansRepository: &repositories.FakePlansRepository{},
 	}
 
 	createPlan := func() (*models.Plan, error) {
-		return plansService.Create(payloads.CreatePlanPayload{
+		return plansService.Create(&payloads.CreatePlanPayload{
 			Name: "Dummy Plan name",
 			Description: "Dummy Plan description",
 			Price: 10.50,

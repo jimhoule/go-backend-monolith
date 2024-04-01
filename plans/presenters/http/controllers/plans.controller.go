@@ -45,7 +45,7 @@ func (pc *PlansController) Create(writer http.ResponseWriter, request *http.Requ
 	}
 
 	// Creates plan
-	plan, err := pc.PlansService.Create(payloads.CreatePlanPayload{
+	plan, err := pc.PlansService.Create(&payloads.CreatePlanPayload{
 		Name: createPlanDto.Name,
 		Description: createPlanDto.Description,
 		Price: createPlanDto.Price,

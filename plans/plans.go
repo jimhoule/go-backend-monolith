@@ -13,7 +13,7 @@ import (
 
 func GetService(db *postgres.Db) *services.PlansService {
 	return &services.PlansService{
-		PlansFactory: factories.PlansFactory{
+		PlansFactory: &factories.PlansFactory{
 			UuidService: uuid.GetService(),
 		},
 		PlansRepository: &repositories.PostgresPlansRepository{
@@ -33,7 +33,6 @@ func Init(mainRouter *router.MainRouter, db *postgres.Db) {
 
 		groupRouter.Get("/plans", plansController.FindAll)
 		groupRouter.Get("/plans/{id}", plansController.FindById)
-
 		groupRouter.Post("/plans", plansController.Create)
 	})
 }

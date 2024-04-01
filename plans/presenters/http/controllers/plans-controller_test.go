@@ -20,7 +20,7 @@ import (
 func getTestContext() (*PlansController, func(), func() (*models.Plan, error)) {
 	plansController := &PlansController{
 		PlansService: services.PlansService{
-			PlansFactory: factories.PlansFactory{
+			PlansFactory: &factories.PlansFactory{
 				UuidService: uuid.GetService(),
 			},
 			PlansRepository: &repositories.FakePlansRepository{},
@@ -28,7 +28,7 @@ func getTestContext() (*PlansController, func(), func() (*models.Plan, error)) {
 	}
 
 	createPlan := func() (*models.Plan, error) {
-		return plansController.PlansService.Create(payloads.CreatePlanPayload{
+		return plansController.PlansService.Create(&payloads.CreatePlanPayload{
 			Name: "Dummy Plan name",
 			Description: "Dummy Plan description",
 			Price: 10.50,
