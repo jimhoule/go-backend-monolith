@@ -3,7 +3,6 @@ package controllers
 import (
 	accountsService "app/accounts/application/services"
 	"app/accounts/domain/factories"
-	"app/accounts/domain/models"
 	"app/accounts/persistence/fake/repositories"
 	"app/authentication/application/payloads"
 	authenticationService "app/authentication/application/services"
@@ -18,7 +17,7 @@ import (
 	"testing"
 )
 
-func getTestContext() (*AuthenticationController, func(), func() (*models.Account, error)) {
+func getTestContext() (*AuthenticationController, func(), func() (*authenticationService.Tokens, error)) {
 	authenticationController := &AuthenticationController{
 		AuthenticationService: authenticationService.AuthenticationService{
 			AccountsService: accountsService.AccountsService{
@@ -33,7 +32,7 @@ func getTestContext() (*AuthenticationController, func(), func() (*models.Accoun
 		},
 	}
 
-	register := func() (*models.Account, error) {
+	register := func() (*authenticationService.Tokens, error) {
 		return authenticationController.AuthenticationService.Register(payloads.RegisterPayload{
 			FirstName: "Dummy first name",
 			LastName: "Dummy last name",
@@ -88,11 +87,11 @@ func TestLoginController(t *testing.T) {
 	authenticationController, reset, register := getTestContext()
 	defer reset()
 
-	newAccount, _ := register()
+	register()
 
 	// Creates request body
 	requestBody, err := json.Marshal(dtos.LoginDto{
-		Email: newAccount.Email,
+		Email: "dummy@dummy.com",
 		Password: "1234",
 	})
 	if err != nil {

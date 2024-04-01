@@ -3,7 +3,6 @@ package services
 import (
 	"app/accounts/application/services"
 	"app/accounts/domain/factories"
-	"app/accounts/domain/models"
 	"app/accounts/persistence/fake/repositories"
 	"app/authentication/application/payloads"
 	"app/crypto"
@@ -12,7 +11,7 @@ import (
 	"testing"
 )
 
-func getTestContext() (*AuthenticationService, func(), func() (*models.Account, error)) {
+func getTestContext() (*AuthenticationService, func(), func() (*Tokens, error)) {
 	authenticationService := &AuthenticationService{
 		AccountsService: services.AccountsService{
 			AccountsFactory: factories.AccountsFactory{
@@ -25,7 +24,7 @@ func getTestContext() (*AuthenticationService, func(), func() (*models.Account, 
 		CryptoService: crypto.GetService(),
 	}
 
-	register := func() (*models.Account, error) {
+	register := func() (*Tokens, error) {
 		return authenticationService.Register(payloads.RegisterPayload{
 			FirstName: "Dummy first name",
 			LastName: "Dummy last name",
@@ -52,10 +51,10 @@ func TestLoginService(t *testing.T) {
 	authenticationService, reset, register := getTestContext()
 	defer reset()
 
-	account, _ := register()
+	register()
 
 	_, err := authenticationService.Login(payloads.LoginPayload{
-		Email: account.Email,
+		Email: "dummy@dummy.com",
 		Password: "1234",
 	})
 	if err != nil {

@@ -16,7 +16,7 @@ Content-Type: application/json
 {
     "firstName": "Marc",
     "lastName": "Laurin",
-    "email": "marc4@example.com",
+    "email": "marc5@example.com",
     "password": "1234",
     "planId": "b1bbf6d6-ac22-49c4-b64b-cd2ed524e948"
 }
