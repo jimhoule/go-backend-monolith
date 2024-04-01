@@ -5,6 +5,7 @@ import (
 	"app/authentication"
 	"app/database/postgres"
 	"app/plans"
+	"app/profiles"
 	"app/router"
 	"fmt"
 	"log"
@@ -24,6 +25,7 @@ func main() {
 	authentication.Init(mainRouter, db)
 	accounts.Init(mainRouter, db)
 	plans.Init(mainRouter, db)
+	profiles.Init(mainRouter, db)
 
 	// Creates server
 	server := &http.Server{
