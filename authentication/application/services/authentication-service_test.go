@@ -25,7 +25,7 @@ func getTestContext() (*AuthenticationService, func(), func(email string) (*Toke
 	}
 
 	register := func(email string) (*Tokens, error) {
-		return authenticationService.Register(payloads.RegisterPayload{
+		return authenticationService.Register(&payloads.RegisterPayload{
 			FirstName: "Dummy first name",
 			LastName: "Dummy last name",
 			Email: email,
@@ -77,7 +77,7 @@ func TestLoginService(t *testing.T) {
 	email := "dummy@dummy.com"
 	register(email)
 
-	tokens, err := authenticationService.Login(payloads.LoginPayload{
+	tokens, err := authenticationService.Login(&payloads.LoginPayload{
 		Email: "dummy@dummy.com",
 		Password: "1234",
 	})

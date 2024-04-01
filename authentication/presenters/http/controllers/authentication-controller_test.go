@@ -33,7 +33,7 @@ func getTestContext() (*AuthenticationController, func(), func() (*authenticatio
 	}
 
 	register := func() (*authenticationService.Tokens, error) {
-		return authenticationController.AuthenticationService.Register(payloads.RegisterPayload{
+		return authenticationController.AuthenticationService.Register(&payloads.RegisterPayload{
 			FirstName: "Dummy first name",
 			LastName: "Dummy last name",
 			Email: "dummy@dummy.com",

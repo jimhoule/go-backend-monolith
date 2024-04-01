@@ -9,7 +9,7 @@ import (
 
 type AccountsService struct {
 	AccountsFactory factories.AccountsFactory
-	AccountsRepository ports.AccountsRepository
+	AccountsRepository ports.AccountsRepositoryPort
 }
 
 func (as *AccountsService) FindAll() ([]*models.Account, error) {
@@ -24,7 +24,7 @@ func (as *AccountsService) FindByEmail(email string) (*models.Account, error) {
 	return as.AccountsRepository.FindByEmail(email)
 }
 
-func (as *AccountsService) Create(createAccountPayload payloads.CreateAccountPayload) (*models.Account, error) {
+func (as *AccountsService) Create(createAccountPayload *payloads.CreateAccountPayload) (*models.Account, error) {
 	account := as.AccountsFactory.Create(
 		createAccountPayload.FirstName,
 		createAccountPayload.LastName,

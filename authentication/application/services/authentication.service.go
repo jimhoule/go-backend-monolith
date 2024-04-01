@@ -19,7 +19,7 @@ type Tokens struct{
 	RefreshToken string
 }
 
-func (as *AuthenticationService) Login(loginPayload authenticationPayloads.LoginPayload) (*Tokens, error) {
+func (as *AuthenticationService) Login(loginPayload *authenticationPayloads.LoginPayload) (*Tokens, error) {
 	tokens := &Tokens{}
 
 	account, err := as.AccountsService.FindByEmail(loginPayload.Email)
@@ -48,10 +48,10 @@ func (as *AuthenticationService) Login(loginPayload authenticationPayloads.Login
 	return tokens, nil
 }
 
-func (as *AuthenticationService) Register(registerPayload authenticationPayloads.RegisterPayload) (*Tokens, error) {
+func (as *AuthenticationService) Register(registerPayload *authenticationPayloads.RegisterPayload) (*Tokens, error) {
 	tokens := &Tokens{}
 
-	account, err := as.AccountsService.Create(accountPayloads.CreateAccountPayload{
+	account, err := as.AccountsService.Create(&accountPayloads.CreateAccountPayload{
 		FirstName: registerPayload.FirstName,
 		LastName: registerPayload.LastName,
 		Email: registerPayload.Email,

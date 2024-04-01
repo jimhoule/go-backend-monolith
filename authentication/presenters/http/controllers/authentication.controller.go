@@ -26,7 +26,7 @@ func (ac *AuthenticationController) Login(writer http.ResponseWriter, request *h
 	}
 
 	// Logs in
-	tokens, err := ac.AuthenticationService.Login(payloads.LoginPayload{
+	tokens, err := ac.AuthenticationService.Login(&payloads.LoginPayload{
 		Email: loginDto.Email,
 		Password: loginDto.Password,
 	})
@@ -49,7 +49,7 @@ func (ac *AuthenticationController) Register(writer http.ResponseWriter, request
 	}
 
 	// Registers
-	tokens, err := ac.AuthenticationService.Register(payloads.RegisterPayload{
+	tokens, err := ac.AuthenticationService.Register(&payloads.RegisterPayload{
 		FirstName: registerDto.FirstName,
 		LastName: registerDto.LastName,
 		Email: registerDto.Email,

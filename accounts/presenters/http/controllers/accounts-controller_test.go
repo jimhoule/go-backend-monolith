@@ -28,7 +28,7 @@ func getTestContext() (*AccountsController, func(), func() (*models.Account, err
 	}
 
 	createAccount := func() (*models.Account, error) {
-		return accountsController.AccountsService.Create(payloads.CreateAccountPayload{
+		return accountsController.AccountsService.Create(&payloads.CreateAccountPayload{
 			FirstName: "Dummy first name",
 			LastName:  "Dummy last name",
 			Email:     "dummy@dummy.com",
