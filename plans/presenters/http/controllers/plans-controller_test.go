@@ -70,7 +70,6 @@ func TestCreatePlanController(t *testing.T) {
 	// Validates the status code
 	if responseRecorder.Code != http.StatusCreated {
 		t.Errorf("Expected http.StatusCreated but got %d", responseRecorder.Code)
-		return
 	}
 }
 
@@ -111,7 +110,6 @@ func TestFindAllPlansController(t *testing.T) {
 	// NOTE: Dereferences pointers to compares the values and not the memory addresses (memory addresses are different but values are the same)
 	if *plans[0] != *newPlan {
 		t.Errorf("Expected first element of Plans slice to equal New Plan but got %v", *plans[0])
-		return
 	}
 }
 
@@ -158,6 +156,5 @@ func TestFindPlanByIdController(t *testing.T) {
 	// NOTE: Dereferencing pointers to compare their values and not their memory addresses
 	if *plan != *newPlan {
 		t.Errorf("Expected Plan to equal New Plan but got %v", *plan)
-		return
 	}
 }
