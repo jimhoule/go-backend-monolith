@@ -1,0 +1,29 @@
+### NOTE: To use this file VSC REST Client extension must be installed 
+
+### Finds all Languages
+GET http://localhost:3000/languages
+
+### Finds a Language by id
+GET http://localhost:3000/languages/bcc9e08f-29bf-47fd-9849-1d69d1eba521
+
+### Creates a Language
+POST http://localhost:3000/languages
+Content-Type: application/json
+
+{
+    "code": "en",
+    "title": "English"
+}
+
+### Updates a Language
+PUT http://localhost:3000/languages/bcc9e08f-29bf-47fd-9849-1d69d1eba521
+Content-Type: application/json
+
+{
+    "code": "fr",
+    "title": "French"
+}
+
+
+### Deletes a Language
+DELETE http://localhost:3000/languages/d66594e4-2001-4c08-bb3a-526043161e68

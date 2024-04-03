@@ -63,11 +63,7 @@ func (pc *ProfilesController) Update(writer http.ResponseWriter, request *http.R
 
 func (pc *ProfilesController) Delete(writer http.ResponseWriter, request *http.Request) {
 	id := chi.URLParam(request, "id");
-	_, err := pc.ProfilesService.Delete(id);
-	if err != nil {
-		json.WriteHttpError(writer, http.StatusBadRequest, err)
-		return
-	}
+	pc.ProfilesService.Delete(id);
 
 	json.WriteHttpResponse(writer, http.StatusNoContent, nil)
 }

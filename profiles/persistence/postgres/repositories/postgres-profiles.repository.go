@@ -16,11 +16,11 @@ func (ppr *PostgresProfilesRepository) FindAllByAccountId(accountId string) ([]*
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	profiles := []*models.Profile{}
 	for rows.Next() {
 		profile := &models.Profile{}
-
 		err = rows.Scan(&profile.Id, &profile.Name, &profile.AccountId)
 		if err != nil {
 			return nil, err

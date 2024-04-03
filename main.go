@@ -4,6 +4,7 @@ import (
 	"app/accounts"
 	"app/authentication"
 	"app/database/postgres"
+	"app/languages"
 	"app/plans"
 	"app/profiles"
 	"app/router"
@@ -24,6 +25,7 @@ func main() {
 	// Inits modules
 	authentication.Init(mainRouter, db)
 	accounts.Init(mainRouter, db)
+	languages.Init(mainRouter, db)
 	plans.Init(mainRouter, db)
 	profiles.Init(mainRouter, db)
 
