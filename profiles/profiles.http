@@ -4,7 +4,7 @@
 GET http://localhost:3000/profiles/account/aff25fab-09e1-47c4-bbe0-e8d4b2f35b86
 
 ### Finds a Profile by id
-GET http://localhost:3000/profiles/6d9eaaab-8b01-4a21-b4a9-d1fcef9a8fa3
+GET http://localhost:3000/profiles/eb6f736f-c798-4754-9d0b-dc97785327e0
 
 ### Creates a Profile
 POST http://localhost:3000/profiles
@@ -12,15 +12,17 @@ Content-Type: application/json
 
 {
     "name": "Marc",
-    "accountId": "aff25fab-09e1-47c4-bbe0-e8d4b2f35b86"
+    "accountId": "aff25fab-09e1-47c4-bbe0-e8d4b2f35b86",
+    "languageId": "aa2ac62a-6372-47fd-bb9e-936a7eedc50e"
 }
 
 ### Updates a Profile
-PATCH http://localhost:3000/profiles/6d9eaaab-8b01-4a21-b4a9-d1fcef9a8fa3
+PATCH http://localhost:3000/profiles/82537315-2a77-4d95-a29d-b426199aaea9
 Content-Type: application/json
 
 {
-    "name": "Updated profile name"
+    "name": "Updated profile name again",
+    "languageId": "aa2ac62a-6372-47fd-bb9e-936a7eedc50e"
 }
 
 

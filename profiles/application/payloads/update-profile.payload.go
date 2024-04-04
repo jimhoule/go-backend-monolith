@@ -1,5 +1,6 @@
 package payloads
 
 type UpdateProfilePayload struct {
-	Name string
+	Name       string
+	LanguageId string
 }

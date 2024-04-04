@@ -38,6 +38,7 @@ func (fpr *FakeProfilesRepository) Update(id string, profile *models.Profile) (*
 	for _, profileToUpdate := range profiles {
 		if profileToUpdate.Id == id {
 			profileToUpdate.Name = profile.Name
+			profileToUpdate.LanguageId = profile.LanguageId
 			return profileToUpdate, nil
 		}
 	}

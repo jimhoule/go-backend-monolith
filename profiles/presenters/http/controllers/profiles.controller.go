@@ -51,6 +51,7 @@ func (pc *ProfilesController) Update(writer http.ResponseWriter, request *http.R
 		id,
 		&payloads.UpdateProfilePayload{
 			Name: updateProfileDto.Name,
+			LanguageId: updateProfileDto.LanguageId,
 		},
 	)
 	if err != nil {
@@ -81,6 +82,7 @@ func (pc *ProfilesController) Create(writer http.ResponseWriter, request *http.R
 	profile, err := pc.ProfilesService.Create(&payloads.CreateProfilePayload{
 		Name: createProfileDto.Name,
 		AccountId: createProfileDto.AccountId,
+		LanguageId: createProfileDto.LanguageId,
 	})
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusBadRequest, err)

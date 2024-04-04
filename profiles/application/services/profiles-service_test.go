@@ -21,6 +21,7 @@ func getTestContext() (*ProfilesService, func(), func() (*models.Profile, error)
 		return profilesService.Create(&payloads.CreateProfilePayload{
 			Name: "Fake profile name",
 			AccountId: "fakeAccoutId",
+			LanguageId: "fakeLanguageId",
 		})
 	}
 
@@ -78,7 +79,10 @@ func TestUpdateProfileService(t *testing.T) {
 	newProfile, _ := createProfile()
 
 	updatedName := "Updated fake profile name"
-	profile, err := profilesService.Update(newProfile.Id, &payloads.UpdateProfilePayload{ Name: updatedName })
+	profile, err := profilesService.Update(newProfile.Id, &payloads.UpdateProfilePayload{ 
+		Name: updatedName,
+		LanguageId: newProfile.LanguageId,
+	})
 	if err != nil {
 		t.Errorf("Expected Profile but got %v", err)
 		return

@@ -31,6 +31,7 @@ func getTestContext() (*ProfilesController, func(), func() (*models.Profile, err
 		return profilesController.ProfilesService.Create(&payloads.CreateProfilePayload{
 			Name: "Fake profile name",
 			AccountId: "fakeAccoutId",
+			LanguageId: "fakeLanguageId",
 		})
 	}
 
@@ -173,6 +174,7 @@ func TestUpdateProfileController(t *testing.T) {
 	updatedName := "Updated fake profile name"
 	requestBody, err := json.Marshal(dtos.UpdateProfileDto{
 		Name: updatedName,
+		LanguageId: newProfile.LanguageId,
 	})
 	if err != nil {
 		t.Errorf("Expected to create request body but got %v", err)

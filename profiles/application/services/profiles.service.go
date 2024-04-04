@@ -21,7 +21,10 @@ func (ps *ProfilesService) FindById(id string) (*models.Profile, error) {
 }
 
 func (ps *ProfilesService) Update(id string, updateProfilePayload *payloads.UpdateProfilePayload) (*models.Profile, error) {
-	return ps.ProfilesRepository.Update(id, &models.Profile{ Name: updateProfilePayload.Name })
+	return ps.ProfilesRepository.Update(id, &models.Profile{ 
+		Name: updateProfilePayload.Name,
+		LanguageId: updateProfilePayload.LanguageId,
+	})
 }
 
 func (ps *ProfilesService) Delete(id string) (string, error) {
@@ -32,6 +35,7 @@ func (ps *ProfilesService) Create(createProfilePayload *payloads.CreateProfilePa
 	profile := ps.ProfilesFactory.Create(
 		createProfilePayload.Name,
 		createProfilePayload.AccountId,
+		createProfilePayload.LanguageId,
 	)
 
 	return ps.ProfilesRepository.Create(profile)
