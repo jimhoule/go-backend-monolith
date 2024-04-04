@@ -1,0 +1,16 @@
+### NOTE: To use this file VSC REST Client extension must be installed 
+
+### Finds all Genres
+GET http://localhost:3000/genres
+
+### Finds a Genre by id
+GET http://localhost:3000/genres/cad9805d-771a-4819-8d4a-8eaef98d390f
+
+### Creates a Genre
+POST http://localhost:3000/genres
+Content-Type: application/json
+
+{
+    "languageCode": "en",
+    "text": "english text"
+}
