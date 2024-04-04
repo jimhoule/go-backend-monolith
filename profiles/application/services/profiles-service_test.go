@@ -111,6 +111,6 @@ func TestDeleteProfileService(t *testing.T) {
 	}
 
 	if newProfile.Id != profileId {
-		t.Errorf("Expected New Profile id to equal Profile id but got %s", profileId)
+		t.Errorf("Expected New Profile id to equal Profile id but got %s", newProfile.Id)
 	}
 }

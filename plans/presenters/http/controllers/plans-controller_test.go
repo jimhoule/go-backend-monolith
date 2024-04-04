@@ -54,7 +54,7 @@ func TestCreatePlanController(t *testing.T) {
 	}
 
 	// Creates request
-	request, err := http.NewRequest(http.MethodPost, "/accounts", bytes.NewReader(requestBody))
+	request, err := http.NewRequest(http.MethodPost, "/plans", bytes.NewReader(requestBody))
 	if err != nil {
 		t.Errorf("Expected to create a new request but got %v", err)
 		return
@@ -80,7 +80,7 @@ func TestFindAllPlansController(t *testing.T) {
 	newPlan, _ := createPlan()
 
 	// Creates request
-	request, err := http.NewRequest(http.MethodGet, "/accounts", nil)
+	request, err := http.NewRequest(http.MethodGet, "/plans", nil)
 	if err != nil {
 		t.Errorf("Expected to create a new request but got %v", err)
 		return
@@ -120,7 +120,7 @@ func TestFindPlanByIdController(t *testing.T) {
 	newPlan, _ := createPlan()
 
 	// Creates request
-	request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/accounts/%s", newPlan.Id), nil)
+	request, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/plans/%s", newPlan.Id), nil)
 	if err != nil {
 		t.Errorf("Expected to create a new request but got %v", err)
 		return
