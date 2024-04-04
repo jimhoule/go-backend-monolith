@@ -5,13 +5,14 @@ import (
 	"app/accounts/domain/factories"
 	"app/accounts/persistence/fake/repositories"
 	"app/authentication/application/payloads"
+	"app/authentication/domain/models"
 	"app/crypto"
 	"app/tokens"
 	"app/uuid"
 	"testing"
 )
 
-func getTestContext() (*AuthenticationService, func(), func(email string) (*Tokens, error)) {
+func getTestContext() (*AuthenticationService, func(), func(email string) (*models.Tokens, error)) {
 	authenticationService := &AuthenticationService{
 		AccountsService: &services.AccountsService{
 			AccountsFactory: &factories.AccountsFactory{
@@ -24,7 +25,7 @@ func getTestContext() (*AuthenticationService, func(), func(email string) (*Toke
 		CryptoService: crypto.GetService(),
 	}
 
-	register := func(email string) (*Tokens, error) {
+	register := func(email string) (*models.Tokens, error) {
 		return authenticationService.Register(&payloads.RegisterPayload{
 			FirstName: "Dummy first name",
 			LastName: "Dummy last name",

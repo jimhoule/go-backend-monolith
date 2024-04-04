@@ -1,7 +1,7 @@
 package models
 
 type Language struct {
-	Id    string
-	Code  string
-	Title string
+	Id    string `json:"id"`
+	Code  string `json:"code"`
+	Title string `json:"title"`
 }

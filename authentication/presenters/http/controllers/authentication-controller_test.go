@@ -6,6 +6,7 @@ import (
 	"app/accounts/persistence/fake/repositories"
 	"app/authentication/application/payloads"
 	authenticationService "app/authentication/application/services"
+	"app/authentication/domain/models"
 	"app/authentication/presenters/http/dtos"
 	"app/crypto"
 	"app/tokens"
@@ -17,7 +18,7 @@ import (
 	"testing"
 )
 
-func getTestContext() (*AuthenticationController, func(), func() (*authenticationService.Tokens, error)) {
+func getTestContext() (*AuthenticationController, func(), func() (*models.Tokens, error)) {
 	authenticationController := &AuthenticationController{
 		AuthenticationService: &authenticationService.AuthenticationService{
 			AccountsService: &accountsService.AccountsService{
@@ -32,7 +33,7 @@ func getTestContext() (*AuthenticationController, func(), func() (*authenticatio
 		},
 	}
 
-	register := func() (*authenticationService.Tokens, error) {
+	register := func() (*models.Tokens, error) {
 		return authenticationController.AuthenticationService.Register(&payloads.RegisterPayload{
 			FirstName: "Dummy first name",
 			LastName: "Dummy last name",
