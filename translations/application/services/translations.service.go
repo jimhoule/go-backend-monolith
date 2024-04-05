@@ -16,6 +16,10 @@ func (ts *TranslationsService) FindAll() ([]*models.Translation, error) {
 	return ts.TranslationsRepository.FindAll()
 }
 
+func (ts *TranslationsService) FindByEntityId(entityId string) ([]*models.Translation, error) {
+	return ts.TranslationsRepository.FindByEntityId(entityId)
+}
+
 func (ts *TranslationsService) FindByCompositeId(entityId string, languageCode string) (*models.Translation, error) {
 	return ts.TranslationsRepository.FindByCompositeId(entityId, languageCode)
 }

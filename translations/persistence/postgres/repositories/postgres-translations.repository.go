@@ -32,6 +32,28 @@ func (ptr *PostgresTranslationsRepository) FindAll() ([]*models.Translation, err
 	return translations, nil
 }
 
+func (ptr *PostgresTranslationsRepository) FindByEntityId(entityId string) ([]*models.Translation, error) {
+	query := "SELECT languageCode, text FROM translation WHERE entityId = $1"
+	rows, err := ptr.Db.Query(context.Background(), query, entityId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	translations := []*models.Translation{}
+	for rows.Next() {
+		translation := &models.Translation{}
+		err = rows.Scan(&translation.LanguageCode, &translation.Text)
+		if err != nil {
+			return nil, err
+		}
+
+		translations = append(translations, translation)
+	}
+
+	return translations, nil
+}
+
 func (ptr *PostgresTranslationsRepository) FindByCompositeId(entityId string, languageCode string) (*models.Translation, error) {
 	query := "SELECT entityId, languageCode, text FROM translations WHERE (entityId, languageCode) = ($1, $2)"
 	row := ptr.Db.QueryRow(context.Background(), query, entityId, languageCode)

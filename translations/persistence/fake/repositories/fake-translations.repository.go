@@ -17,6 +17,17 @@ func (ftr *FakeTranslationsRepository) FindAll() ([]*models.Translation, error) 
 	return translations, nil
 }
 
+func (ftr *FakeTranslationsRepository) FindByEntityId(entityId string) ([]*models.Translation, error) {
+	entityTranslations := []*models.Translation{}
+	for _, translation := range translations {
+		if translation.EntityId == entityId {
+			entityTranslations = append(entityTranslations, translation)
+		}
+	}
+
+	return entityTranslations, nil
+}
+
 func (ftr *FakeTranslationsRepository) FindByCompositeId(entityId string, languageCode string) (*models.Translation, error) {
 	for _, translation := range translations {
 		if translation.EntityId == entityId && translation.LanguageCode == languageCode {
