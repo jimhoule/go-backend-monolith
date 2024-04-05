@@ -28,6 +28,23 @@ func (fgr *FakeGenresRepository) FindById(id string) (*models.Genre, error) {
 	return nil, fmt.Errorf("the genre with id %s does not exist", id)
 }
 
+func (fgr *FakeGenresRepository) Delete(ctx context.Context, id string) (string, error) {
+	for index, genre := range genres {
+		if genre.Id == id {
+			/*
+			 * NOTES:
+			 *	- genres[:index] yields the slice elements before
+			 *	- genres[index + 1:]... yields the slice elements after
+			 *	- The 2 slices are then merged together by append()
+			 */
+			 genres = append(genres[:index], genres[index + 1:]...)
+			 break
+		}
+	}
+
+	return id, nil
+}
+
 func (fgr *FakeGenresRepository) Create(ctx context.Context, genre *models.Genre) (*models.Genre, error) {
 	genres = append(genres, genre)
 

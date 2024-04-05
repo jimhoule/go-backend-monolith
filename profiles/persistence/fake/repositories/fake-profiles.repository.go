@@ -57,6 +57,7 @@ func (fpr *FakeProfilesRepository) Delete(id string) (string, error) {
 			 *	- The 2 slices are then merged together by append()
 			 */
 			profiles = append(profiles[:index], profiles[index + 1:]...)
+			break
 		}
 	}
 

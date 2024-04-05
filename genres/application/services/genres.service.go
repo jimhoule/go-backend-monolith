@@ -49,6 +49,29 @@ func (gs *GenresService) FindById(id string) (*models.Genre, error) {
 	return genre, nil
 }
 
+func (gs *GenresService) Delete(id string) (string, error) {
+	deletedGenreId, err := gs.TranslationsService.ExecuteTransaction(
+		context.Background(),
+		func(ctx context.Context) (any, error) {
+			// Deletes genre
+			_, err := gs.GenresRepository.Delete(ctx, id)
+			if err != nil {
+				return "", err
+			}
+
+			// Deletes all translations
+			_, err = gs.TranslationsService.DeleteBatch(ctx, id)
+			if err != nil {
+				return "", err
+			}
+
+			return id, nil
+		},
+	)
+
+	return deletedGenreId.(string), err
+}
+
 func (gs *GenresService) Create(createGenrePayload *genrePayloads.CreateGenrePayload) (*models.Genre, error) {
 	genre, err := gs.TranslationsService.ExecuteTransaction(
 		context.Background(),
@@ -66,7 +89,7 @@ func (gs *GenresService) Create(createGenrePayload *genrePayloads.CreateGenrePay
 			}
 
 			// Creates translations of genre labels
-			translations, err := gs.TranslationsService.Create(ctx, createGenrePayload.CreateTranslationPayloads)
+			translations, err := gs.TranslationsService.CreateBatch(ctx, createGenrePayload.CreateTranslationPayloads)
 			if err != nil {
 				return nil, err
 			}

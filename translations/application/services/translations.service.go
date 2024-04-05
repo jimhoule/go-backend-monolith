@@ -32,7 +32,11 @@ func (ts *TranslationsService) FindByCompositeId(entityId string, languageCode s
 	return ts.TranslationsRepository.FindByCompositeId(entityId, languageCode)
 }
 
-func (ts *TranslationsService) Create(ctx context.Context, createTranslationPayloads []*payloads.CreateTranslationPayload) ([]*models.Translation, error) {
+func (ts *TranslationsService) DeleteBatch(ctx context.Context, entityId string) (string, error) {
+	return ts.TranslationsRepository.DeleteBatch(ctx, entityId)
+}
+
+func (ts *TranslationsService) CreateBatch(ctx context.Context, createTranslationPayloads []*payloads.CreateTranslationPayload) ([]*models.Translation, error) {
 	translations := []*models.Translation{}
 	for _, createTranslationPayload := range createTranslationPayloads {
 		translation := ts.TranslationsFactory.Create(
@@ -44,5 +48,5 @@ func (ts *TranslationsService) Create(ctx context.Context, createTranslationPayl
 		translations = append(translations, translation)
 	}
 
-	return ts.TranslationsRepository.Create(ctx, translations)
+	return ts.TranslationsRepository.CreateBatch(ctx, translations)
 }

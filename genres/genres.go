@@ -31,4 +31,5 @@ func Init(mainRouter *router.MainRouter, db *postgres.Db) {
 	mainRouter.Get("/genres", genresController.FindAll)
 	mainRouter.Get("/genres/{id}", genresController.FindById)
 	mainRouter.Post("/genres", genresController.Create)
+	mainRouter.Delete("/genres/{id}", genresController.Delete)
 }

@@ -74,7 +74,17 @@ func (ptr *PostgresTranslationsRepository) FindByCompositeId(entityId string, la
 	return translation, nil
 }
 
-func (ptr* PostgresTranslationsRepository) Create(ctx context.Context, translations []*models.Translation) ([]*models.Translation, error) {
+func (ptr* PostgresTranslationsRepository) DeleteBatch(ctx context.Context, entityId string) (string, error) {
+	query := "DELETE from translations WHERE entityid = $1"
+	_, err := ptr.Db.Connection.Exec(ctx, query, entityId)
+	if err != nil {
+		return "", err
+	}
+
+	return entityId, nil
+}
+
+func (ptr* PostgresTranslationsRepository) CreateBatch(ctx context.Context, translations []*models.Translation) ([]*models.Translation, error) {
 	_, err := ptr.Db.Connection.CopyFrom(
 		context.Background(),
 		postgres.Identifier{"translations"},

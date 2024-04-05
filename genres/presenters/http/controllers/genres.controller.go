@@ -35,6 +35,13 @@ func (gc *GenresController) FindById(writer http.ResponseWriter, request *http.R
 	json.WriteHttpResponse(writer, http.StatusOK, genre)
 }
 
+func (gc *GenresController) Delete(writer http.ResponseWriter, request *http.Request) {
+	id := chi.URLParam(request, "id")
+	gc.GenresService.Delete(id)
+
+	json.WriteHttpResponse(writer, http.StatusNoContent, id)
+}
+
 func (gc *GenresController) Create(writer http.ResponseWriter, request *http.Request) {
 	// Gets request body
 	var createGenreDto dtos.CreateGenreDto

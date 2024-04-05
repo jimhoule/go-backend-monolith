@@ -4,7 +4,7 @@
 GET http://localhost:3000/genres
 
 ### Finds a Genre by id
-GET http://localhost:3000/genres/a5368d12-5a1b-47c2-a82d-1298251196e3
+GET http://localhost:3000/genres/f632b005-633a-4152-adf1-924683818a7a
 
 ### Creates a Genre
 POST http://localhost:3000/genres
@@ -22,3 +22,6 @@ Content-Type: application/json
         }
     ]
 }
+
+### Deletes a Genre
+DELETE http://localhost:3000/genres/d8f75b6f-1f2d-47cf-a0d2-5125a81d3160

@@ -46,7 +46,17 @@ func (ftr *FakeTranslationsRepository) FindByCompositeId(entityId string, langua
 	return nil, fmt.Errorf("the translation with composite id (%s, %s) does not exist", entityId, languageCode)
 }
 
-func (ftr *FakeTranslationsRepository) Create(ctx context.Context, newTranslations []*models.Translation) ([]*models.Translation, error) {
+func (ftr *FakeTranslationsRepository) DeleteBatch(ctx context.Context, entityId string) (string, error) {
+	for index, translation := range translations {
+		if translation.EntityId == entityId {
+			translations = append(translations[:index], translations[index + 1:]...)
+		}
+	}
+
+	return entityId, nil
+}
+
+func (ftr *FakeTranslationsRepository) CreateBatch(ctx context.Context, newTranslations []*models.Translation) ([]*models.Translation, error) {
 	translations = append(translations, newTranslations...)
 
 	return translations, nil

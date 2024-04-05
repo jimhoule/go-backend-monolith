@@ -45,6 +45,16 @@ func (pgr *PostgresGenresRepository) FindById(id string) (*models.Genre, error) 
 	return genre, nil
 }
 
+func (pgr *PostgresGenresRepository) Delete(ctx context.Context, id string) (string, error) {
+	query := "DELETE FROM genres WHERE id = $1"
+	_, err := pgr.Db.Connection.Exec(ctx, query, id)
+	if err != nil {
+		return "", err
+	}
+
+	return id, nil
+}
+
 func (pgr *PostgresGenresRepository) Create(ctx context.Context, genre *models.Genre) (*models.Genre, error) {
 	query := "INSERT INTO genres(id) VALUES(@id)"
 	args := postgres.NamedArgs{

@@ -44,11 +44,12 @@ func (flr *FakeLanguagesRepository) Delete(id string) (string, error) {
 		if language.Id == id {
 			/*
 			 * NOTES:
-			 *	- profiles[:index] yields the slice elements before
-			 *	- profiles[index+1:]... yields the slice elements after
+			 *	- languages[:index] yields the slice elements before
+			 *	- languages[index+1:]... yields the slice elements after
 			 *	- The 2 slices are then merged together by append()
 			 */
 			 languages = append(languages[:index], languages[index + 1:]...)
+			 break
 		}
 	}
 
