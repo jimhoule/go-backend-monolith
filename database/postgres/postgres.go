@@ -42,3 +42,20 @@ func Get() *Db {
 
 	return db
 }
+
+func ExecuteTransaction(ctx context.Context, executeQuery func(ctx context.Context) (any, error)) (any, error) {
+	transaction, err := db.Connection.Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := executeQuery(ctx)
+	if err != nil {
+		transaction.Rollback(ctx)
+		return nil, err
+	}
+
+	transaction.Commit(ctx)
+
+	return result, nil
+}

@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"app/translations/domain/models"
+	"context"
 	"fmt"
 )
 
@@ -12,6 +13,13 @@ func ResetFakeTranslationRepository() {
 }
 
 type FakeTranslationsRepository struct {}
+
+func (ftr *FakeTranslationsRepository) ExecuteTransaction(
+	ctx context.Context,
+	executeQuery func(ctx context.Context) (any, error),
+) (any, error) {
+	return executeQuery(ctx)
+}
 
 func (ftr *FakeTranslationsRepository) FindAll() ([]*models.Translation, error) {
 	return translations, nil
@@ -38,7 +46,7 @@ func (ftr *FakeTranslationsRepository) FindByCompositeId(entityId string, langua
 	return nil, fmt.Errorf("the translation with composite id (%s, %s) does not exist", entityId, languageCode)
 }
 
-func (ftr *FakeTranslationsRepository) Create(newTranslations []*models.Translation) ([]*models.Translation, error) {
+func (ftr *FakeTranslationsRepository) Create(ctx context.Context, newTranslations []*models.Translation) ([]*models.Translation, error) {
 	translations = append(translations, newTranslations...)
 
 	return translations, nil

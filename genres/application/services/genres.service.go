@@ -6,6 +6,7 @@ import (
 	"app/genres/domain/factories"
 	"app/genres/domain/models"
 	"app/translations/application/services"
+	"context"
 )
 
 type GenresService struct {
@@ -49,25 +50,32 @@ func (gs *GenresService) FindById(id string) (*models.Genre, error) {
 }
 
 func (gs *GenresService) Create(createGenrePayload *genrePayloads.CreateGenrePayload) (*models.Genre, error) {
-	// Creates genre
-	genre := gs.GenresFactory.Create()
-	_, err := gs.GenresRepository.Create(genre)
-	if err != nil {
-		return nil, err
-	}
+	genre, err := gs.TranslationsService.ExecuteTransaction(
+		context.Background(),
+		func(ctx context.Context) (any, error) {
+			// Creates genre
+			genre := gs.GenresFactory.Create()
+			_, err := gs.GenresRepository.Create(ctx, genre)
+			if err != nil {
+				return nil, err
+			}
 
-	// Adds Translations entity id
-	for _, createTranslationPayload := range createGenrePayload.CreateTranslationPayloads {
-		createTranslationPayload.EntityId = genre.Id
-	}
+			// Adds Translations entity id
+			for _, createTranslationPayload := range createGenrePayload.CreateTranslationPayloads {
+				createTranslationPayload.EntityId = genre.Id
+			}
 
-	// Creates translations of genre labels
-	translations, err := gs.TranslationsService.Create(createGenrePayload.CreateTranslationPayloads)
-	if err != nil {
-		return nil, err
-	}
+			// Creates translations of genre labels
+			translations, err := gs.TranslationsService.Create(ctx, createGenrePayload.CreateTranslationPayloads)
+			if err != nil {
+				return nil, err
+			}
 
-	genre.Labels = translations
+			genre.Labels = translations
 
-	return genre, nil
+			return genre, nil
+		},
+	)
+
+	return genre.(*models.Genre), err
 }

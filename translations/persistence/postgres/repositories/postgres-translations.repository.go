@@ -10,6 +10,13 @@ type PostgresTranslationsRepository struct {
 	Db *postgres.Db
 }
 
+func (ptr *PostgresTranslationsRepository) ExecuteTransaction(
+	ctx context.Context,
+	executeQuery func(ctx context.Context) (any, error),
+) (any, error) {
+	return postgres.ExecuteTransaction(ctx, executeQuery)
+}
+
 func (ptr *PostgresTranslationsRepository) FindAll() ([]*models.Translation, error) {
 	query := "SELECT entityId, languageCode, text FROM translations"
 	rows, err := ptr.Db.Connection.Query(context.Background(), query)
@@ -67,7 +74,7 @@ func (ptr *PostgresTranslationsRepository) FindByCompositeId(entityId string, la
 	return translation, nil
 }
 
-func (ptr* PostgresTranslationsRepository) Create(translations []*models.Translation) ([]*models.Translation, error) {
+func (ptr* PostgresTranslationsRepository) Create(ctx context.Context, translations []*models.Translation) ([]*models.Translation, error) {
 	_, err := ptr.Db.Connection.CopyFrom(
 		context.Background(),
 		postgres.Identifier{"translations"},

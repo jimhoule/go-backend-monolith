@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"app/genres/domain/models"
+	"context"
 	"fmt"
 )
 
@@ -27,7 +28,7 @@ func (fgr *FakeGenresRepository) FindById(id string) (*models.Genre, error) {
 	return nil, fmt.Errorf("the genre with id %s does not exist", id)
 }
 
-func (fgr *FakeGenresRepository) Create(genre *models.Genre) (*models.Genre, error) {
+func (fgr *FakeGenresRepository) Create(ctx context.Context, genre *models.Genre) (*models.Genre, error) {
 	genres = append(genres, genre)
 
 	return genre, nil

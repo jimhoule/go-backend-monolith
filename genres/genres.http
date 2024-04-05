@@ -14,11 +14,11 @@ Content-Type: application/json
     "createTranslationPayloads": [
         {
             "languageCode": "en",
-            "text": "Horror"
+            "text": "Action"
         },
         {
             "languageCode": "es",
-            "text": "Terror"
+            "text": "Accion"
         }
     ]
 }

@@ -45,13 +45,13 @@ func (pgr *PostgresGenresRepository) FindById(id string) (*models.Genre, error) 
 	return genre, nil
 }
 
-func (pgr *PostgresGenresRepository) Create(genre *models.Genre) (*models.Genre, error) {
+func (pgr *PostgresGenresRepository) Create(ctx context.Context, genre *models.Genre) (*models.Genre, error) {
 	query := "INSERT INTO genres(id) VALUES(@id)"
 	args := postgres.NamedArgs{
 		"id": genre.Id,
 	}
 
-	_, err := pgr.Db.Connection.Exec(context.Background(), query, args)
+	_, err := pgr.Db.Connection.Exec(ctx, query, args)
 	if err != nil {
 		return nil, err
 	}
