@@ -22,12 +22,12 @@ func (gs *GenresService) FindAll() ([]*models.Genre, error) {
 	}
 
 	for _, genre := range genres {
-		translation, err := gs.TranslationsService.FindByCompositeId(genre.Id, "en")
+		translations, err := gs.TranslationsService.FindAllByEntityId(genre.Id)
 		if err != nil {
 			return nil, err
 		}
 
-		genre.Label = translation
+		genre.Labels = translations
 	}
 
 	return genres, nil
@@ -39,12 +39,12 @@ func (gs *GenresService) FindById(id string) (*models.Genre, error) {
 		return nil, err
 	}
 
-	translation, err := gs.TranslationsService.FindByCompositeId(genre.Id, "en")
+	translations, err := gs.TranslationsService.FindAllByEntityId(genre.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	genre.Label = translation
+	genre.Labels = translations
 
 	return genre, nil
 }
@@ -57,17 +57,20 @@ func (gs *GenresService) Create(createGenrePayload *genrePayloads.CreateGenrePay
 		return nil, err
 	}
 
-	// Creates translation of genre label
-	translation, err := gs.TranslationsService.Create(&translationPayloads.CreateTranslationPayload{
+	// Creates translations of genre labels
+	createTranslationPayloads := []*translationPayloads.CreateTranslationPayload{}
+	createTranslationPayload := &translationPayloads.CreateTranslationPayload{
 		EntityId: genre.Id,
 		LanguageCode: "en",
 		Text: "english text",
-	})
+	}
+	createTranslationPayloads = append(createTranslationPayloads, createTranslationPayload)
+	translations, err := gs.TranslationsService.Create(createTranslationPayloads)
 	if err != nil {
 		return nil, err
 	}
 
-	genre.Label = translation
+	genre.Labels = translations
 
 	return genre, nil
 }

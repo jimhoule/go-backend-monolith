@@ -12,7 +12,7 @@ type PostgresGenresRepository struct {
 
 func (pgr *PostgresGenresRepository) FindAll() ([]*models.Genre, error) {
 	query := "SELECT id FROM genres"
-	rows, err := pgr.Db.Query(context.Background(), query)
+	rows, err := pgr.Db.Connection.Query(context.Background(), query)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (pgr *PostgresGenresRepository) FindAll() ([]*models.Genre, error) {
 
 func (pgr *PostgresGenresRepository) FindById(id string) (*models.Genre, error) {
 	query := "SELECT id FROM genres WHERE id = $1"
-	row := pgr.Db.QueryRow(context.Background(), query, id)
+	row := pgr.Db.Connection.QueryRow(context.Background(), query, id)
 
 	genre := &models.Genre{}
 	err := row.Scan(&genre.Id)
@@ -51,7 +51,7 @@ func (pgr *PostgresGenresRepository) Create(genre *models.Genre) (*models.Genre,
 		"id": genre.Id,
 	}
 
-	_, err := pgr.Db.Exec(context.Background(), query, args)
+	_, err := pgr.Db.Connection.Exec(context.Background(), query, args)
 	if err != nil {
 		return nil, err
 	}

@@ -17,7 +17,7 @@ func (ftr *FakeTranslationsRepository) FindAll() ([]*models.Translation, error) 
 	return translations, nil
 }
 
-func (ftr *FakeTranslationsRepository) FindByEntityId(entityId string) ([]*models.Translation, error) {
+func (ftr *FakeTranslationsRepository) FindAllByEntityId(entityId string) ([]*models.Translation, error) {
 	entityTranslations := []*models.Translation{}
 	for _, translation := range translations {
 		if translation.EntityId == entityId {
@@ -38,8 +38,8 @@ func (ftr *FakeTranslationsRepository) FindByCompositeId(entityId string, langua
 	return nil, fmt.Errorf("the translation with composite id (%s, %s) does not exist", entityId, languageCode)
 }
 
-func (ftr *FakeTranslationsRepository) Create(translation *models.Translation) (*models.Translation, error) {
-	translations = append(translations, translation)
+func (ftr *FakeTranslationsRepository) Create(newTranslations []*models.Translation) ([]*models.Translation, error) {
+	translations = append(translations, newTranslations...)
 
-	return translation, nil
+	return translations, nil
 }

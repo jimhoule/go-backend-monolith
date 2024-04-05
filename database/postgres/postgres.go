@@ -8,8 +8,16 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type Db = pgx.Conn
+//type Db = pgx.Conn
 type NamedArgs = pgx.NamedArgs
+type Batch = pgx.Batch
+type Identifier = pgx.Identifier
+
+type Db struct{
+	Connection *pgx.Conn
+	CopyFromSlice func(length int, next func(int) ([]any, error)) pgx.CopyFromSource
+	CopyFromRows func(rows [][]any) pgx.CopyFromSource
+}
 
 var db *Db
 
@@ -23,7 +31,11 @@ func Get() *Db {
 			os.Exit(1)
 		}
 
-		db = connection
+		db = &Db{
+			Connection: connection,
+			CopyFromSlice: pgx.CopyFromSlice,
+			CopyFromRows: pgx.CopyFromRows,
+		}
 
 		return db
 	}

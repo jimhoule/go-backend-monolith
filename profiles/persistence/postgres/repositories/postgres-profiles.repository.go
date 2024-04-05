@@ -12,7 +12,7 @@ type PostgresProfilesRepository struct {
 
 func (ppr *PostgresProfilesRepository) FindAllByAccountId(accountId string) ([]*models.Profile, error) {
 	query := "SELECT id, name, accountId FROM profiles WHERE accountId = $1"
-	rows, err := ppr.Db.Query(context.Background(), query, accountId)
+	rows, err := ppr.Db.Connection.Query(context.Background(), query, accountId)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (ppr *PostgresProfilesRepository) FindAllByAccountId(accountId string) ([]*
 
 func (ppr *PostgresProfilesRepository) FindById(id string) (*models.Profile, error) {
 	query := "SELECT id, name, accountId, languageId FROM profiles WHERE id = $1"
-	row := ppr.Db.QueryRow(context.Background(), query, id)
+	row := ppr.Db.Connection.QueryRow(context.Background(), query, id)
 
 	profile := &models.Profile{}
 	err := row.Scan(&profile.Id, &profile.Name, &profile.AccountId, &profile.LanguageId)
@@ -47,7 +47,7 @@ func (ppr *PostgresProfilesRepository) FindById(id string) (*models.Profile, err
 
 func (ppr *PostgresProfilesRepository) Update(id string, profile *models.Profile) (*models.Profile, error) {
 	query := "UPDATE profiles SET name = $1, languageId = $2 WHERE id = $3 RETURNING *"
-	row := ppr.Db.QueryRow(context.Background(), query, profile.Name, profile.LanguageId, id)
+	row := ppr.Db.Connection.QueryRow(context.Background(), query, profile.Name, profile.LanguageId, id)
 
 	updatedProfile := &models.Profile{}
 	err := row.Scan(&updatedProfile.Id, &updatedProfile.Name, &updatedProfile.AccountId, &updatedProfile.LanguageId)
@@ -60,7 +60,7 @@ func (ppr *PostgresProfilesRepository) Update(id string, profile *models.Profile
 
 func (ppr *PostgresProfilesRepository) Delete(id string) (string, error) {
 	query := "DELETE FROM profiles WHERE id = $1"
-	_, err := ppr.Db.Exec(context.Background(), query, id)
+	_, err := ppr.Db.Connection.Exec(context.Background(), query, id)
 	if err != nil {
 		return "", err
 	}
@@ -76,7 +76,7 @@ func (ppr *PostgresProfilesRepository) Create(profile *models.Profile) (*models.
 		"accountId": profile.AccountId,
 		"languageId": profile.LanguageId,
 	}
-	_, err := ppr.Db.Exec(context.Background(), query, args)
+	_, err := ppr.Db.Connection.Exec(context.Background(), query, args)
 	if err != nil {
 		return nil , err
 	}

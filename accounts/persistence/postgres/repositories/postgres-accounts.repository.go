@@ -12,7 +12,7 @@ type PostgresAccountsRepository struct{
 
 func (par *PostgresAccountsRepository) FindAll() ([]*models.Account, error) {
 	query := "SELECT id, firstName, lastName, email, password, isMembershipCancelled, planId FROM accounts"
-	rows, err := par.Db.Query(context.Background(), query)
+	rows, err := par.Db.Connection.Query(context.Background(), query)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (par *PostgresAccountsRepository) FindAll() ([]*models.Account, error) {
 
 func (par *PostgresAccountsRepository) FindById(id string) (*models.Account, error) {
 	query := "SELECT id, firstName, lastName, email, password, isMembershipCancelled, planId FROM accounts WHERE id = $1"
-	row := par.Db.QueryRow(context.Background(), query, id)
+	row := par.Db.Connection.QueryRow(context.Background(), query, id)
 
 	account := &models.Account{}
 	err := row.Scan(&account.Id, &account.FirstName, &account.LastName, &account.Email, &account.Password, &account.IsMembershipCancelled, &account.PlanId)
@@ -48,7 +48,7 @@ func (par *PostgresAccountsRepository) FindById(id string) (*models.Account, err
 
 func (par *PostgresAccountsRepository) FindByEmail(email string) (*models.Account, error) {
 	query := "SELECT id, firstName, lastName, email, password, isMembershipCancelled, planId FROM accounts WHERE email = $1"
-	row := par.Db.QueryRow(context.Background(), query, email)
+	row := par.Db.Connection.QueryRow(context.Background(), query, email)
 
 	account := &models.Account{}
 	err := row.Scan(&account.Id, &account.FirstName, &account.LastName, &account.Email, &account.Password, &account.IsMembershipCancelled, &account.PlanId)
@@ -70,7 +70,7 @@ func  (par *PostgresAccountsRepository) Create(account *models.Account) (*models
 		"isMembershipCancelled": account.IsMembershipCancelled,
 		"planId": account.PlanId,
 	}
-	_, err := par.Db.Exec(context.Background(), query, args)
+	_, err := par.Db.Connection.Exec(context.Background(), query, args)
 	if err != nil {
 		return nil, err
 	}

@@ -12,7 +12,7 @@ type PostgresTranslationsRepository struct {
 
 func (ptr *PostgresTranslationsRepository) FindAll() ([]*models.Translation, error) {
 	query := "SELECT entityId, languageCode, text FROM translations"
-	rows, err := ptr.Db.Query(context.Background(), query)
+	rows, err := ptr.Db.Connection.Query(context.Background(), query)
 	if err != nil {
 		return nil, err
 	}
@@ -32,9 +32,9 @@ func (ptr *PostgresTranslationsRepository) FindAll() ([]*models.Translation, err
 	return translations, nil
 }
 
-func (ptr *PostgresTranslationsRepository) FindByEntityId(entityId string) ([]*models.Translation, error) {
-	query := "SELECT languageCode, text FROM translation WHERE entityId = $1"
-	rows, err := ptr.Db.Query(context.Background(), query, entityId)
+func (ptr *PostgresTranslationsRepository) FindAllByEntityId(entityId string) ([]*models.Translation, error) {
+	query := "SELECT languageCode, text FROM translations WHERE entityId = $1"
+	rows, err := ptr.Db.Connection.Query(context.Background(), query, entityId)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (ptr *PostgresTranslationsRepository) FindByEntityId(entityId string) ([]*m
 
 func (ptr *PostgresTranslationsRepository) FindByCompositeId(entityId string, languageCode string) (*models.Translation, error) {
 	query := "SELECT entityId, languageCode, text FROM translations WHERE (entityId, languageCode) = ($1, $2)"
-	row := ptr.Db.QueryRow(context.Background(), query, entityId, languageCode)
+	row := ptr.Db.Connection.QueryRow(context.Background(), query, entityId, languageCode)
 
 	translation := &models.Translation{}
 	err := row.Scan(&translation.EntityId, &translation.LanguageCode, &translation.Text)
@@ -67,17 +67,19 @@ func (ptr *PostgresTranslationsRepository) FindByCompositeId(entityId string, la
 	return translation, nil
 }
 
-func (ptr* PostgresTranslationsRepository) Create(translation *models.Translation) (*models.Translation, error) {
-	query := "INSERT INTO translations(entityId, languageCode, text) VALUES(@entityId, @languageCode, @text)"
-	args := postgres.NamedArgs{
-		"entityId": translation.EntityId,
-		"languageCode": translation.LanguageCode,
-		"text": translation.Text,
-	}
-	_, err := ptr.Db.Exec(context.Background(), query, args)
+func (ptr* PostgresTranslationsRepository) Create(translations []*models.Translation) ([]*models.Translation, error) {
+	_, err := ptr.Db.Connection.CopyFrom(
+		context.Background(),
+		postgres.Identifier{"translations"},
+		[]string{"entityid", "languagecode", "text"},
+		ptr.Db.CopyFromSlice(len(translations), func(index int) ([]interface{}, error) {
+			translation := translations[index]
+			return []interface{}{translation.EntityId, translation.LanguageCode, translation.Text}, nil
+		}),
+	)
 	if err != nil {
 		return nil, err
 	}
 
-	return translation, nil
+	return translations, nil
 }

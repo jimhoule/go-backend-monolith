@@ -12,7 +12,7 @@ type PostgresLanguagesRepository struct {
 
 func (plr *PostgresLanguagesRepository) FindAll() ([]*models.Language, error) {
 	query := "SELECT id, code, title FROM languages"
-	rows, err := plr.Db.Query(context.Background(), query)
+	rows, err := plr.Db.Connection.Query(context.Background(), query)
 	if err != nil {
 		return nil , err
 	}
@@ -34,7 +34,7 @@ func (plr *PostgresLanguagesRepository) FindAll() ([]*models.Language, error) {
 
 func (plr *PostgresLanguagesRepository) FindById(id string) (*models.Language, error) {
 	query := "SELECT id, code, title FROM languages WHERE id = $1"
-	row := plr.Db.QueryRow(context.Background(), query, id)
+	row := plr.Db.Connection.QueryRow(context.Background(), query, id)
 
 
 	language := &models.Language{}
@@ -48,7 +48,7 @@ func (plr *PostgresLanguagesRepository) FindById(id string) (*models.Language, e
 
 func (plr *PostgresLanguagesRepository) Update(id string, language *models.Language) (*models.Language, error) {
 	query := "UPDATE languages SET code = $1, title = $2 WHERE id = $3 RETURNING *"
-	row := plr.Db.QueryRow(context.Background(), query, language.Code, language.Title, id)
+	row := plr.Db.Connection.QueryRow(context.Background(), query, language.Code, language.Title, id)
 
 
 	updatedLanguage := &models.Language{}
@@ -62,7 +62,7 @@ func (plr *PostgresLanguagesRepository) Update(id string, language *models.Langu
 
 func (plr *PostgresLanguagesRepository) Delete(id string) (string, error) {
 	query := "DELETE FROM languages WHERE id = $1"
-	_, err := plr.Db.Exec(context.Background(), query, id)
+	_, err := plr.Db.Connection.Exec(context.Background(), query, id)
 	if err != nil {
 		return "", err
 	}
@@ -77,7 +77,7 @@ func (plr *PostgresLanguagesRepository) Create(language *models.Language) (*mode
 		"code": language.Code,
 		"title": language.Title,
 	}
-	_, err := plr.Db.Exec(context.Background(), query, args)
+	_, err := plr.Db.Connection.Exec(context.Background(), query, args)
 	if err != nil {
 		return nil , err
 	}

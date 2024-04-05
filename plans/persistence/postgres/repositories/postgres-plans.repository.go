@@ -12,7 +12,7 @@ type PostgresPlansRepository struct {
 
 func (ppr *PostgresPlansRepository) FindAll() ([]*models.Plan, error) {
 	query := "SELECT id, name, description, price FROM plans"
-	rows, err := ppr.Db.Query(context.Background(), query)
+	rows, err := ppr.Db.Connection.Query(context.Background(), query)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (ppr *PostgresPlansRepository) FindAll() ([]*models.Plan, error) {
 
 func (ppr *PostgresPlansRepository) FindById(id string) (*models.Plan, error) {
 	query := "SELECT id, name, description, price FROM plans WHERE id = $1"
-	row := ppr.Db.QueryRow(context.Background(), query, id)
+	row := ppr.Db.Connection.QueryRow(context.Background(), query, id)
 
 	plan := &models.Plan{}
 	err := row.Scan(&plan.Id, &plan.Name, &plan.Description, &plan.Price)
@@ -54,7 +54,7 @@ func (ppr *PostgresPlansRepository) Create(plan *models.Plan) (*models.Plan, err
 		"description": plan.Description,
 		"price": plan.Price,
 	}
-	_, err := ppr.Db.Exec(context.Background(), query, args)
+	_, err := ppr.Db.Connection.Exec(context.Background(), query, args)
 	if err != nil {
 		return nil, err
 	}
