@@ -1,7 +1,7 @@
 package payloads
 
 type CreateTranslationPayload struct {
-	EntityId     string
-	LanguageCode string
-	Text         string
+	EntityId     string `json:"entityId"`
+	LanguageCode string `json:"languageCode"`
+	Text         string `json:"text"`
 }

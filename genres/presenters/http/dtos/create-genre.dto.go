@@ -1,7 +1,9 @@
 package dtos
 
-import "app/translations/presenters/http/dtos"
+import (
+	"app/translations/application/payloads"
+)
 
 type CreateGenreDto struct {
-	CreateTranslationDtos []*dtos.CreateTranslationDto `json:"createTranslationDtos"`
+	CreateTranslationPayloads []*payloads.CreateTranslationPayload `json:"createTranslationPayloads"`
 }

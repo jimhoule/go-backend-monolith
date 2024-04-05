@@ -4,7 +4,6 @@ import (
 	genrePayloads "app/genres/application/payloads"
 	"app/genres/application/services"
 	"app/genres/presenters/http/dtos"
-	translationPayloads "app/translations/application/payloads"
 	"app/utils/json"
 	"net/http"
 
@@ -45,20 +44,9 @@ func (gc *GenresController) Create(writer http.ResponseWriter, request *http.Req
 		return
 	}
 
-	// Maps all translation dtos to translation payloads
-	createTranslationPayloads := []*translationPayloads.CreateTranslationPayload{}
-	for _, createTranslationsDto := range createGenreDto.CreateTranslationDtos {
-		createTranslationPayload := &translationPayloads.CreateTranslationPayload{
-			LanguageCode: createTranslationsDto.LanguageCode,
-			Text: createTranslationsDto.Text,
-		}
-
-		createTranslationPayloads = append(createTranslationPayloads, createTranslationPayload)
-	}
-
 	// Creates genre
 	genre, err := gc.GenresService.Create(&genrePayloads.CreateGenrePayload{
-		CreateTranslationPayloads: createTranslationPayloads,
+		CreateTranslationPayloads: createGenreDto.CreateTranslationPayloads,
 	})
 	if (err != nil) {
 		json.WriteHttpError(writer, http.StatusInternalServerError, err)
