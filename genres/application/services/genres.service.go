@@ -5,7 +5,6 @@ import (
 	"app/genres/application/ports"
 	"app/genres/domain/factories"
 	"app/genres/domain/models"
-	translationPayloads "app/translations/application/payloads"
 	"app/translations/application/services"
 )
 
@@ -57,15 +56,13 @@ func (gs *GenresService) Create(createGenrePayload *genrePayloads.CreateGenrePay
 		return nil, err
 	}
 
-	// Creates translations of genre labels
-	createTranslationPayloads := []*translationPayloads.CreateTranslationPayload{}
-	createTranslationPayload := &translationPayloads.CreateTranslationPayload{
-		EntityId: genre.Id,
-		LanguageCode: "en",
-		Text: "english text",
+	// Adds Translations entity id
+	for _, createTranslationPayload := range createGenrePayload.CreateTranslationPayloads {
+		createTranslationPayload.EntityId = genre.Id
 	}
-	createTranslationPayloads = append(createTranslationPayloads, createTranslationPayload)
-	translations, err := gs.TranslationsService.Create(createTranslationPayloads)
+
+	// Creates translations of genre labels
+	translations, err := gs.TranslationsService.Create(createGenrePayload.CreateTranslationPayloads)
 	if err != nil {
 		return nil, err
 	}

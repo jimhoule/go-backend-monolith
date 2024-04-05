@@ -1,8 +1,10 @@
 package controllers
 
 import (
-	"app/genres/application/payloads"
+	genrePayloads "app/genres/application/payloads"
 	"app/genres/application/services"
+	"app/genres/presenters/http/dtos"
+	translationPayloads "app/translations/application/payloads"
 	"app/utils/json"
 	"net/http"
 
@@ -35,7 +37,29 @@ func (gc *GenresController) FindById(writer http.ResponseWriter, request *http.R
 }
 
 func (gc *GenresController) Create(writer http.ResponseWriter, request *http.Request) {
-	genre, err := gc.GenresService.Create(&payloads.CreateGenrePayload{})
+	// Gets request body
+	var createGenreDto dtos.CreateGenreDto
+	err := json.ReadHttpRequestBody(writer, request, &createGenreDto)
+	if err != nil {
+		json.WriteHttpError(writer, http.StatusBadRequest, err)
+		return
+	}
+
+	// Maps all translation dtos to translation payloads
+	createTranslationPayloads := []*translationPayloads.CreateTranslationPayload{}
+	for _, createTranslationsDto := range createGenreDto.CreateTranslationDtos {
+		createTranslationPayload := &translationPayloads.CreateTranslationPayload{
+			LanguageCode: createTranslationsDto.LanguageCode,
+			Text: createTranslationsDto.Text,
+		}
+
+		createTranslationPayloads = append(createTranslationPayloads, createTranslationPayload)
+	}
+
+	// Creates genre
+	genre, err := gc.GenresService.Create(&genrePayloads.CreateGenrePayload{
+		CreateTranslationPayloads: createTranslationPayloads,
+	})
 	if (err != nil) {
 		json.WriteHttpError(writer, http.StatusInternalServerError, err)
 		return

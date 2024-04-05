@@ -11,6 +11,14 @@ POST http://localhost:3000/genres
 Content-Type: application/json
 
 {
-    "languageCode": "en",
-    "text": "english text"
+    "createTranslationDtos": [
+        {
+            "languageCode": "en",
+            "text": "Horror"
+        },
+        {
+            "languageCode": "es",
+            "text": "Terror"
+        }
+    ]
 }
