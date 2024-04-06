@@ -1,6 +1,6 @@
 CREATE TABLE translations (
-    entityId UUID NOT NULL,
-    languageCode VARCHAR(5) NOT NULL,
+    entity_id UUID NOT NULL,
+    language_code VARCHAR(5) NOT NULL,
     text VARCHAR(300) NOT NULL,
-    PRIMARY KEY(entityId, languageCode)
+    PRIMARY KEY(entity_id, language_code)
 );
