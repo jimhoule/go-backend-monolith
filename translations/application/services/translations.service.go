@@ -32,15 +32,38 @@ func (ts *TranslationsService) FindByCompositeId(entityId string, languageCode s
 	return ts.TranslationsRepository.FindByCompositeId(entityId, languageCode)
 }
 
+func (ts *TranslationsService) UpdateBatch(
+	ctx context.Context,
+	entityId string,
+	updateTranslationPayloads []*payloads.UpdateTranslationPayload,
+) ([]*models.Translation, error) {
+	translations := []*models.Translation{}
+	for _, updateTranslationPayload := range updateTranslationPayloads {
+		translation := &models.Translation{
+			EntityId: entityId,
+			LanguageCode: updateTranslationPayload.LanguageCode,
+			Text: updateTranslationPayload.Text,
+		}
+
+		translations = append(translations, translation)
+	}
+
+	return ts.TranslationsRepository.UpdateBatch(ctx, translations)
+}
+
 func (ts *TranslationsService) DeleteBatch(ctx context.Context, entityId string) (string, error) {
 	return ts.TranslationsRepository.DeleteBatch(ctx, entityId)
 }
 
-func (ts *TranslationsService) CreateBatch(ctx context.Context, createTranslationPayloads []*payloads.CreateTranslationPayload) ([]*models.Translation, error) {
+func (ts *TranslationsService) CreateBatch(
+	ctx context.Context,
+	entityId string,
+	createTranslationPayloads []*payloads.CreateTranslationPayload,
+) ([]*models.Translation, error) {
 	translations := []*models.Translation{}
 	for _, createTranslationPayload := range createTranslationPayloads {
 		translation := ts.TranslationsFactory.Create(
-			createTranslationPayload.EntityId,
+			entityId,
 			createTranslationPayload.LanguageCode,
 			createTranslationPayload.Text,
 		)

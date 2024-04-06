@@ -49,6 +49,27 @@ func (gs *GenresService) FindById(id string) (*models.Genre, error) {
 	return genre, nil
 }
 
+// NOTE: No need to use a transaction here because Genres table only contains the Id so the only things we need to update in this case are the translations
+func (gs *GenresService) Update(id string, updateGenrePayload *genrePayloads.UpdateGenrePayload) (*models.Genre, error) {
+	genre, err := gs.FindById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	translations, err := gs.TranslationsService.UpdateBatch(
+		context.Background(),
+		id,
+		updateGenrePayload.UpdateTranslationPayloads,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	genre.Labels = translations
+
+	return genre, nil
+}
+
 func (gs *GenresService) Delete(id string) (string, error) {
 	deletedGenreId, err := gs.TranslationsService.ExecuteTransaction(
 		context.Background(),
@@ -83,13 +104,8 @@ func (gs *GenresService) Create(createGenrePayload *genrePayloads.CreateGenrePay
 				return nil, err
 			}
 
-			// Adds Translations entity id
-			for _, createTranslationPayload := range createGenrePayload.CreateTranslationPayloads {
-				createTranslationPayload.EntityId = genre.Id
-			}
-
-			// Creates translations of genre labels
-			translations, err := gs.TranslationsService.CreateBatch(ctx, createGenrePayload.CreateTranslationPayloads)
+			// Creates all translations
+			translations, err := gs.TranslationsService.CreateBatch(ctx, genre.Id, createGenrePayload.CreateTranslationPayloads)
 			if err != nil {
 				return nil, err
 			}

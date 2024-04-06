@@ -74,6 +74,39 @@ func (ptr *PostgresTranslationsRepository) FindByCompositeId(entityId string, la
 	return translation, nil
 }
 
+func (ptr *PostgresTranslationsRepository) UpdateBatch(ctx context.Context, translations []*models.Translation) ([]*models.Translation, error) {
+	// Creates batch
+	batch := &postgres.Batch{}
+	for _, translation := range translations {
+		batch.Queue(
+			"UPDATE translations SET text = $1 WHERE entityId = $2 AND languageCode = $3 RETURNING languageCode, text",
+			translation.Text,
+			translation.EntityId,
+			translation.LanguageCode,
+		)
+	}
+
+	// Executes batch
+	batchResult := ptr.Db.Connection.SendBatch(ctx, batch)
+	defer batchResult.Close()
+
+	// Gets result of each batch update query
+	updatedTranslations := []*models.Translation{}
+	for range translations {
+		row := batchResult.QueryRow()
+
+		updatedTranslation := &models.Translation{}
+		err := row.Scan(&updatedTranslation.LanguageCode, &updatedTranslation.Text)
+		if err != nil {
+			return nil, err
+		}
+
+		updatedTranslations = append(updatedTranslations, updatedTranslation)
+	}
+
+	return updatedTranslations, nil
+}
+
 func (ptr* PostgresTranslationsRepository) DeleteBatch(ctx context.Context, entityId string) (string, error) {
 	query := "DELETE from translations WHERE entityid = $1"
 	_, err := ptr.Db.Connection.Exec(ctx, query, entityId)

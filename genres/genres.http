@@ -14,11 +14,28 @@ Content-Type: application/json
     "createTranslationPayloads": [
         {
             "languageCode": "en",
-            "text": "Action"
+            "text": "Suspense"
         },
         {
             "languageCode": "es",
-            "text": "Accion"
+            "text": "Suspensio"
+        }
+    ]
+}
+
+### Updates a Genre
+PUT http://localhost:3000/genres/a019291c-fcc1-4436-91bd-b38be4d16c02
+Content-Type: application/json
+
+{
+    "updateTranslationPayloads": [
+        {
+            "languageCode": "en",
+            "text": "Drama"
+        },
+        {
+            "languageCode": "es",
+            "text": "Drama"
         }
     ]
 }

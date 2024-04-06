@@ -35,6 +35,28 @@ func (gc *GenresController) FindById(writer http.ResponseWriter, request *http.R
 	json.WriteHttpResponse(writer, http.StatusOK, genre)
 }
 
+func (gc *GenresController) Update(writer http.ResponseWriter, request *http.Request) {
+	// Gets request body
+	var updateGenreDto dtos.UpdateGenreDto
+	err := json.ReadHttpRequestBody(writer, request, &updateGenreDto)
+	if err != nil {
+		json.WriteHttpError(writer, http.StatusBadRequest, err)
+		return
+	}
+
+	// Updates genre
+	id := chi.URLParam(request, "id")
+	genre, err := gc.GenresService.Update(id, &genrePayloads.UpdateGenrePayload{
+		UpdateTranslationPayloads: updateGenreDto.UpdateTranslationPayloads,
+	})
+	if err != nil {
+		json.WriteHttpError(writer, http.StatusBadRequest, err)
+		return
+	}
+
+	json.WriteHttpResponse(writer, http.StatusOK, genre)
+}
+
 func (gc *GenresController) Delete(writer http.ResponseWriter, request *http.Request) {
 	id := chi.URLParam(request, "id")
 	gc.GenresService.Delete(id)
