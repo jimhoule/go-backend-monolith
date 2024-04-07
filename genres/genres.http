@@ -4,7 +4,7 @@
 GET http://localhost:3000/genres
 
 ### Finds a Genre by id
-GET http://localhost:3000/genres/f632b005-633a-4152-adf1-924683818a7a
+GET http://localhost:3000/genres/dd24a9bf-5c42-4140-a7cd-6f3a2410a654
 
 ### Creates a Genre
 POST http://localhost:3000/genres
@@ -13,32 +13,32 @@ Content-Type: application/json
 {
     "createTranslationPayloads": [
         {
-            "languageCode": "en",
-            "text": "Suspense"
+            "languageId": "4d68f0b4-c87b-43e2-8ba1-78fb4d0d3302",
+            "text": "Comedy"
         },
         {
-            "languageCode": "es",
-            "text": "Suspensio"
+            "languageId": "be277c64-a1e4-4aa1-b8da-e90df53a9890",
+            "text": "Comedia"
         }
     ]
 }
 
 ### Updates a Genre
-PUT http://localhost:3000/genres/a019291c-fcc1-4436-91bd-b38be4d16c02
+PUT http://localhost:3000/genres/dd24a9bf-5c42-4140-a7cd-6f3a2410a654
 Content-Type: application/json
 
 {
     "updateTranslationPayloads": [
         {
-            "languageCode": "en",
+            "languageId": "4d68f0b4-c87b-43e2-8ba1-78fb4d0d3302",
             "text": "Drama"
         },
         {
-            "languageCode": "es",
+            "languageId": "be277c64-a1e4-4aa1-b8da-e90df53a9890",
             "text": "Drama"
         }
     ]
 }
 
 ### Deletes a Genre
-DELETE http://localhost:3000/genres/d8f75b6f-1f2d-47cf-a0d2-5125a81d3160
+DELETE http://localhost:3000/genres/dd24a9bf-5c42-4140-a7cd-6f3a2410a654

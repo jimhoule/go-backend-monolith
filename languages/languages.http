@@ -14,11 +14,11 @@ Content-Type: application/json
     "code": "es",
     "createTranslationPayloads": [
         {
-            "languageId": "2028403e-1fec-464b-ac97-92985963f91f",
+            "languageId": "972af4a6-84cd-474d-a159-08436daf1e43",
             "text": "French"
         },
         {
-            "languageId": "f4cce80d-13db-42ee-9583-ebcd75b9d982",
+            "languageId": "be277c64-a1e4-4aa1-b8da-e90df53a9890",
             "text": "Frances"
         }
     ]

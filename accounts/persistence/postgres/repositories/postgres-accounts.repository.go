@@ -11,7 +11,7 @@ type PostgresAccountsRepository struct{
 }
 
 func (par *PostgresAccountsRepository) FindAll() ([]*models.Account, error) {
-	query := "SELECT id, firstName, lastName, email, password, isMembershipCancelled, planId FROM accounts"
+	query := "SELECT id, first_name, last_name, email, password, is_membership_cancelled, plan_id FROM accounts"
 	rows, err := par.Db.Connection.Query(context.Background(), query)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func (par *PostgresAccountsRepository) FindAll() ([]*models.Account, error) {
 }
 
 func (par *PostgresAccountsRepository) FindById(id string) (*models.Account, error) {
-	query := "SELECT id, firstName, lastName, email, password, isMembershipCancelled, planId FROM accounts WHERE id = $1"
+	query := "SELECT id, first_name, last_name, email, password, is_membership_cancelled, plan_id FROM accounts WHERE id = $1"
 	row := par.Db.Connection.QueryRow(context.Background(), query, id)
 
 	account := &models.Account{}
@@ -47,7 +47,7 @@ func (par *PostgresAccountsRepository) FindById(id string) (*models.Account, err
 }
 
 func (par *PostgresAccountsRepository) FindByEmail(email string) (*models.Account, error) {
-	query := "SELECT id, firstName, lastName, email, password, isMembershipCancelled, planId FROM accounts WHERE email = $1"
+	query := "SELECT id, first_name, last_name, email, password, is_membership_cancelled, plan_id FROM accounts WHERE email = $1"
 	row := par.Db.Connection.QueryRow(context.Background(), query, email)
 
 	account := &models.Account{}
@@ -60,7 +60,10 @@ func (par *PostgresAccountsRepository) FindByEmail(email string) (*models.Accoun
 }
 
 func  (par *PostgresAccountsRepository) Create(account *models.Account) (*models.Account, error) {
-	query := "INSERT INTO accounts (id, firstName, lastName, email, password, isMembershipCancelled, planId) VALUES (@id, @firstName, @lastName, @email, @password, @isMembershipCancelled, @planId)"
+	query := `
+		INSERT INTO accounts (id, first_name, last_name, email, password, is_membership_cancelled, plan_id) 
+		VALUES (@id, @firstName, @lastName, @email, @password, @isMembershipCancelled, @planId)
+	`
 	args := postgres.NamedArgs{
 		"id": account.Id,
 		"firstName": account.FirstName,
