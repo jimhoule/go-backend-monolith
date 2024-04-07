@@ -7,6 +7,7 @@ import (
 	"app/languages/persistence/postgres/repositories"
 	"app/languages/presenters/http/controllers"
 	"app/router"
+	"app/translations"
 	"app/uuid"
 )
 
@@ -18,6 +19,7 @@ func GetService(db *postgres.Db) *services.LanguagesService {
 		LanguagesRepository: &repositories.PostgresLanguagesRepository{
 			Db: db,
 		},
+		TranslationsService: translations.GetService(db),
 	}
 }
 

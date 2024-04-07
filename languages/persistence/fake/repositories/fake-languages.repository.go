@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"app/languages/domain/models"
+	"context"
 	"fmt"
 )
 
@@ -27,11 +28,10 @@ func (flr *FakeLanguagesRepository) FindById(id string) (*models.Language, error
 	return nil, fmt.Errorf("the language with id %s does not exist", id)
 }
 
-func (flr *FakeLanguagesRepository) Update(id string, language *models.Language) (*models.Language, error) {
+func (flr *FakeLanguagesRepository) Update(ctx context.Context, id string, language *models.Language) (*models.Language, error) {
 	for _, languageToUpdate := range languages {
 		if languageToUpdate.Id == id {
 			languageToUpdate.Code = language.Code
-			languageToUpdate.Title = language.Title
 			return languageToUpdate, nil
 		}
 	}
@@ -56,7 +56,7 @@ func (flr *FakeLanguagesRepository) Delete(id string) (string, error) {
 	return id, nil
 }
 
-func (flr *FakeLanguagesRepository) Create(language *models.Language) (*models.Language, error) {
+func (flr *FakeLanguagesRepository) Create(ctx context.Context, language *models.Language) (*models.Language, error) {
 	languages = append(languages, language)
 
 	return language, nil

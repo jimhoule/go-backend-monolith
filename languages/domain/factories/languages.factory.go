@@ -9,10 +9,9 @@ type LanguagesFactory struct {
 	UuidService services.UuidService
 }
 
-func (lf *LanguagesFactory) Create(code string, title string) *models.Language {
+func (lf *LanguagesFactory) Create(code string) *models.Language {
 	return &models.Language{
 		Id: lf.UuidService.Generate(),
 		Code: code,
-		Title: title,
 	}
 }

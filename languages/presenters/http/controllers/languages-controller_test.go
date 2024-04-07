@@ -30,7 +30,6 @@ func getTestContext() (*LanguagesController, func(), func() (*models.Language, e
 	createLanguage := func() (*models.Language, error) {
 		return laguagesController.LanguagesService.Create(&payloads.CreateLanguagePayload{
 			Code: "Fake code",
-			Title: "Fake title",
 		})
 	}
 
@@ -44,7 +43,6 @@ func TestCreateLanguageController(t *testing.T) {
 	// Creates request body
 	requestBody, err := json.Marshal(dtos.CreateLanguageDto{
 		Code: "Fake code",
-		Title: "Fake title",
 	})
 	if err != nil {
 		t.Errorf("Expected to create request body but got %v", err)
@@ -106,8 +104,8 @@ func TestFindAllLanguagesController(t *testing.T) {
 	}
 
 	// NOTE: Dereferencing pointers to compare their values and not their memory addresses
-	if *languages[0] != *newLanguage {
-		t.Errorf("Expected first element of Languages slice to equal New Language but got %v", *languages[0])
+	if languages[0].Id != newLanguage.Id {
+		t.Errorf("Expected first element of Languages slice to equal New Language but got %v", languages[0].Id)
 	}
 }
 
@@ -152,8 +150,8 @@ func TestFindLanguageByIdController(t *testing.T) {
 	}
 
 	// NOTE: Dereferencing pointers to compare their values and not their memory addresses
-	if *language != *newLanguage {
-		t.Errorf("Expected Language to equal New Language but got %v", *language)
+	if language.Id != newLanguage.Id {
+		t.Errorf("Expected Language to equal New Language but got %v", language.Id)
 	}
 }
 
@@ -164,10 +162,9 @@ func TestUpdateLanguageController(t *testing.T) {
 	newLanguage, _ := createLanguage()
 
 	// Creates request body
-	updatedTitle := "Updated fake language title"
+	updatedCode := "Updated fake language code"
 	requestBody, err := json.Marshal(dtos.UpdateLanguageDto{
-		Code: newLanguage.Code,
-		Title: updatedTitle,
+		Code: updatedCode,
 	})
 	if err != nil {
 		t.Errorf("Expected to create request body but got %v", err)
@@ -207,13 +204,13 @@ func TestUpdateLanguageController(t *testing.T) {
 		return
 	}
 
-	if language.Title != updatedTitle {
-		t.Errorf("Expected Language title to equal updated ttle but got %s", language.Title)
+	if language.Code != updatedCode {
+		t.Errorf("Expected Language code to equal updated code but got %s", language.Code)
 	}
 
 	// Validates new language
-	if newLanguage.Title != updatedTitle {
-		t.Errorf("Expected New Language title to equal updated title but got %s", newLanguage.Title)
+	if newLanguage.Code != updatedCode {
+		t.Errorf("Expected New Language code to equal updated code but got %s", newLanguage.Code)
 		return
 	}
 }

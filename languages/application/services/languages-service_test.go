@@ -20,7 +20,6 @@ func getTestContext() (*LanguagesService, func(), func() (*models.Language, erro
 	createLanguage := func() (*models.Language, error) {
 		return languagesService.Create(&payloads.CreateLanguagePayload{
 			Code: "Fake code",
-			Title: "Fake title",
 		})
 	}
 
@@ -77,23 +76,22 @@ func TestUpdateLanguageService(t *testing.T) {
 
 	newLanguage, _ := createLanguage()
 
-	updatedTitle := "Updated fake language title"
+	updatedCode := "Updated fake language code"
 	language, err := languagesService.Update(newLanguage.Id, &payloads.UpdateLanguagePayload{
-		Code: newLanguage.Code,
-		Title: updatedTitle,
+		Code: updatedCode,
 	})
 	if err != nil {
 		t.Errorf("Expected Language but got %v", err)
 		return
 	}
 
-	if newLanguage.Title != updatedTitle {
-		t.Errorf("Expected New Language title to equal updated title but got %s", newLanguage.Title)
+	if newLanguage.Code != updatedCode {
+		t.Errorf("Expected New Language code to equal updated code but got %s", newLanguage.Code)
 		return
 	}
 
-	if language.Title != updatedTitle {
-		t.Errorf("Expected Language title to equal updated title but got %s", language.Title)
+	if language.Code != updatedCode {
+		t.Errorf("Expected Language code to equal updated code but got %s", language.Code)
 	}
 }
 

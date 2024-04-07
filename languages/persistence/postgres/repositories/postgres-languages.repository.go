@@ -11,7 +11,7 @@ type PostgresLanguagesRepository struct {
 }
 
 func (plr *PostgresLanguagesRepository) FindAll() ([]*models.Language, error) {
-	query := "SELECT id, code, title FROM languages"
+	query := "SELECT id, code FROM languages"
 	rows, err := plr.Db.Connection.Query(context.Background(), query)
 	if err != nil {
 		return nil , err
@@ -21,7 +21,7 @@ func (plr *PostgresLanguagesRepository) FindAll() ([]*models.Language, error) {
 	languages := []*models.Language{}
 	for rows.Next() {
 		language := &models.Language{}
-		err = rows.Scan(&language.Id, &language.Code, &language.Title)
+		err = rows.Scan(&language.Id, &language.Code)
 		if err != nil {
 			return nil, err
 		}
@@ -33,12 +33,12 @@ func (plr *PostgresLanguagesRepository) FindAll() ([]*models.Language, error) {
 }
 
 func (plr *PostgresLanguagesRepository) FindById(id string) (*models.Language, error) {
-	query := "SELECT id, code, title FROM languages WHERE id = $1"
+	query := "SELECT id, code FROM languages WHERE id = $1"
 	row := plr.Db.Connection.QueryRow(context.Background(), query, id)
 
 
 	language := &models.Language{}
-	err := row.Scan(&language.Id, &language.Code, &language.Title)
+	err := row.Scan(&language.Id, &language.Code)
 	if err != nil {
 		return nil, err
 	}
@@ -46,13 +46,13 @@ func (plr *PostgresLanguagesRepository) FindById(id string) (*models.Language, e
 	return language, nil
 }
 
-func (plr *PostgresLanguagesRepository) Update(id string, language *models.Language) (*models.Language, error) {
-	query := "UPDATE languages SET code = $1, title = $2 WHERE id = $3 RETURNING *"
-	row := plr.Db.Connection.QueryRow(context.Background(), query, language.Code, language.Title, id)
+func (plr *PostgresLanguagesRepository) Update(ctx context.Context, id string, language *models.Language) (*models.Language, error) {
+	query := "UPDATE languages SET code = $1 WHERE id = $2 RETURNING *"
+	row := plr.Db.Connection.QueryRow(ctx, query, language.Code, id)
 
 
 	updatedLanguage := &models.Language{}
-	err := row.Scan(&updatedLanguage.Id, &updatedLanguage.Code, &updatedLanguage.Title)
+	err := row.Scan(&updatedLanguage.Id, &updatedLanguage.Code)
 	if err != nil {
 		return nil, err
 	}
@@ -70,14 +70,13 @@ func (plr *PostgresLanguagesRepository) Delete(id string) (string, error) {
 	return id, nil
 }
 
-func (plr *PostgresLanguagesRepository) Create(language *models.Language) (*models.Language, error) {
-	query := "INSERT INTO languages(id, code, title) VALUES(@id, @code, @title)"
+func (plr *PostgresLanguagesRepository) Create(ctx context.Context, language *models.Language) (*models.Language, error) {
+	query := "INSERT INTO languages(id, code) VALUES(@id, @code)"
 	args := postgres.NamedArgs{
 		"id": language.Id,
 		"code": language.Code,
-		"title": language.Title,
 	}
-	_, err := plr.Db.Connection.Exec(context.Background(), query, args)
+	_, err := plr.Db.Connection.Exec(ctx, query, args)
 	if err != nil {
 		return nil , err
 	}
