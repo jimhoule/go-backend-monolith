@@ -11,7 +11,7 @@ type PostgresProfilesRepository struct {
 }
 
 func (ppr *PostgresProfilesRepository) FindAllByAccountId(accountId string) ([]*models.Profile, error) {
-	query := "SELECT id, name, accountId FROM profiles WHERE accountId = $1"
+	query := "SELECT id, name, account_id FROM profiles WHERE account_id = $1"
 	rows, err := ppr.Db.Connection.Query(context.Background(), query, accountId)
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func (ppr *PostgresProfilesRepository) FindAllByAccountId(accountId string) ([]*
 }
 
 func (ppr *PostgresProfilesRepository) FindById(id string) (*models.Profile, error) {
-	query := "SELECT id, name, accountId, languageId FROM profiles WHERE id = $1"
+	query := "SELECT id, name, account_id, language_id FROM profiles WHERE id = $1"
 	row := ppr.Db.Connection.QueryRow(context.Background(), query, id)
 
 	profile := &models.Profile{}
@@ -46,7 +46,7 @@ func (ppr *PostgresProfilesRepository) FindById(id string) (*models.Profile, err
 }
 
 func (ppr *PostgresProfilesRepository) Update(id string, profile *models.Profile) (*models.Profile, error) {
-	query := "UPDATE profiles SET name = $1, languageId = $2 WHERE id = $3 RETURNING *"
+	query := "UPDATE profiles SET name = $1, language_id = $2 WHERE id = $3 RETURNING *"
 	row := ppr.Db.Connection.QueryRow(context.Background(), query, profile.Name, profile.LanguageId, id)
 
 	updatedProfile := &models.Profile{}
@@ -69,7 +69,7 @@ func (ppr *PostgresProfilesRepository) Delete(id string) (string, error) {
 }
 
 func (ppr *PostgresProfilesRepository) Create(profile *models.Profile) (*models.Profile, error) {
-	query := "INSERT INTO profiles(id, name, accountId, languageId) VALUES(@id, @name, @accountId, @languageId)"
+	query := "INSERT INTO profiles(id, name, account_id, language_id) VALUES(@id, @name, @accountId, @languageId)"
 	args := postgres.NamedArgs{
 		"id": profile.Id,
 		"name": profile.Name,
