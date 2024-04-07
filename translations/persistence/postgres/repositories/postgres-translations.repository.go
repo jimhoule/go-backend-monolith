@@ -18,7 +18,7 @@ func (ptr *PostgresTranslationsRepository) ExecuteTransaction(
 }
 
 func (ptr *PostgresTranslationsRepository) FindAll() ([]*models.Translation, error) {
-	query := "SELECT entityId, languageCode, text FROM translations"
+	query := "SELECT entity_id, language_id, text text FROM translations"
 	rows, err := ptr.Db.Connection.Query(context.Background(), query)
 	if err != nil {
 		return nil, err
@@ -28,7 +28,7 @@ func (ptr *PostgresTranslationsRepository) FindAll() ([]*models.Translation, err
 	translations := []*models.Translation{}
 	for rows.Next() {
 		translation := &models.Translation{}
-		err = rows.Scan(&translation.EntityId, &translation.LanguageCode, &translation.Text)
+		err = rows.Scan(&translation.EntityId, &translation.LanguageId, &translation.Text)
 		if err != nil {
 			return nil, err
 		}
@@ -40,7 +40,7 @@ func (ptr *PostgresTranslationsRepository) FindAll() ([]*models.Translation, err
 }
 
 func (ptr *PostgresTranslationsRepository) FindAllByEntityId(entityId string) ([]*models.Translation, error) {
-	query := "SELECT languageCode, text FROM translations WHERE entityId = $1"
+	query := "SELECT language_id, text FROM translations WHERE entity_id = $1"
 	rows, err := ptr.Db.Connection.Query(context.Background(), query, entityId)
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (ptr *PostgresTranslationsRepository) FindAllByEntityId(entityId string) ([
 	translations := []*models.Translation{}
 	for rows.Next() {
 		translation := &models.Translation{}
-		err = rows.Scan(&translation.LanguageCode, &translation.Text)
+		err = rows.Scan(&translation.LanguageId, &translation.Text)
 		if err != nil {
 			return nil, err
 		}
@@ -61,12 +61,12 @@ func (ptr *PostgresTranslationsRepository) FindAllByEntityId(entityId string) ([
 	return translations, nil
 }
 
-func (ptr *PostgresTranslationsRepository) FindByCompositeId(entityId string, languageCode string) (*models.Translation, error) {
-	query := "SELECT entityId, languageCode, text FROM translations WHERE (entityId, languageCode) = ($1, $2)"
-	row := ptr.Db.Connection.QueryRow(context.Background(), query, entityId, languageCode)
+func (ptr *PostgresTranslationsRepository) FindByCompositeId(entityId string, languageId string) (*models.Translation, error) {
+	query := "SELECT entity_id, language_id, text text FROM translations WHERE (entity_id, language_id) = ($1, $2)"
+	row := ptr.Db.Connection.QueryRow(context.Background(), query, entityId, languageId)
 
 	translation := &models.Translation{}
-	err := row.Scan(&translation.EntityId, &translation.LanguageCode, &translation.Text)
+	err := row.Scan(&translation.EntityId, &translation.LanguageId, &translation.Text)
 	if err != nil {
 		return nil, err
 	}
@@ -78,12 +78,8 @@ func (ptr *PostgresTranslationsRepository) UpdateBatch(ctx context.Context, tran
 	// Creates batch
 	batch := &postgres.Batch{}
 	for _, translation := range translations {
-		batch.Queue(
-			"UPDATE translations SET text = $1 WHERE entityId = $2 AND languageCode = $3 RETURNING languageCode, text",
-			translation.Text,
-			translation.EntityId,
-			translation.LanguageCode,
-		)
+		query := "UPDATE translations SET text = $1 WHERE entity_id = $2 AND language_id = $3 RETURNING language_id, text"
+		batch.Queue(query, translation.Text, translation.EntityId, translation.LanguageId)
 	}
 
 	// Executes batch
@@ -96,7 +92,40 @@ func (ptr *PostgresTranslationsRepository) UpdateBatch(ctx context.Context, tran
 		row := batchResult.QueryRow()
 
 		updatedTranslation := &models.Translation{}
-		err := row.Scan(&updatedTranslation.LanguageCode, &updatedTranslation.Text)
+		err := row.Scan(&updatedTranslation.LanguageId, &updatedTranslation.Text)
+		if err != nil {
+			return nil, err
+		}
+
+		updatedTranslations = append(updatedTranslations, updatedTranslation)
+	}
+
+	return updatedTranslations, nil
+}
+
+func (ptr *PostgresTranslationsRepository) UpsertBatch(ctx context.Context, translations []*models.Translation) ([]*models.Translation, error) {
+	// Creates batch
+	batch := &postgres.Batch{}
+	for _, translation := range translations {
+		query := `
+			INSERT INTO translations(entity_id, language_id, text) VALUES($1, $2, $3)
+			ON CONFLICT ON CONSTRAINT pk_translation DO UPDATE SET text = $3
+			RETURNING language_id, text
+		`
+		batch.Queue(query, translation.EntityId, translation.LanguageId, translation.Text)
+	}
+
+	// Executes batch
+	batchResult := ptr.Db.Connection.SendBatch(ctx, batch)
+	defer batchResult.Close()
+
+	// Gets result of each batch update query
+	updatedTranslations := []*models.Translation{}
+	for range translations {
+		row := batchResult.QueryRow()
+
+		updatedTranslation := &models.Translation{}
+		err := row.Scan(&updatedTranslation.LanguageId, &updatedTranslation.Text)
 		if err != nil {
 			return nil, err
 		}
@@ -108,7 +137,7 @@ func (ptr *PostgresTranslationsRepository) UpdateBatch(ctx context.Context, tran
 }
 
 func (ptr* PostgresTranslationsRepository) DeleteBatch(ctx context.Context, entityId string) (string, error) {
-	query := "DELETE from translations WHERE entityid = $1"
+	query := "DELETE from translations WHERE entity_id = $1"
 	_, err := ptr.Db.Connection.Exec(ctx, query, entityId)
 	if err != nil {
 		return "", err
@@ -121,10 +150,10 @@ func (ptr* PostgresTranslationsRepository) CreateBatch(ctx context.Context, tran
 	_, err := ptr.Db.Connection.CopyFrom(
 		context.Background(),
 		postgres.Identifier{"translations"},
-		[]string{"entityid", "languagecode", "text"},
+		[]string{"entity_id", "language_id", "text"},
 		ptr.Db.CopyFromSlice(len(translations), func(index int) ([]interface{}, error) {
 			translation := translations[index]
-			return []interface{}{translation.EntityId, translation.LanguageCode, translation.Text}, nil
+			return []interface{}{translation.EntityId, translation.LanguageId, translation.Text}, nil
 		}),
 	)
 	if err != nil {

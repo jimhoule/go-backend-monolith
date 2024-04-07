@@ -36,33 +36,49 @@ func (ftr *FakeTranslationsRepository) FindAllByEntityId(entityId string) ([]*mo
 	return entityTranslations, nil
 }
 
-func (ftr *FakeTranslationsRepository) FindByCompositeId(entityId string, languageCode string) (*models.Translation, error) {
+func (ftr *FakeTranslationsRepository) FindByCompositeId(entityId string, languageId string) (*models.Translation, error) {
 	for _, translation := range translations {
-		if translation.EntityId == entityId && translation.LanguageCode == languageCode {
+		if translation.EntityId == entityId && translation.LanguageId == languageId {
 			return translation, nil
 		}
 	}
 
-	return nil, fmt.Errorf("the translation with composite id (%s, %s) does not exist", entityId, languageCode)
+	return nil, fmt.Errorf("the translation with composite id (%s, %s) does not exist", entityId, languageId)
 }
 
 func (ftr *FakeTranslationsRepository) UpdateBatch(ctx context.Context, updatedTranslations []*models.Translation) ([]*models.Translation, error) {
 	// Creates updated translations map
 	updatedTranslationsMap := map[string]*models.Translation{}
 	for _, updatedTranslation := range updatedTranslations {
-		key := updatedTranslation.EntityId + updatedTranslation.LanguageCode
+		key := updatedTranslation.EntityId + updatedTranslation.LanguageId
 		updatedTranslationsMap[key] = updatedTranslation
 	}
 
 	// Updates translations based on updated translations map
 	for _, translation := range translations {
-		key := translation.EntityId + translation.LanguageCode
+		key := translation.EntityId + translation.LanguageId
 		updatedTranslation := updatedTranslationsMap[key]
 		if updatedTranslation != nil {
 			translation.Text = updatedTranslation.Text
 		}
 	}
 	
+	return updatedTranslations, nil
+}
+
+func (ftr *FakeTranslationsRepository) UpsertBatch(ctx context.Context, updatedTranslations []*models.Translation) ([]*models.Translation, error) {
+	for _, updatedTranslation := range updatedTranslations {
+		translation, err := ftr.FindByCompositeId(updatedTranslation.EntityId, updatedTranslation.LanguageId)
+		// Creates translation if not found
+		if err != nil {
+			translations = append(translations, updatedTranslation)
+			continue
+		}
+
+		// Updates translation if found
+		translation.Text = updatedTranslation.Text
+	}
+
 	return updatedTranslations, nil
 }
 

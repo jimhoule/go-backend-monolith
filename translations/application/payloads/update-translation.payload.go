@@ -1,6 +1,6 @@
 package payloads
 
 type UpdateTranslationPayload struct {
-	LanguageCode string `json:"languageCode"`
-	Text         string `json:"text"`
+	LanguageId string `json:"languageId"`
+	Text       string `json:"text"`
 }

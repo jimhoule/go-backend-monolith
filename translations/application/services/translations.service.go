@@ -28,8 +28,8 @@ func (ts *TranslationsService) FindAllByEntityId(entityId string) ([]*models.Tra
 	return ts.TranslationsRepository.FindAllByEntityId(entityId)
 }
 
-func (ts *TranslationsService) FindByCompositeId(entityId string, languageCode string) (*models.Translation, error) {
-	return ts.TranslationsRepository.FindByCompositeId(entityId, languageCode)
+func (ts *TranslationsService) FindByCompositeId(entityId string, languageId string) (*models.Translation, error) {
+	return ts.TranslationsRepository.FindByCompositeId(entityId, languageId)
 }
 
 func (ts *TranslationsService) UpdateBatch(
@@ -41,7 +41,7 @@ func (ts *TranslationsService) UpdateBatch(
 	for _, updateTranslationPayload := range updateTranslationPayloads {
 		translation := &models.Translation{
 			EntityId: entityId,
-			LanguageCode: updateTranslationPayload.LanguageCode,
+			LanguageId: updateTranslationPayload.LanguageId,
 			Text: updateTranslationPayload.Text,
 		}
 
@@ -49,6 +49,25 @@ func (ts *TranslationsService) UpdateBatch(
 	}
 
 	return ts.TranslationsRepository.UpdateBatch(ctx, translations)
+}
+
+func (ts *TranslationsService) UpsertBatch(
+	ctx context.Context,
+	entityId string,
+	updateTranslationPayloads []*payloads.UpdateTranslationPayload,
+) ([]*models.Translation, error) {
+	translations := []*models.Translation{}
+	for _, updateTranslationPayload := range updateTranslationPayloads {
+		translation := &models.Translation{
+			EntityId: entityId,
+			LanguageId: updateTranslationPayload.LanguageId,
+			Text: updateTranslationPayload.Text,
+		}
+
+		translations = append(translations, translation)
+	}
+
+	return ts.TranslationsRepository.UpsertBatch(ctx, translations)
 }
 
 func (ts *TranslationsService) DeleteBatch(ctx context.Context, entityId string) (string, error) {
@@ -64,7 +83,7 @@ func (ts *TranslationsService) CreateBatch(
 	for _, createTranslationPayload := range createTranslationPayloads {
 		translation := ts.TranslationsFactory.Create(
 			entityId,
-			createTranslationPayload.LanguageCode,
+			createTranslationPayload.LanguageId,
 			createTranslationPayload.Text,
 		)
 
