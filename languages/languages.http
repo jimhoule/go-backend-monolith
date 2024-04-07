@@ -11,37 +11,29 @@ POST http://localhost:3000/languages
 Content-Type: application/json
 
 {
-    "code": "es",
+    "code": "en",
     "createTranslationPayloads": [
         {
             "languageId": "972af4a6-84cd-474d-a159-08436daf1e43",
-            "text": "French"
+            "text": "Anglais"
         },
         {
             "languageId": "be277c64-a1e4-4aa1-b8da-e90df53a9890",
-            "text": "Frances"
+            "text": "Ingles"
         }
     ]
 }
 
 ### Updates a Language
-PUT http://localhost:3000/languages/be277c64-a1e4-4aa1-b8da-e90df53a9890
+PUT http://localhost:3000/languages/e401938c-a390-4cf0-9eac-7379f7735711
 Content-Type: application/json
 
 {
-    "code": "es",
+    "code": "en",
     "updateTranslationPayloads": [
         {
-            "languageId": "972af4a6-84cd-474d-a159-08436daf1e43",
-            "text": "Espagnol"
-        },
-        {
-            "languageId": "4d68f0b4-c87b-43e2-8ba1-78fb4d0d3302",
-            "text": "Spanish"
-        },
-        {
-            "languageId": "be277c64-a1e4-4aa1-b8da-e90df53a9890",
-            "text": "Espanol"
+            "languageId": "e401938c-a390-4cf0-9eac-7379f7735711",
+            "text": "English"
         }
     ]
 }

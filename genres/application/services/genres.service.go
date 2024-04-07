@@ -1,18 +1,20 @@
 package services
 
 import (
-	genrePayloads "app/genres/application/payloads"
+	"app/genres/application/payloads"
 	"app/genres/application/ports"
 	"app/genres/domain/factories"
 	"app/genres/domain/models"
-	"app/translations/application/services"
+	transactionsServices "app/transactions/application/services"
+	translationsServices "app/translations/application/services"
 	"context"
 )
 
 type GenresService struct {
 	GenresFactory *factories.GenresFactory
 	GenresRepository ports.GenresRepositoryPort
-	TranslationsService *services.TranslationsService
+	TranslationsService *translationsServices.TranslationsService
+	TransactionsService *transactionsServices.TransactionsService
 }
 
 func (gs *GenresService) FindAll() ([]*models.Genre, error) {
@@ -50,13 +52,14 @@ func (gs *GenresService) FindById(id string) (*models.Genre, error) {
 }
 
 // NOTE: No need to use a transaction here because Genres table only contains the Id so the only things we need to update in this case are the translations
-func (gs *GenresService) Update(id string, updateGenrePayload *genrePayloads.UpdateGenrePayload) (*models.Genre, error) {
+func (gs *GenresService) Update(id string, updateGenrePayload *payloads.UpdateGenrePayload) (*models.Genre, error) {
 	genre, err := gs.FindById(id)
 	if err != nil {
 		return nil, err
 	}
 
-	translations, err := gs.TranslationsService.UpdateBatch(
+	// Upserts translations
+	translations, err := gs.TranslationsService.UpsertBatch(
 		context.Background(),
 		id,
 		updateGenrePayload.UpdateTranslationPayloads,
@@ -71,7 +74,7 @@ func (gs *GenresService) Update(id string, updateGenrePayload *genrePayloads.Upd
 }
 
 func (gs *GenresService) Delete(id string) (string, error) {
-	deletedGenreId, err := gs.TranslationsService.ExecuteTransaction(
+	deletedGenreId, err := gs.TransactionsService.Execute(
 		context.Background(),
 		func(ctx context.Context) (any, error) {
 			// Deletes genre
@@ -93,8 +96,8 @@ func (gs *GenresService) Delete(id string) (string, error) {
 	return deletedGenreId.(string), err
 }
 
-func (gs *GenresService) Create(createGenrePayload *genrePayloads.CreateGenrePayload) (*models.Genre, error) {
-	genre, err := gs.TranslationsService.ExecuteTransaction(
+func (gs *GenresService) Create(createGenrePayload *payloads.CreateGenrePayload) (*models.Genre, error) {
+	genre, err := gs.TransactionsService.Execute(
 		context.Background(),
 		func(ctx context.Context) (any, error) {
 			// Creates genre

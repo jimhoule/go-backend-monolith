@@ -13,13 +13,6 @@ type TranslationsService struct {
 	TranslationsRepository ports.TranslationsRepositoryPort
 }
 
-func (ts *TranslationsService) ExecuteTransaction(
-	ctx context.Context,
-	executeQuery func(ctx context.Context) (any, error),
-) (any, error) {
-	return ts.TranslationsRepository.ExecuteTransaction(ctx, executeQuery)
-}
-
 func (ts *TranslationsService) FindAll() ([]*models.Translation, error) {
 	return ts.TranslationsRepository.FindAll()
 }
@@ -30,25 +23,6 @@ func (ts *TranslationsService) FindAllByEntityId(entityId string) ([]*models.Tra
 
 func (ts *TranslationsService) FindByCompositeId(entityId string, languageId string) (*models.Translation, error) {
 	return ts.TranslationsRepository.FindByCompositeId(entityId, languageId)
-}
-
-func (ts *TranslationsService) UpdateBatch(
-	ctx context.Context,
-	entityId string,
-	updateTranslationPayloads []*payloads.UpdateTranslationPayload,
-) ([]*models.Translation, error) {
-	translations := []*models.Translation{}
-	for _, updateTranslationPayload := range updateTranslationPayloads {
-		translation := &models.Translation{
-			EntityId: entityId,
-			LanguageId: updateTranslationPayload.LanguageId,
-			Text: updateTranslationPayload.Text,
-		}
-
-		translations = append(translations, translation)
-	}
-
-	return ts.TranslationsRepository.UpdateBatch(ctx, translations)
 }
 
 func (ts *TranslationsService) UpsertBatch(

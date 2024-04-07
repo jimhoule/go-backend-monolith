@@ -5,14 +5,16 @@ import (
 	"app/languages/application/ports"
 	"app/languages/domain/factories"
 	"app/languages/domain/models"
-	"app/translations/application/services"
+	transactionsServices "app/transactions/application/services"
+	translationsServices "app/translations/application/services"
 	"context"
 )
 
 type LanguagesService struct {
 	LanguagesFactory *factories.LanguagesFactory
 	LanguagesRepository ports.LanguagesRepositoryPort
-	TranslationsService *services.TranslationsService
+	TranslationsService *translationsServices.TranslationsService
+	TransactionsService *transactionsServices.TransactionsService
 }
 
 func (ls *LanguagesService) FindAll() ([]*models.Language, error) {
@@ -50,7 +52,7 @@ func (ls *LanguagesService) FindById(id string) (*models.Language, error) {
 }
 
 func (ls *LanguagesService) Update(id string, updateLanguagePayload *payloads.UpdateLanguagePayload) (*models.Language, error) {
-	language, err := ls.TranslationsService.ExecuteTransaction(
+	language, err := ls.TransactionsService.Execute(
 		context.Background(),
 		func(ctx context.Context) (any, error) {
 			// Updates language
@@ -61,13 +63,7 @@ func (ls *LanguagesService) Update(id string, updateLanguagePayload *payloads.Up
 				return nil, err
 			}
 
-			/*
-			 * NOTES:
-			 *	- Upserts all translations
-			 *	- Updating a language is the only operation that upserts translations
-			 *	- Translations need a language id so a language needs to be created before 
-			 *    a translation can be added to this one
-			 */
+			// Upserts translations
 			translations, err := ls.TranslationsService.UpsertBatch(ctx, language.Id, updateLanguagePayload.UpdateTranslationPayloads)
 			if err != nil {
 				return nil, err
@@ -101,7 +97,7 @@ func (ls *LanguagesService) Delete(id string) (string, error) {
 }
 
 func (ls *LanguagesService) Create(createLanguagePayload *payloads.CreateLanguagePayload) (*models.Language, error) {
-	language, err := ls.TranslationsService.ExecuteTransaction(
+	language, err := ls.TransactionsService.Execute(
 		context.Background(),
 		func(ctx context.Context) (any, error) {
 			language := ls.LanguagesFactory.Create(createLanguagePayload.Code)

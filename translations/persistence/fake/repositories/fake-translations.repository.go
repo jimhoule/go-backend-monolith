@@ -14,13 +14,6 @@ func ResetFakeTranslationRepository() {
 
 type FakeTranslationsRepository struct {}
 
-func (ftr *FakeTranslationsRepository) ExecuteTransaction(
-	ctx context.Context,
-	executeQuery func(ctx context.Context) (any, error),
-) (any, error) {
-	return executeQuery(ctx)
-}
-
 func (ftr *FakeTranslationsRepository) FindAll() ([]*models.Translation, error) {
 	return translations, nil
 }
@@ -44,26 +37,6 @@ func (ftr *FakeTranslationsRepository) FindByCompositeId(entityId string, langua
 	}
 
 	return nil, fmt.Errorf("the translation with composite id (%s, %s) does not exist", entityId, languageId)
-}
-
-func (ftr *FakeTranslationsRepository) UpdateBatch(ctx context.Context, updatedTranslations []*models.Translation) ([]*models.Translation, error) {
-	// Creates updated translations map
-	updatedTranslationsMap := map[string]*models.Translation{}
-	for _, updatedTranslation := range updatedTranslations {
-		key := updatedTranslation.EntityId + updatedTranslation.LanguageId
-		updatedTranslationsMap[key] = updatedTranslation
-	}
-
-	// Updates translations based on updated translations map
-	for _, translation := range translations {
-		key := translation.EntityId + translation.LanguageId
-		updatedTranslation := updatedTranslationsMap[key]
-		if updatedTranslation != nil {
-			translation.Text = updatedTranslation.Text
-		}
-	}
-	
-	return updatedTranslations, nil
 }
 
 func (ftr *FakeTranslationsRepository) UpsertBatch(ctx context.Context, updatedTranslations []*models.Translation) ([]*models.Translation, error) {

@@ -10,13 +10,6 @@ type PostgresTranslationsRepository struct {
 	Db *postgres.Db
 }
 
-func (ptr *PostgresTranslationsRepository) ExecuteTransaction(
-	ctx context.Context,
-	executeQuery func(ctx context.Context) (any, error),
-) (any, error) {
-	return postgres.ExecuteTransaction(ctx, executeQuery)
-}
-
 func (ptr *PostgresTranslationsRepository) FindAll() ([]*models.Translation, error) {
 	query := "SELECT entity_id, language_id, text text FROM translations"
 	rows, err := ptr.Db.Connection.Query(context.Background(), query)
@@ -72,35 +65,6 @@ func (ptr *PostgresTranslationsRepository) FindByCompositeId(entityId string, la
 	}
 
 	return translation, nil
-}
-
-func (ptr *PostgresTranslationsRepository) UpdateBatch(ctx context.Context, translations []*models.Translation) ([]*models.Translation, error) {
-	// Creates batch
-	batch := &postgres.Batch{}
-	for _, translation := range translations {
-		query := "UPDATE translations SET text = $1 WHERE entity_id = $2 AND language_id = $3 RETURNING language_id, text"
-		batch.Queue(query, translation.Text, translation.EntityId, translation.LanguageId)
-	}
-
-	// Executes batch
-	batchResult := ptr.Db.Connection.SendBatch(ctx, batch)
-	defer batchResult.Close()
-
-	// Gets result of each batch update query
-	updatedTranslations := []*models.Translation{}
-	for range translations {
-		row := batchResult.QueryRow()
-
-		updatedTranslation := &models.Translation{}
-		err := row.Scan(&updatedTranslation.LanguageId, &updatedTranslation.Text)
-		if err != nil {
-			return nil, err
-		}
-
-		updatedTranslations = append(updatedTranslations, updatedTranslation)
-	}
-
-	return updatedTranslations, nil
 }
 
 func (ptr *PostgresTranslationsRepository) UpsertBatch(ctx context.Context, translations []*models.Translation) ([]*models.Translation, error) {

@@ -7,6 +7,7 @@ import (
 	"app/genres/persistence/postgres/repositories"
 	"app/genres/presenters/http/controllers"
 	"app/router"
+	"app/transactions"
 	"app/translations"
 	"app/uuid"
 )
@@ -20,6 +21,7 @@ func GetService(db *postgres.Db) *services.GenresService {
 			Db: db,
 		},
 		TranslationsService: translations.GetService(db),
+		TransactionsService: transactions.GetService(db),
 	}
 }
 
