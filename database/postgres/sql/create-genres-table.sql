@@ -1,3 +1,4 @@
 CREATE TABLE genres (
-    id UUID PRIMARY KEY NOT NULL
+    id UUID NOT NULL,
+    CONSTRAINT pk_genre PRIMARY KEY(id)
 );

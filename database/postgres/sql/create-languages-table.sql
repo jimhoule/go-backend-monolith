@@ -1,4 +1,5 @@
 CREATE TABLE languages (
-  id UUID PRIMARY KEY NOT NULL,
+  id UUID NOT NULL,
   code VARCHAR(5) UNIQUE NOT NULL,
+  CONSTRAINT pk_language PRIMARY KEY(id)
 );
