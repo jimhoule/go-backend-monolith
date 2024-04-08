@@ -47,7 +47,7 @@ func (gc *GenresController) Update(writer http.ResponseWriter, request *http.Req
 	// Updates genre
 	id := chi.URLParam(request, "id")
 	genre, err := gc.GenresService.Update(id, &genrePayloads.UpdateGenrePayload{
-		UpdateTranslationPayloads: updateGenreDto.UpdateTranslationPayloads,
+		UpdateLabelTranslationPayloads: updateGenreDto.UpdateLabelTranslationPayloads,
 	})
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusBadRequest, err)
@@ -75,7 +75,7 @@ func (gc *GenresController) Create(writer http.ResponseWriter, request *http.Req
 
 	// Creates genre
 	genre, err := gc.GenresService.Create(&genrePayloads.CreateGenrePayload{
-		CreateTranslationPayloads: createGenreDto.CreateTranslationPayloads,
+		CreateLabelTranslationPayloads: createGenreDto.CreateLabelTranslationPayloads,
 	})
 	if (err != nil) {
 		json.WriteHttpError(writer, http.StatusInternalServerError, err)

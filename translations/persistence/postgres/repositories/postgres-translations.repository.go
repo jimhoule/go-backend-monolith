@@ -54,9 +54,9 @@ func (ptr *PostgresTranslationsRepository) FindAllByEntityIdAndType(entityId str
 	return translations, nil
 }
 
-func (ptr *PostgresTranslationsRepository) FindByCompositeId(entityId string, languageId string) (*models.Translation, error) {
-	query := "SELECT entity_id, language_id, text text FROM translations WHERE (entity_id, language_id) = ($1, $2)"
-	row := ptr.Db.Connection.QueryRow(context.Background(), query, entityId, languageId)
+func (ptr *PostgresTranslationsRepository) FindByCompositeId(entityId string, languageId string, translationType string) (*models.Translation, error) {
+	query := "SELECT entity_id, language_id, text text FROM translations WHERE (entity_id, language_id, type) = ($1, $2, $3)"
+	row := ptr.Db.Connection.QueryRow(context.Background(), query, entityId, languageId, translationType)
 
 	translation := &models.Translation{}
 	err := row.Scan(&translation.EntityId, &translation.LanguageId, &translation.Text)

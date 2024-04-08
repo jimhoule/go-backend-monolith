@@ -29,9 +29,9 @@ func (ftr *FakeTranslationsRepository) FindAllByEntityIdAndType(entityId string,
 	return entityTranslations, nil
 }
 
-func (ftr *FakeTranslationsRepository) FindByCompositeId(entityId string, languageId string) (*models.Translation, error) {
+func (ftr *FakeTranslationsRepository) FindByCompositeId(entityId string, languageId string, translationType string) (*models.Translation, error) {
 	for _, translation := range translations {
-		if translation.EntityId == entityId && translation.LanguageId == languageId {
+		if translation.EntityId == entityId && translation.LanguageId == languageId && translation.Type == translationType {
 			return translation, nil
 		}
 	}
@@ -41,7 +41,7 @@ func (ftr *FakeTranslationsRepository) FindByCompositeId(entityId string, langua
 
 func (ftr *FakeTranslationsRepository) UpsertBatch(ctx context.Context, updatedTranslations []*models.Translation) ([]*models.Translation, error) {
 	for _, updatedTranslation := range updatedTranslations {
-		translation, err := ftr.FindByCompositeId(updatedTranslation.EntityId, updatedTranslation.LanguageId)
+		translation, err := ftr.FindByCompositeId(updatedTranslation.EntityId, updatedTranslation.LanguageId, updatedTranslation.Type)
 		// Creates translation if not found
 		if err != nil {
 			translations = append(translations, updatedTranslation)

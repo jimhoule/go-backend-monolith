@@ -21,13 +21,14 @@ func (ts *TranslationsService) FindAllByEntityIdAndType(entityId string, transla
 	return ts.TranslationsRepository.FindAllByEntityIdAndType(entityId, translationType)
 }
 
-func (ts *TranslationsService) FindByCompositeId(entityId string, languageId string) (*models.Translation, error) {
-	return ts.TranslationsRepository.FindByCompositeId(entityId, languageId)
+func (ts *TranslationsService) FindByCompositeId(entityId string, languageId string, translationType string) (*models.Translation, error) {
+	return ts.TranslationsRepository.FindByCompositeId(entityId, languageId, translationType)
 }
 
 func (ts *TranslationsService) UpsertBatch(
 	ctx context.Context,
 	entityId string,
+	translationType string,
 	updateTranslationPayloads []*payloads.UpdateTranslationPayload,
 ) ([]*models.Translation, error) {
 	translations := []*models.Translation{}
@@ -36,7 +37,7 @@ func (ts *TranslationsService) UpsertBatch(
 			EntityId: entityId,
 			LanguageId: updateTranslationPayload.LanguageId,
 			Text: updateTranslationPayload.Text,
-			Type: updateTranslationPayload.Type,
+			Type: translationType,
 		}
 
 		translations = append(translations, translation)
@@ -52,6 +53,7 @@ func (ts *TranslationsService) DeleteBatch(ctx context.Context, entityId string)
 func (ts *TranslationsService) CreateBatch(
 	ctx context.Context,
 	entityId string,
+	translationType string,
 	createTranslationPayloads []*payloads.CreateTranslationPayload,
 ) ([]*models.Translation, error) {
 	translations := []*models.Translation{}
@@ -60,7 +62,7 @@ func (ts *TranslationsService) CreateBatch(
 			entityId,
 			createTranslationPayload.LanguageId,
 			createTranslationPayload.Text,
-			createTranslationPayload.Type,
+			translationType,
 		)
 
 		translations = append(translations, translation)

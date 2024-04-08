@@ -5,5 +5,5 @@ import (
 )
 
 type UpdateGenreDto struct {
-	UpdateTranslationPayloads []*payloads.UpdateTranslationPayload `json:"updateTranslationPayloads"`
+	UpdateLabelTranslationPayloads []*payloads.UpdateTranslationPayload `json:"updateLabelTranslationPayloads"`
 }

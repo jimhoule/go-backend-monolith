@@ -65,7 +65,12 @@ func (ls *LanguagesService) Update(id string, updateLanguagePayload *payloads.Up
 			}
 
 			// Upserts translations
-			labelTranslations, err := ls.TranslationsService.UpsertBatch(ctx, language.Id, updateLanguagePayload.UpdateTranslationPayloads)
+			labelTranslations, err := ls.TranslationsService.UpsertBatch(
+				ctx,
+				language.Id,
+				constants.TanslationTypeLabel,
+				updateLanguagePayload.UpdateLabelTranslationPayloads,
+			)
 			if err != nil {
 				return nil, err
 			}
@@ -110,8 +115,13 @@ func (ls *LanguagesService) Create(createLanguagePayload *payloads.CreateLanguag
 			}
 
 
-			// Creates all translations
-			labelTranslations, err := ls.TranslationsService.CreateBatch(ctx, language.Id, createLanguagePayload.CreateTranslationPayloads)
+			// Creates translations
+			labelTranslations, err := ls.TranslationsService.CreateBatch(
+				ctx,
+				language.Id,
+				constants.TanslationTypeLabel,
+				createLanguagePayload.CreateLabelTranslationPayloads,
+			)
 			if err != nil {
 				return nil, err
 			}

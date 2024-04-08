@@ -5,5 +5,5 @@ import (
 )
 
 type CreateGenreDto struct {
-	CreateTranslationPayloads []*payloads.CreateTranslationPayload `json:"createTranslationPayloads"`
+	CreateLabelTranslationPayloads []*payloads.CreateTranslationPayload `json:"createLabelTranslationPayloads"`
 }

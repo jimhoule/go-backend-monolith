@@ -11,7 +11,11 @@ POST http://localhost:3000/genres
 Content-Type: application/json
 
 {
-    "createTranslationPayloads": [
+    "createLabelTranslationPayloads": [
+        {
+            "languageId": "972af4a6-84cd-474d-a159-08436daf1e43",
+            "text": "Comedie"
+        },
         {
             "languageId": "e401938c-a390-4cf0-9eac-7379f7735711",
             "text": "Comedy"
@@ -28,13 +32,21 @@ PUT http://localhost:3000/genres/7529b627-789a-4353-a671-b079a68f3d79
 Content-Type: application/json
 
 {
-    "updateTranslationPayloads": [
+    "updateLabelTranslationPayloads": [
+        {
+            "languageId": "972af4a6-84cd-474d-a159-08436daf1e43",
+            "text": "Action"
+        },
         {
             "languageId": "e401938c-a390-4cf0-9eac-7379f7735711",
-            "text": "Comedy"
+            "text": "Action"
+        },
+        {
+            "languageId": "be277c64-a1e4-4aa1-b8da-e90df53a9890",
+            "text": "Accion"
         }
     ]
 }
 
 ### Deletes a Genre
-DELETE http://localhost:3000/genres/dd24a9bf-5c42-4140-a7cd-6f3a2410a654
+DELETE http://localhost:3000/genres/dc07cb1e-8bbb-49ef-9188-577c70257741

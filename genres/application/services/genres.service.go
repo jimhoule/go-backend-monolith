@@ -63,7 +63,8 @@ func (gs *GenresService) Update(id string, updateGenrePayload *payloads.UpdateGe
 	labelTranslations, err := gs.TranslationsService.UpsertBatch(
 		context.Background(),
 		id,
-		updateGenrePayload.UpdateTranslationPayloads,
+		constants.TanslationTypeLabel,
+		updateGenrePayload.UpdateLabelTranslationPayloads,
 	)
 	if err != nil {
 		return nil, err
@@ -75,7 +76,7 @@ func (gs *GenresService) Update(id string, updateGenrePayload *payloads.UpdateGe
 }
 
 func (gs *GenresService) Delete(id string) (string, error) {
-	deletedGenreId, err := gs.TransactionsService.Execute(
+	_, err := gs.TransactionsService.Execute(
 		context.Background(),
 		func(ctx context.Context) (any, error) {
 			// Deletes genre
@@ -93,8 +94,11 @@ func (gs *GenresService) Delete(id string) (string, error) {
 			return id, nil
 		},
 	)
+	if err != nil {
+		return "", err
+	}
 
-	return deletedGenreId.(string), err
+	return id, nil
 }
 
 func (gs *GenresService) Create(createGenrePayload *payloads.CreateGenrePayload) (*models.Genre, error) {
@@ -109,7 +113,12 @@ func (gs *GenresService) Create(createGenrePayload *payloads.CreateGenrePayload)
 			}
 
 			// Creates all translations
-			labelTranslations, err := gs.TranslationsService.CreateBatch(ctx, genre.Id, createGenrePayload.CreateTranslationPayloads)
+			labelTranslations, err := gs.TranslationsService.CreateBatch(
+				ctx,
+				genre.Id,
+				constants.TanslationTypeLabel,
+				createGenrePayload.CreateLabelTranslationPayloads,
+			)
 			if err != nil {
 				return nil, err
 			}
@@ -119,6 +128,9 @@ func (gs *GenresService) Create(createGenrePayload *payloads.CreateGenrePayload)
 			return genre, nil
 		},
 	)
+	if err != nil {
+		return nil, err
+	}
 
-	return genre.(*models.Genre), err
+	return genre.(*models.Genre), nil
 }

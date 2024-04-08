@@ -5,7 +5,7 @@ GET http://localhost:3000/plans
 Authorization: Bearer accessToken
 
 ### Finds a Plan by id
-GET http://localhost:3000/plans/92885497-d1cd-4407-834a-141ee7ae1083
+GET http://localhost:3000/plans/8d1dc821-3ebe-4aad-8238-e7fdfea5fbba
 Authorization: Bearer accessToken
 
 ### Creates a Plan
@@ -19,24 +19,20 @@ Content-Type: application/json
         {
             "languageId": "e401938c-a390-4cf0-9eac-7379f7735711",
             "text": "Elite Plan",
-            "type": "LABEL"
         },
          {
             "languageId": "972af4a6-84cd-474d-a159-08436daf1e43",
             "text": "Plan Elite",
-            "type": "LABEL"
         }
     ],
     "createDescriptionTranslationPayloads": [
         {
             "languageId": "e401938c-a390-4cf0-9eac-7379f7735711",
             "text": "Elite Plan description",
-            "type": "DESCRIPTION"
         },
          {
             "languageId": "972af4a6-84cd-474d-a159-08436daf1e43",
             "text": "description Plan Elite",
-            "type": "DESCRIPTION"
         }
     ]
 }

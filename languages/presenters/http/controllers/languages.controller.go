@@ -46,7 +46,7 @@ func (lc *LanguagesController) Update(writer http.ResponseWriter, request *http.
 	id := chi.URLParam(request, "id")
 	language, err := lc.LanguagesService.Update(id, &payloads.UpdateLanguagePayload{
 		Code: updateLanguageDto.Code,
-		UpdateTranslationPayloads: updateLanguageDto.UpdateTranslationPayloads,
+		UpdateLabelTranslationPayloads: updateLanguageDto.UpdateLabelTranslationPayloads,
 	})
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusNotFound, err)
@@ -73,7 +73,7 @@ func (lc *LanguagesController) Create(writer http.ResponseWriter, request *http.
 
 	language, err := lc.LanguagesService.Create(&payloads.CreateLanguagePayload{
 		Code: createLanguageDto.Code,
-		CreateTranslationPayloads: createLanguageDto.CreateTranslationPayloads,
+		CreateLabelTranslationPayloads: createLanguageDto.CreateLabelTranslationPayloads,
 	})
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusInternalServerError, err)

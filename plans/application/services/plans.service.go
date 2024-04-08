@@ -77,13 +77,23 @@ func (ps *PlansService) Create(createPlanPayload *payloads.CreatePlanPayload) (*
 			}
 
 			// Creates label translations
-			labelTranslations, err := ps.TranslationsService.CreateBatch(ctx, plan.Id, createPlanPayload.CreateLabelTranslationPayloads)
+			labelTranslations, err := ps.TranslationsService.CreateBatch(
+				ctx,
+				plan.Id,
+				constants.TanslationTypeLabel,
+				createPlanPayload.CreateLabelTranslationPayloads,
+			)
 			if err != nil {
 				return nil, err
 			}
 
 			// Creates description translations
-			descriptionTranslations, err := ps.TranslationsService.CreateBatch(ctx, plan.Id, createPlanPayload.CreateDescriptionTranslationPayloads)
+			descriptionTranslations, err := ps.TranslationsService.CreateBatch(
+				ctx,
+				plan.Id,
+				constants.TanslationTypeLabel,
+				createPlanPayload.CreateDescriptionTranslationPayloads,
+			)
 			if err != nil {
 				return nil, err
 			}
