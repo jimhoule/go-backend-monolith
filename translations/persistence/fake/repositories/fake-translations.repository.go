@@ -18,10 +18,10 @@ func (ftr *FakeTranslationsRepository) FindAll() ([]*models.Translation, error) 
 	return translations, nil
 }
 
-func (ftr *FakeTranslationsRepository) FindAllByEntityId(entityId string) ([]*models.Translation, error) {
+func (ftr *FakeTranslationsRepository) FindAllByEntityIdAndType(entityId string, translationType string) ([]*models.Translation, error) {
 	entityTranslations := []*models.Translation{}
 	for _, translation := range translations {
-		if translation.EntityId == entityId {
+		if translation.EntityId == entityId && translation.Type == translationType {
 			entityTranslations = append(entityTranslations, translation)
 		}
 	}
@@ -50,6 +50,7 @@ func (ftr *FakeTranslationsRepository) UpsertBatch(ctx context.Context, updatedT
 
 		// Updates translation if found
 		translation.Text = updatedTranslation.Text
+		translation.Type = updatedTranslation.Type
 	}
 
 	return updatedTranslations, nil

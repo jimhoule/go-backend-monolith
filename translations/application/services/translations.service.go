@@ -17,8 +17,8 @@ func (ts *TranslationsService) FindAll() ([]*models.Translation, error) {
 	return ts.TranslationsRepository.FindAll()
 }
 
-func (ts *TranslationsService) FindAllByEntityId(entityId string) ([]*models.Translation, error) {
-	return ts.TranslationsRepository.FindAllByEntityId(entityId)
+func (ts *TranslationsService) FindAllByEntityIdAndType(entityId string, translationType string) ([]*models.Translation, error) {
+	return ts.TranslationsRepository.FindAllByEntityIdAndType(entityId, translationType)
 }
 
 func (ts *TranslationsService) FindByCompositeId(entityId string, languageId string) (*models.Translation, error) {
@@ -36,6 +36,7 @@ func (ts *TranslationsService) UpsertBatch(
 			EntityId: entityId,
 			LanguageId: updateTranslationPayload.LanguageId,
 			Text: updateTranslationPayload.Text,
+			Type: updateTranslationPayload.Type,
 		}
 
 		translations = append(translations, translation)
@@ -59,6 +60,7 @@ func (ts *TranslationsService) CreateBatch(
 			entityId,
 			createTranslationPayload.LanguageId,
 			createTranslationPayload.Text,
+			createTranslationPayload.Type,
 		)
 
 		translations = append(translations, translation)

@@ -32,9 +32,9 @@ func (ptr *PostgresTranslationsRepository) FindAll() ([]*models.Translation, err
 	return translations, nil
 }
 
-func (ptr *PostgresTranslationsRepository) FindAllByEntityId(entityId string) ([]*models.Translation, error) {
-	query := "SELECT language_id, text FROM translations WHERE entity_id = $1"
-	rows, err := ptr.Db.Connection.Query(context.Background(), query, entityId)
+func (ptr *PostgresTranslationsRepository) FindAllByEntityIdAndType(entityId string, translationType string) ([]*models.Translation, error) {
+	query := "SELECT language_id, text FROM translations WHERE entity_id = $1 AND type = $2"
+	rows, err := ptr.Db.Connection.Query(context.Background(), query, entityId, translationType)
 	if err != nil {
 		return nil, err
 	}
@@ -72,11 +72,11 @@ func (ptr *PostgresTranslationsRepository) UpsertBatch(ctx context.Context, tran
 	batch := &postgres.Batch{}
 	for _, translation := range translations {
 		query := `
-			INSERT INTO translations(entity_id, language_id, text) VALUES($1, $2, $3)
-			ON CONFLICT ON CONSTRAINT pk_translation DO UPDATE SET text = $3
+			INSERT INTO translations(entity_id, language_id, text, type) VALUES($1, $2, $3, $4)
+			ON CONFLICT ON CONSTRAINT pk_translation DO UPDATE SET text = $3, type = $4
 			RETURNING language_id, text
 		`
-		batch.Queue(query, translation.EntityId, translation.LanguageId, translation.Text)
+		batch.Queue(query, translation.EntityId, translation.LanguageId, translation.Text, translation.Type)
 	}
 
 	// Executes batch
@@ -114,10 +114,10 @@ func (ptr* PostgresTranslationsRepository) CreateBatch(ctx context.Context, tran
 	_, err := ptr.Db.Connection.CopyFrom(
 		context.Background(),
 		postgres.Identifier{"translations"},
-		[]string{"entity_id", "language_id", "text"},
+		[]string{"entity_id", "language_id", "text", "type"},
 		ptr.Db.CopyFromSlice(len(translations), func(index int) ([]interface{}, error) {
 			translation := translations[index]
-			return []interface{}{translation.EntityId, translation.LanguageId, translation.Text}, nil
+			return []interface{}{translation.EntityId, translation.LanguageId, translation.Text, translation.Type}, nil
 		}),
 	)
 	if err != nil {
