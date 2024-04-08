@@ -6,6 +6,7 @@ import (
 	"app/genres/domain/factories"
 	"app/genres/domain/models"
 	transactionsServices "app/transactions/application/services"
+	"app/translations/application/constants"
 	translationsServices "app/translations/application/services"
 	"context"
 )
@@ -24,12 +25,12 @@ func (gs *GenresService) FindAll() ([]*models.Genre, error) {
 	}
 
 	for _, genre := range genres {
-		translations, err := gs.TranslationsService.FindAllByEntityId(genre.Id)
+		labelTranslations, err := gs.TranslationsService.FindAllByEntityIdAndType(genre.Id, constants.TanslationTypeLabel)
 		if err != nil {
 			return nil, err
 		}
 
-		genre.Labels = translations
+		genre.Labels = labelTranslations
 	}
 
 	return genres, nil
@@ -41,12 +42,12 @@ func (gs *GenresService) FindById(id string) (*models.Genre, error) {
 		return nil, err
 	}
 
-	translations, err := gs.TranslationsService.FindAllByEntityId(genre.Id)
+	labelTranslations, err := gs.TranslationsService.FindAllByEntityIdAndType(genre.Id, constants.TanslationTypeLabel)
 	if err != nil {
 		return nil, err
 	}
 
-	genre.Labels = translations
+	genre.Labels = labelTranslations
 
 	return genre, nil
 }
@@ -58,8 +59,8 @@ func (gs *GenresService) Update(id string, updateGenrePayload *payloads.UpdateGe
 		return nil, err
 	}
 
-	// Upserts translations
-	translations, err := gs.TranslationsService.UpsertBatch(
+	// Upserts all translations
+	labelTranslations, err := gs.TranslationsService.UpsertBatch(
 		context.Background(),
 		id,
 		updateGenrePayload.UpdateTranslationPayloads,
@@ -68,7 +69,7 @@ func (gs *GenresService) Update(id string, updateGenrePayload *payloads.UpdateGe
 		return nil, err
 	}
 
-	genre.Labels = translations
+	genre.Labels = labelTranslations
 
 	return genre, nil
 }
@@ -108,12 +109,12 @@ func (gs *GenresService) Create(createGenrePayload *payloads.CreateGenrePayload)
 			}
 
 			// Creates all translations
-			translations, err := gs.TranslationsService.CreateBatch(ctx, genre.Id, createGenrePayload.CreateTranslationPayloads)
+			labelTranslations, err := gs.TranslationsService.CreateBatch(ctx, genre.Id, createGenrePayload.CreateTranslationPayloads)
 			if err != nil {
 				return nil, err
 			}
 
-			genre.Labels = translations
+			genre.Labels = labelTranslations
 
 			return genre, nil
 		},

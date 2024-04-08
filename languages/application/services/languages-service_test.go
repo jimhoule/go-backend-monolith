@@ -2,19 +2,32 @@ package services
 
 import (
 	"app/languages/application/payloads"
-	"app/languages/domain/factories"
+	languagesFactories "app/languages/domain/factories"
 	"app/languages/domain/models"
 	"app/languages/persistence/fake/repositories"
+	languagesRepositories "app/languages/persistence/fake/repositories"
+	transactionsServices "app/transactions/application/services"
+	transactionsRepositories "app/transactions/persistence/fake/repositories"
+	translationsServices "app/translations/application/services"
+	translationsFactories "app/translations/domain/factories"
+	translationsRepositories "app/translations/persistence/fake/repositories"
 	"app/uuid"
 	"testing"
 )
 
 func getTestContext() (*LanguagesService, func(), func() (*models.Language, error)) {
 	languagesService := &LanguagesService{
-		LanguagesFactory: &factories.LanguagesFactory{
+		LanguagesFactory: &languagesFactories.LanguagesFactory{
 			UuidService: uuid.GetService(),
 		},
-		LanguagesRepository: &repositories.FakeLanguagesRepository{},
+		LanguagesRepository: &languagesRepositories.FakeLanguagesRepository{},
+		TranslationsService: &translationsServices.TranslationsService{
+			TranslationsFactory: &translationsFactories.TranslationsFactory{},
+			TranslationsRepository: &translationsRepositories.FakeTranslationsRepository{},
+		},
+		TransactionsService: &transactionsServices.TransactionsService{
+			TransactionsRepository: &transactionsRepositories.FakeTransactionsRepository{},
+		},
 	}
 
 	createLanguage := func() (*models.Language, error) {

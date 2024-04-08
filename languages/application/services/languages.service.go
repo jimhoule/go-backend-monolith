@@ -6,6 +6,7 @@ import (
 	"app/languages/domain/factories"
 	"app/languages/domain/models"
 	transactionsServices "app/transactions/application/services"
+	"app/translations/application/constants"
 	translationsServices "app/translations/application/services"
 	"context"
 )
@@ -24,12 +25,12 @@ func (ls *LanguagesService) FindAll() ([]*models.Language, error) {
 	}
 
 	for _, language := range languages {
-		translations, err := ls.TranslationsService.FindAllByEntityId(language.Id)
+		labelTranslations, err := ls.TranslationsService.FindAllByEntityIdAndType(language.Id, constants.TanslationTypeLabel)
 		if err != nil {
 			return nil, err
 		}
 
-		language.Labels = translations
+		language.Labels = labelTranslations
 	}
 
 	return languages, nil
@@ -41,12 +42,12 @@ func (ls *LanguagesService) FindById(id string) (*models.Language, error) {
 		return nil, err
 	}
 
-	translations, err := ls.TranslationsService.FindAllByEntityId(language.Id)
+	labelTranslations, err := ls.TranslationsService.FindAllByEntityIdAndType(language.Id, constants.TanslationTypeLabel)
 	if err != nil {
 		return nil, err
 	}
 
-	language.Labels = translations
+	language.Labels = labelTranslations
 
 	return language, nil
 }
@@ -64,12 +65,12 @@ func (ls *LanguagesService) Update(id string, updateLanguagePayload *payloads.Up
 			}
 
 			// Upserts translations
-			translations, err := ls.TranslationsService.UpsertBatch(ctx, language.Id, updateLanguagePayload.UpdateTranslationPayloads)
+			labelTranslations, err := ls.TranslationsService.UpsertBatch(ctx, language.Id, updateLanguagePayload.UpdateTranslationPayloads)
 			if err != nil {
 				return nil, err
 			}
 
-			language.Labels = translations
+			language.Labels = labelTranslations
 
 			return language, nil
 		},
@@ -110,12 +111,12 @@ func (ls *LanguagesService) Create(createLanguagePayload *payloads.CreateLanguag
 
 
 			// Creates all translations
-			translations, err := ls.TranslationsService.CreateBatch(ctx, language.Id, createLanguagePayload.CreateTranslationPayloads)
+			labelTranslations, err := ls.TranslationsService.CreateBatch(ctx, language.Id, createLanguagePayload.CreateTranslationPayloads)
 			if err != nil {
 				return nil, err
 			}
 
-			language.Labels = translations
+			language.Labels = labelTranslations
 
 			return language, nil
 		},
