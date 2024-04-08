@@ -1,7 +1,9 @@
 package payloads
 
+import "app/translations/application/payloads"
+
 type CreatePlanPayload struct {
-	Name        string
-	Description string
-	Price       float32
+	Price                                float32
+	CreateLabelTranslationPayloads       []*payloads.CreateTranslationPayload
+	CreateDescriptionTranslationPayloads []*payloads.CreateTranslationPayload
 }

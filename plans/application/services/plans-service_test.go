@@ -19,8 +19,6 @@ func getTestContext() (*PlansService, func(), func() (*models.Plan, error)) {
 
 	createPlan := func() (*models.Plan, error) {
 		return plansService.Create(&payloads.CreatePlanPayload{
-			Name: "Dummy Plan name",
-			Description: "Dummy Plan description",
 			Price: 10.50,
 		})
 	}

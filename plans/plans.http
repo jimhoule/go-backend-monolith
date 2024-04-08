@@ -14,7 +14,29 @@ Authorization: Bearer accessToken
 Content-Type: application/json
 
 {
-    "name": "Premium Plan",
-    "description": "Premium plan description",
-    "price": 12.50
+    "price": 14.50,
+    "createLabelTranslationPayloads": [
+        {
+            "languageId": "e401938c-a390-4cf0-9eac-7379f7735711",
+            "text": "Elite Plan",
+            "type": "LABEL"
+        },
+         {
+            "languageId": "972af4a6-84cd-474d-a159-08436daf1e43",
+            "text": "Plan Elite",
+            "type": "LABEL"
+        }
+    ],
+    "createDescriptionTranslationPayloads": [
+        {
+            "languageId": "e401938c-a390-4cf0-9eac-7379f7735711",
+            "text": "Elite Plan description",
+            "type": "DESCRIPTION"
+        },
+         {
+            "languageId": "972af4a6-84cd-474d-a159-08436daf1e43",
+            "text": "description Plan Elite",
+            "type": "DESCRIPTION"
+        }
+    ]
 }

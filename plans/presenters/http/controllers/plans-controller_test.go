@@ -29,8 +29,6 @@ func getTestContext() (*PlansController, func(), func() (*models.Plan, error)) {
 
 	createPlan := func() (*models.Plan, error) {
 		return plansController.PlansService.Create(&payloads.CreatePlanPayload{
-			Name: "Dummy Plan name",
-			Description: "Dummy Plan description",
 			Price: 10.50,
 		})
 	}
@@ -44,8 +42,6 @@ func TestCreatePlanController(t *testing.T) {
 
 	// Creates request body
 	requestBody, err := json.Marshal(dtos.CreatePlanDto{
-		Name: "Dummy Plan name",
-		Description: "Dummy Plan description",
 		Price: 10.50,
 	})
 	if err != nil {
@@ -107,9 +103,8 @@ func TestFindAllPlansController(t *testing.T) {
 		return
 	}
 
-	// NOTE: Dereferences pointers to compares the values and not the memory addresses (memory addresses are different but values are the same)
-	if *plans[0] != *newPlan {
-		t.Errorf("Expected first element of Plans slice to equal New Plan but got %v", *plans[0])
+	if plans[0].Id != newPlan.Id {
+		t.Errorf("Expected first element of Plans slice id to equal New Plan id but got %v", plans[0].Id)
 	}
 }
 
@@ -154,7 +149,7 @@ func TestFindPlanByIdController(t *testing.T) {
 	}
 
 	// NOTE: Dereferencing pointers to compare their values and not their memory addresses
-	if *plan != *newPlan {
-		t.Errorf("Expected Plan to equal New Plan but got %v", *plan)
+	if plan.Id != newPlan.Id {
+		t.Errorf("Expected Plan id to equal New Plan id but got %v", plan.Id)
 	}
 }

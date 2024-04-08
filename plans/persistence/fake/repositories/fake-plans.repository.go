@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"app/plans/domain/models"
+	"context"
 	"fmt"
 )
 
@@ -27,7 +28,7 @@ func (fpr *FakePlansRepository) FindById(id string) (*models.Plan, error) {
 	return nil, fmt.Errorf("the account with id %s does not exist", id)
 }
 
-func (fpr *FakePlansRepository) Create(plan *models.Plan) (*models.Plan, error) {
+func (fpr *FakePlansRepository) Create(ctx context.Context, plan *models.Plan) (*models.Plan, error) {
 	plans = append(plans, plan);
 
 	return plan, nil

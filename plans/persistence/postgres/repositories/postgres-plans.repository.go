@@ -11,7 +11,7 @@ type PostgresPlansRepository struct {
 }
 
 func (ppr *PostgresPlansRepository) FindAll() ([]*models.Plan, error) {
-	query := "SELECT id, name, description, price FROM plans"
+	query := "SELECT id, price FROM plans"
 	rows, err := ppr.Db.Connection.Query(context.Background(), query)
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func (ppr *PostgresPlansRepository) FindAll() ([]*models.Plan, error) {
 	for rows.Next() {
 		plan := &models.Plan{}
 
-		err := rows.Scan(&plan.Id, &plan.Name, &plan.Description, &plan.Price)
+		err := rows.Scan(&plan.Id, &plan.Price)
 		if err != nil {
 			return nil, err
 		}
@@ -34,11 +34,11 @@ func (ppr *PostgresPlansRepository) FindAll() ([]*models.Plan, error) {
 }
 
 func (ppr *PostgresPlansRepository) FindById(id string) (*models.Plan, error) {
-	query := "SELECT id, name, description, price FROM plans WHERE id = $1"
+	query := "SELECT id, price FROM plans WHERE id = $1"
 	row := ppr.Db.Connection.QueryRow(context.Background(), query, id)
 
 	plan := &models.Plan{}
-	err := row.Scan(&plan.Id, &plan.Name, &plan.Description, &plan.Price)
+	err := row.Scan(&plan.Id, &plan.Price)
 	if err != nil {
 		return nil, err
 	}
@@ -46,15 +46,9 @@ func (ppr *PostgresPlansRepository) FindById(id string) (*models.Plan, error) {
 	return plan, nil
 }
 
-func (ppr *PostgresPlansRepository) Create(plan *models.Plan) (*models.Plan, error) {
-	query := "INSERT INTO plans (id, name, description, price) VALUES (@id, @name, @description, @price)"
-	args := postgres.NamedArgs{
-		"id": plan.Id,
-		"name": plan.Name,
-		"description": plan.Description,
-		"price": plan.Price,
-	}
-	_, err := ppr.Db.Connection.Exec(context.Background(), query, args)
+func (ppr *PostgresPlansRepository) Create(ctx context.Context, plan *models.Plan) (*models.Plan, error) {
+	query := "INSERT INTO plans (id, price) VALUES ($1, $2)"
+	_, err := ppr.Db.Connection.Exec(ctx, query, plan.Id, plan.Price)
 	if err != nil {
 		return nil, err
 	}

@@ -8,6 +8,8 @@ import (
 	"app/plans/persistence/postgres/repositories"
 	"app/plans/presenters/http/controllers"
 	"app/router"
+	"app/transactions"
+	"app/translations"
 	"app/uuid"
 )
 
@@ -19,6 +21,8 @@ func GetService(db *postgres.Db) *services.PlansService {
 		PlansRepository: &repositories.PostgresPlansRepository{
 			Db: db,
 		},
+		TranslationsService: translations.GetService(db),
+		TransactionsService: transactions.GetService(db),
 	}
 }
 
