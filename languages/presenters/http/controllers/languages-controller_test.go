@@ -2,12 +2,17 @@ package controllers
 
 import (
 	"app/languages/application/payloads"
-	"app/languages/application/services"
-	"app/languages/domain/factories"
+	languageServices "app/languages/application/services"
+	languagesFactories "app/languages/domain/factories"
 	"app/languages/domain/models"
-	"app/languages/persistence/fake/repositories"
+	languagesRepositories "app/languages/persistence/fake/repositories"
 	"app/languages/presenters/http/dtos"
 	"app/router/mock"
+	transactionsServices "app/transactions/application/services"
+	transactionsRepositories "app/transactions/persistence/fake/repositories"
+	translationsServices "app/translations/application/services"
+	translationsFactories "app/translations/domain/factories"
+	translationsRepositories "app/translations/persistence/fake/repositories"
 	"app/uuid"
 	"bytes"
 	"encoding/json"
@@ -19,11 +24,18 @@ import (
 
 func getTestContext() (*LanguagesController, func(), func() (*models.Language, error)) {
 	laguagesController := &LanguagesController{
-		LanguagesService: &services.LanguagesService{
-			LanguagesFactory: &factories.LanguagesFactory{
+		LanguagesService: &languageServices.LanguagesService{
+			LanguagesFactory: &languagesFactories.LanguagesFactory{
 				UuidService: uuid.GetService(),
 			},
-			LanguagesRepository: &repositories.FakeLanguagesRepository{},
+			LanguagesRepository: &languagesRepositories.FakeLanguagesRepository{},
+			TranslationsService: &translationsServices.TranslationsService{
+				TranslationsFactory: &translationsFactories.TranslationsFactory{},
+				TranslationsRepository: &translationsRepositories.FakeTranslationsRepository{},
+			},
+			TransactionsService: &transactionsServices.TransactionsService{
+				TransactionsRepository: &transactionsRepositories.FakeTransactionsRepository{},
+			},
 		},
 	}
 
@@ -33,7 +45,7 @@ func getTestContext() (*LanguagesController, func(), func() (*models.Language, e
 		})
 	}
 
-	return laguagesController, repositories.ResetFakeLanguagesRepository, createLanguage
+	return laguagesController, languagesRepositories.ResetFakeLanguagesRepository, createLanguage
 }
 
 func TestCreateLanguageController(t *testing.T) {
