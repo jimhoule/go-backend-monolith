@@ -4,7 +4,6 @@ import (
 	"app/languages/application/payloads"
 	languagesFactories "app/languages/domain/factories"
 	"app/languages/domain/models"
-	"app/languages/persistence/fake/repositories"
 	languagesRepositories "app/languages/persistence/fake/repositories"
 	transactionsServices "app/transactions/application/services"
 	transactionsRepositories "app/transactions/persistence/fake/repositories"
@@ -36,7 +35,7 @@ func getTestContext() (*LanguagesService, func(), func() (*models.Language, erro
 		})
 	}
 
-	return languagesService, repositories.ResetFakeLanguagesRepository, createLanguage
+	return languagesService, languagesRepositories.ResetFakeLanguagesRepository, createLanguage
 }
 
 func TestCreateLanguageService(t *testing.T) {
