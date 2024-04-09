@@ -98,13 +98,13 @@ func TestUpdateLanguageService(t *testing.T) {
 		return
 	}
 
-	if updatedCode != newLanguage.Code {
-		t.Errorf("Expected updated code to equal New Language code but got %s", updatedCode)
+	if newLanguage.Code != updatedCode {
+		t.Errorf("Expected New Language code to equal updated code but got %s", newLanguage.Code)
 		return
 	}
 
-	if updatedCode != language.Code {
-		t.Errorf("Expected updated code to equal Language code but got %s", updatedCode)
+	if language.Code != updatedCode {
+		t.Errorf("Expected Language code to equal updated code but got %s", language.Code)
 	}
 }
 
