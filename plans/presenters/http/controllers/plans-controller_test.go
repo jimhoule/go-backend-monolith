@@ -5,9 +5,14 @@ import (
 	"app/plans/application/services"
 	"app/plans/domain/factories"
 	"app/plans/domain/models"
-	"app/plans/persistence/fake/repositories"
+	plansRepositories "app/plans/persistence/fake/repositories"
 	"app/plans/presenters/http/dtos"
 	"app/router/mock"
+	transactionsServices "app/transactions/application/services"
+	transactionsRepositories "app/transactions/persistence/fake/repositories"
+	translationsServices "app/translations/application/services"
+	translationsFactories "app/translations/domain/factories"
+	translationsRepositories "app/translations/persistence/fake/repositories"
 	"app/uuid"
 	"bytes"
 	"encoding/json"
@@ -23,7 +28,14 @@ func getTestContext() (*PlansController, func(), func() (*models.Plan, error)) {
 			PlansFactory: &factories.PlansFactory{
 				UuidService: uuid.GetService(),
 			},
-			PlansRepository: &repositories.FakePlansRepository{},
+			PlansRepository: &plansRepositories.FakePlansRepository{},
+			TranslationsService: &translationsServices.TranslationsService{
+				TranslationsFactory: &translationsFactories.TranslationsFactory{},
+				TranslationsRepository: &translationsRepositories.FakeTranslationsRepository{},
+			},
+			TransactionsService: &transactionsServices.TransactionsService{
+				TransactionsRepository: &transactionsRepositories.FakeTransactionsRepository{},
+			},
 		},
 	}
 
@@ -33,7 +45,7 @@ func getTestContext() (*PlansController, func(), func() (*models.Plan, error)) {
 		})
 	}
 
-	return plansController, repositories.ResetFakePlansRepository, createPlan
+	return plansController, plansRepositories.ResetFakePlansRepository, createPlan
 }
 
 func TestCreatePlanController(t *testing.T) {
@@ -104,7 +116,7 @@ func TestFindAllPlansController(t *testing.T) {
 	}
 
 	if plans[0].Id != newPlan.Id {
-		t.Errorf("Expected first element of Plans slice id to equal New Plan id but got %v", plans[0].Id)
+		t.Errorf("Expected Plan id to equal New Plan id but got %v", plans[0].Id)
 	}
 }
 

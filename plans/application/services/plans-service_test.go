@@ -4,7 +4,12 @@ import (
 	"app/plans/application/payloads"
 	"app/plans/domain/factories"
 	"app/plans/domain/models"
-	"app/plans/persistence/fake/repositories"
+	plansRepositories "app/plans/persistence/fake/repositories"
+	transactionsServices "app/transactions/application/services"
+	transactionsRepositories "app/transactions/persistence/fake/repositories"
+	translationsServices "app/translations/application/services"
+	translationsFactories "app/translations/domain/factories"
+	translationsRepositories "app/translations/persistence/fake/repositories"
 	"app/uuid"
 	"testing"
 )
@@ -14,7 +19,14 @@ func getTestContext() (*PlansService, func(), func() (*models.Plan, error)) {
 		PlansFactory: &factories.PlansFactory{
 			UuidService: uuid.GetService(),
 		},
-		PlansRepository: &repositories.FakePlansRepository{},
+		PlansRepository: &plansRepositories.FakePlansRepository{},
+		TranslationsService: &translationsServices.TranslationsService{
+			TranslationsFactory: &translationsFactories.TranslationsFactory{},
+			TranslationsRepository: &translationsRepositories.FakeTranslationsRepository{},
+		},
+		TransactionsService: &transactionsServices.TransactionsService{
+			TransactionsRepository: &transactionsRepositories.FakeTransactionsRepository{},
+		},
 	}
 
 	createPlan := func() (*models.Plan, error) {
@@ -23,7 +35,7 @@ func getTestContext() (*PlansService, func(), func() (*models.Plan, error)) {
 		})
 	}
 
-	return plansService, repositories.ResetFakePlansRepository, createPlan
+	return plansService, plansRepositories.ResetFakePlansRepository, createPlan
 }
 
 func TestCreatePlanService(t *testing.T) {
@@ -40,7 +52,7 @@ func TestCreatePlanService(t *testing.T) {
 func TestFindAllPlansService(t *testing.T) {
 	plansService, reset, createPlan := getTestContext()
 	defer reset()
-	newAccount, _ := createPlan()
+	newPlan, _ := createPlan()
 
 	plans, err := plansService.FindAll()
 	if err != nil {
@@ -53,8 +65,8 @@ func TestFindAllPlansService(t *testing.T) {
 		return
 	}
 
-	if plans[0] != newAccount {
-		t.Errorf("Expected first Plan of slice to be equal to New Plan but got %v", plans[0])
+	if plans[0].Id != newPlan.Id {
+		t.Errorf("Expected Plan id to be equal to New Plan id but got %v", plans[0].Id)
 		return
 	}
 }
@@ -70,8 +82,8 @@ func TestFindPlanByIdService(t *testing.T) {
 		return
 	}
 
-	if newPlan != plan {
-		t.Errorf("Expected Plan to be equal to New Plan but got %v", plan)
+	if plan.Id != newPlan.Id {
+		t.Errorf("Expected Plan id to be equal to New Plan id but got %v", plan.Id)
 		return
 	}
 }
