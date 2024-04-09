@@ -82,5 +82,5 @@ func (gc *GenresController) Create(writer http.ResponseWriter, request *http.Req
 		return
 	}
 
-	json.WriteHttpResponse(writer, http.StatusOK, genre)
+	json.WriteHttpResponse(writer, http.StatusCreated, genre)
 }
