@@ -79,7 +79,7 @@ func TestFindLanguageByIdService(t *testing.T) {
 	}
 
 	if language.Id != newLanguage.Id {
-		t.Errorf("Expected Language to equal New Language but got %v", language.Id)
+		t.Errorf("Expected Language id to equal New Language id but got %v", language.Id)
 	}
 }
 
