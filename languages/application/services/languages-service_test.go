@@ -61,8 +61,8 @@ func TestFindAllLanguagesService(t *testing.T) {
 		return
 	}
 
-	if languages[0] != newLanguage {
-		t.Errorf("Expected first element of Languages slice to be equal to New Language but got %v", languages[0])
+	if languages[0].Id != newLanguage.Id {
+		t.Errorf("Expected Language id to be equal to New Language id but got %v", languages[0].Id)
 	}
 }
 
@@ -78,8 +78,8 @@ func TestFindLanguageByIdService(t *testing.T) {
 		return
 	}
 
-	if language != newLanguage {
-		t.Errorf("Expected Language to equal New Language but got %v", language)
+	if language.Id != newLanguage.Id {
+		t.Errorf("Expected Language to equal New Language but got %v", language.Id)
 	}
 }
 
@@ -98,13 +98,13 @@ func TestUpdateLanguageService(t *testing.T) {
 		return
 	}
 
-	if newLanguage.Code != updatedCode {
-		t.Errorf("Expected New Language code to equal updated code but got %s", newLanguage.Code)
+	if updatedCode != newLanguage.Code {
+		t.Errorf("Expected updated code to equal New Language code but got %s", updatedCode)
 		return
 	}
 
-	if language.Code != updatedCode {
-		t.Errorf("Expected Language code to equal updated code but got %s", language.Code)
+	if updatedCode != language.Code {
+		t.Errorf("Expected updated code to equal Language code but got %s", updatedCode)
 	}
 }
 
@@ -120,7 +120,7 @@ func TestDeleteLanguageService(t *testing.T) {
 		return
 	}
 
-	if newLanguage.Id != languageId {
-		t.Errorf("Expected New Language id to equal Language id but got %s", newLanguage.Id)
+	if languageId != newLanguage.Id {
+		t.Errorf("Expected Language id to equal New Language id but got %s", languageId)
 	}
 }

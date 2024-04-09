@@ -115,9 +115,8 @@ func TestFindAllLanguagesController(t *testing.T) {
 		return
 	}
 
-	// NOTE: Dereferencing pointers to compare their values and not their memory addresses
 	if languages[0].Id != newLanguage.Id {
-		t.Errorf("Expected first element of Languages slice to equal New Language but got %v", languages[0].Id)
+		t.Errorf("Expected Languages id to equal New Language id but got %v", languages[0].Id)
 	}
 }
 
@@ -161,9 +160,8 @@ func TestFindLanguageByIdController(t *testing.T) {
 		return
 	}
 
-	// NOTE: Dereferencing pointers to compare their values and not their memory addresses
 	if language.Id != newLanguage.Id {
-		t.Errorf("Expected Language to equal New Language but got %v", language.Id)
+		t.Errorf("Expected Language id to equal New Language id but got %v", language.Id)
 	}
 }
 
@@ -216,13 +214,13 @@ func TestUpdateLanguageController(t *testing.T) {
 		return
 	}
 
-	if language.Code != updatedCode {
-		t.Errorf("Expected Language code to equal updated code but got %s", language.Code)
+	if updatedCode != language.Code {
+		t.Errorf("Expected updated code to equal Language code but got %s", updatedCode)
 	}
 
 	// Validates new language
-	if newLanguage.Code != updatedCode {
-		t.Errorf("Expected New Language code to equal updated code but got %s", newLanguage.Code)
+	if updatedCode != newLanguage.Code {
+		t.Errorf("Expected updatedCode code to equal New Language code but got %s", updatedCode)
 		return
 	}
 }
