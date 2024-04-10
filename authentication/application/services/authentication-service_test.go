@@ -3,7 +3,7 @@ package services
 import (
 	"app/accounts/application/services"
 	"app/accounts/domain/factories"
-	"app/accounts/persistence/fake/repositories"
+	"app/accounts/infrastructures/persistence/fake/repositories"
 	"app/authentication/application/payloads"
 	"app/authentication/domain/models"
 	"app/crypto"

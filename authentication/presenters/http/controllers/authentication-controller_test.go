@@ -3,7 +3,7 @@ package controllers
 import (
 	accountsService "app/accounts/application/services"
 	"app/accounts/domain/factories"
-	"app/accounts/persistence/fake/repositories"
+	"app/accounts/infrastructures/persistence/fake/repositories"
 	"app/authentication/application/payloads"
 	authenticationService "app/authentication/application/services"
 	"app/authentication/domain/models"
