@@ -5,7 +5,7 @@ import (
 	"app/translations/application/payloads"
 	"app/translations/domain/factories"
 	"app/translations/domain/models"
-	"app/translations/persistence/fake/repositories"
+	"app/translations/infrastructures/persistence/fake/repositories"
 	"context"
 	"testing"
 )

@@ -3,7 +3,7 @@ package accounts
 import (
 	"app/accounts/application/services"
 	"app/accounts/domain/factories"
-	"app/accounts/persistence/postgres/repositories"
+	"app/accounts/infrastructures/persistence/postgres/repositories"
 	"app/accounts/presenters/http/controllers"
 	"app/crypto"
 	"app/database/postgres"

@@ -1,7 +1,7 @@
 package services
 
 import (
-	"app/transactions/persistence/fake/repositories"
+	"app/transactions/infrastructures/persistence/fake/repositories"
 	"context"
 	"fmt"
 	"testing"

@@ -4,7 +4,7 @@ import (
 	"app/database/postgres"
 	"app/translations/application/services"
 	"app/translations/domain/factories"
-	"app/translations/persistence/postgres/repositories"
+	"app/translations/infrastructures/persistence/postgres/repositories"
 )
 
 func GetService(db *postgres.Db) *services.TranslationsService {

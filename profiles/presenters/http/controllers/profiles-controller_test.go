@@ -5,7 +5,7 @@ import (
 	"app/profiles/application/services"
 	"app/profiles/domain/factories"
 	"app/profiles/domain/models"
-	"app/profiles/persistence/fake/repositories"
+	"app/profiles/infrastructures/persistence/fake/repositories"
 	"app/profiles/presenters/http/dtos"
 	"app/router/mock"
 	"app/uuid"

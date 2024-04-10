@@ -5,7 +5,7 @@ import (
 	"app/database/postgres"
 	"app/plans/application/services"
 	"app/plans/domain/factories"
-	"app/plans/persistence/postgres/repositories"
+	"app/plans/infrastructures/persistence/postgres/repositories"
 	"app/plans/presenters/http/controllers"
 	"app/router"
 	"app/transactions"

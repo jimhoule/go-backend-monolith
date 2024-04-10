@@ -4,7 +4,7 @@ import (
 	"app/profiles/application/payloads"
 	"app/profiles/domain/factories"
 	"app/profiles/domain/models"
-	"app/profiles/persistence/fake/repositories"
+	"app/profiles/infrastructures/persistence/fake/repositories"
 	"app/uuid"
 	"testing"
 )
