@@ -1,0 +1,44 @@
+Parameters:
+  AppName:
+    Description: 'App name'
+    Type: String
+
+  Env:
+    Description: Environment
+    Type: String
+
+Conditions:
+  IsProd: !Equals [!Ref Env, prod]
+
+Resources:
+  TranscodedVideoStorage:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${AppName}-transcoded-video-${Env}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      CorsConfiguration:
+        CorsRules:
+          - Id: transcoded-video-storage-access-rule
+            AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - HEAD
+              - POST
+              - PUT
+            AllowedOrigins:
+              !If [
+                IsProd,
+                # If IsProd
+                ['*'],
+                # Else
+                ['*']
+              ]
+            ExposedHeaders:
+              - Connection
+              - Server
+              - Date
+            MaxAge: 3600

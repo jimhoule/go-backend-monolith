@@ -1,0 +1,21 @@
+Parameters:
+  Env:
+    Description: Environment
+    Type: String
+    AllowedValues:
+      - dev
+      - prod
+
+  AppName:
+    Description: 'App name'
+    Type: String
+    Default: showtime
+
+Resources:
+  S3Stack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/s3/s3-stack.yml'
+      Parameters:
+        AppName: !Ref AppName
+        Env: !Ref Env
