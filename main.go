@@ -12,11 +12,19 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/joho/godotenv"
 )
 
 const httpPort = 3000
 
 func main() {
+	// Loads .env file
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Panic(err);
+	}
+
 	// Gets database connection
 	db := postgres.Get()
 
@@ -38,7 +46,7 @@ func main() {
 	}
 
 	// Starts server
-	err := server.ListenAndServe();
+	err = server.ListenAndServe();
 	if err != nil {
 		log.Panic(err);
 	}
