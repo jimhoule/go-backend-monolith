@@ -6,11 +6,11 @@ import (
 )
 
 type S3FilesService struct {
-	S3Service *services.S3Service
+	S3Service services.S3Service
 }
 
-func (sfs *S3FilesService) Upload(dirName string, fileName string, file []byte) (bool, error) {
-	_, err := sfs.S3Service.PutObject(dirName, fileName, file)
+func (sfs *S3FilesService) Upload(filePath string, file []byte) (bool, error) {
+	_, err := sfs.S3Service.PutObject(filePath, file)
 	if err != nil {
 		return false, err
 	}
@@ -18,8 +18,8 @@ func (sfs *S3FilesService) Upload(dirName string, fileName string, file []byte) 
 	return true, nil
 }
 
-func (sfs *S3FilesService) Download(dirName string, fileName string) ([]byte, error) {
-	output, err := sfs.S3Service.GetObject(dirName, fileName)
+func (sfs *S3FilesService) Download(filePath string) ([]byte, error) {
+	output, err := sfs.S3Service.GetObject(filePath)
 	if err != nil {
 		return nil, err
 	}

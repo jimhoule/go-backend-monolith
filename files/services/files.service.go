@@ -1,6 +1,6 @@
 package services
 
 type FilesService interface {
-	Upload(dirName string, fileName string, file []byte) (bool, error)
-	Download(dirName string, fileName string) ([]byte, error)
+	Upload(filePath string, file []byte) (bool, error)
+	Download(filePath string) ([]byte, error)
 }

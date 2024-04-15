@@ -12,6 +12,7 @@ import (
 
 type S3Service struct{
 	Client *s3.Client
+	BucketName string
 }
 
 func CreateS3Client() *s3.Client {
@@ -19,10 +20,10 @@ func CreateS3Client() *s3.Client {
 }
 
 // Downloads file from bucket
-func (ss *S3Service) GetObject(bucketName string, fileName string) (*s3.GetObjectOutput, error) {
+func (ss *S3Service) GetObject(filePath string) (*s3.GetObjectOutput, error) {
 	output, err := ss.Client.GetObject(context.TODO(), &s3.GetObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(fileName),
+		Bucket: aws.String(ss.BucketName),
+		Key:    aws.String(filePath),
 	})
 	if err != nil {
 		return nil, err
@@ -32,12 +33,12 @@ func (ss *S3Service) GetObject(bucketName string, fileName string) (*s3.GetObjec
 }
 
 // Uploads file into Bucket
-func (ss *S3Service) PutObject(bucketName string, fileName string, file []byte) (*s3.PutObjectOutput, error) {
+func (ss *S3Service) PutObject(filePath string, file []byte) (*s3.PutObjectOutput, error) {
 	output, err := ss.Client.PutObject(
 		context.TODO(),
 		&s3.PutObjectInput{
-			Bucket: aws.String(bucketName),
-			Key:    aws.String(fileName),
+			Bucket: aws.String(ss.BucketName),
+			Key:    aws.String(filePath),
 			Body:  	bytes.NewReader(file),
 		},
 	)

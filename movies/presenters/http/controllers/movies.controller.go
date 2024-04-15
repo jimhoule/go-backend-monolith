@@ -37,7 +37,7 @@ func (mc *MoviesController) Upload(writer http.ResponseWriter, request *http.Req
     }
 
     // Uploads file
-    isUpload, err := mc.FilesService.Upload("showtime-transcoded-video-dev", splittedFileName[0], buffer.Bytes())
+    isUpload, err := mc.FilesService.Upload(splittedFileName[0], buffer.Bytes())
     if err != nil {
         json.WriteHttpError(writer, http.StatusInternalServerError, err)
 		return
