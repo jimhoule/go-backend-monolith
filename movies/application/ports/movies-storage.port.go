@@ -1,6 +1,6 @@
-package services
+package ports
 
-type FilesService interface {
+type MoviesStoragePort interface {
 	Upload(filePath string, file []byte) (bool, error)
 	Download(filePath string) ([]byte, error)
 }

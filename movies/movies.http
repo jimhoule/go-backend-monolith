@@ -1,0 +1,82 @@
+### NOTE: To use this file VSC REST Client extension must be installed 
+
+### Finds all Movies
+GET http://localhost:3000/movies
+
+### Finds a Movie by id
+GET http://localhost:3000/movies/b1ea0aaf-e967-41b6-9684-0aed827d3b21
+
+### Creates a Movie
+POST http://localhost:3000/movies
+Content-Type: application/json
+
+{
+    "genreId": "65282964-4687-4aa7-bc42-80ed84aaa597",
+    "createTitleTranslationPayloads": [
+        {
+            "languageId": "972af4a6-84cd-474d-a159-08436daf1e43",
+            "text": "Titre francais"
+        },
+        {
+            "languageId": "e401938c-a390-4cf0-9eac-7379f7735711",
+            "text": "English title"
+        },
+        {
+            "languageId": "be277c64-a1e4-4aa1-b8da-e90df53a9890",
+            "text": "Titulo en espanol"
+        }
+    ],
+    "createDescriptionTranslationPayloads": [
+        {
+            "languageId": "972af4a6-84cd-474d-a159-08436daf1e43",
+            "text": "Description francaise"
+        },
+        {
+            "languageId": "e401938c-a390-4cf0-9eac-7379f7735711",
+            "text": "English description"
+        },
+        {
+            "languageId": "be277c64-a1e4-4aa1-b8da-e90df53a9890",
+            "text": "descripcion en espanol"
+        }
+    ]
+}
+
+### Updates a Movie
+PUT http://localhost:3000/movies/b1ea0aaf-e967-41b6-9684-0aed827d3b21
+Content-Type: application/json
+
+{
+    "genreId": "65282964-4687-4aa7-bc42-80ed84aaa597",
+    "updateTitleTranslationPayloads": [
+        {
+            "languageId": "972af4a6-84cd-474d-a159-08436daf1e43",
+            "text": "Titre francais actualize"
+        },
+        {
+            "languageId": "e401938c-a390-4cf0-9eac-7379f7735711",
+            "text": "Updated english title"
+        },
+        {
+            "languageId": "be277c64-a1e4-4aa1-b8da-e90df53a9890",
+            "text": "Titulo en espanol actualizado"
+        }
+    ],
+    "updateDescriptionTranslationPayloads": [
+        {
+            "languageId": "972af4a6-84cd-474d-a159-08436daf1e43",
+            "text": "Description francaise actualise"
+        },
+        {
+            "languageId": "e401938c-a390-4cf0-9eac-7379f7735711",
+            "text": "Updated english description"
+        },
+        {
+            "languageId": "be277c64-a1e4-4aa1-b8da-e90df53a9890",
+            "text": "descripcion en espanol actualizada"
+        }
+    ]
+}
+
+### Deletes a Movie
+DELETE http://localhost:3000/movies/dc07cb1e-8bbb-49ef-9188-577c70257741

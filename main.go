@@ -6,6 +6,7 @@ import (
 	"app/database/postgres"
 	"app/genres"
 	"app/languages"
+	"app/movies"
 	"app/plans"
 	"app/profiles"
 	"app/router"
@@ -36,6 +37,7 @@ func main() {
 	accounts.Init(mainRouter, db)
 	genres.Init(mainRouter, db)
 	languages.Init(mainRouter, db)
+	movies.Init(mainRouter, db)
 	plans.Init(mainRouter, db)
 	profiles.Init(mainRouter, db)
 
