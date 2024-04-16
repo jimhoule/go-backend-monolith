@@ -69,7 +69,7 @@ func (pmr *PostgresMoviesRepository) Delete(ctx context.Context, id string) (str
 }
 
 func (pmr *PostgresMoviesRepository) Create(ctx context.Context, movie *models.Movie) (*models.Movie, error) {
-	query := "INSERT INTO movies(id, genre_id) VALUES($1, $2)"
+	query := "INSERT INTO movies(id, genre_id) VALUES($1, $2) RETURNING id, genre_id"
 	row := pmr.Db.Connection.QueryRow(ctx, query, movie.Id, movie.GenreId)
 
 	newMovie := &models.Movie{}
