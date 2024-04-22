@@ -6,6 +6,7 @@ import (
 	"app/movies/presenters/http/dtos"
 	"app/utils/json"
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -89,7 +90,7 @@ func (mc *MoviesController) Create(writer http.ResponseWriter, request *http.Req
 }
 
 func (mc *MoviesController) Upload(writer http.ResponseWriter, request *http.Request) {
-	// limit your max input length!
+	// Limits max input length
 	//request.ParseMultipartForm(32 << 20)
 
     // Gets request file
@@ -100,19 +101,22 @@ func (mc *MoviesController) Upload(writer http.ResponseWriter, request *http.Req
     }
     defer file.Close()
 
-    // Gets request file name
+    // Splits file name and extension
     splittedFileName := strings.Split(header.Filename, ".")
 
     // Copies file into buffer
-    var buffer bytes.Buffer
-    _, err = io.Copy(&buffer, file)
+    var fileBuffer bytes.Buffer
+    _, err = io.Copy(&fileBuffer, file)
     if err != nil {
         json.WriteHttpError(writer, http.StatusInternalServerError, err)
 		return
     }
 
     // Uploads file
-    isUpload, err := mc.MoviesService.Upload(splittedFileName[0], buffer.Bytes())
+    isUpload, err := mc.MoviesService.Upload(&payloads.UploadMoviePayload{
+        File: fileBuffer.Bytes(),
+        FilePath: fmt.Sprintf("%s/%s", splittedFileName[0], header.Filename),
+    })
     if err != nil {
         json.WriteHttpError(writer, http.StatusInternalServerError, err)
 		return
@@ -120,7 +124,7 @@ func (mc *MoviesController) Upload(writer http.ResponseWriter, request *http.Req
 
     // Resets the buffer in case I want to use it again
     // NOTE: Reduces memory allocations in more intense projects
-    buffer.Reset()
+    fileBuffer.Reset()
 
     json.WriteHttpResponse(writer, http.StatusOK, isUpload)
 }

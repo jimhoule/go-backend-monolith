@@ -51,19 +51,20 @@ func (ss *S3Service) PutObject(filePath string, file []byte) (*s3.PutObjectOutpu
 
 // Uses an upload manager to upload file into bucket
 // NOTE: The upload manager breaks large data into parts and uploads the parts concurrently
-func (ss *S3Service) PutLargeObject(bucketName string, fileName string, largeFile []byte) (*manager.UploadOutput, error) {
+func (ss *S3Service) PutLargeObject(fileName string, largeFile []byte) (*manager.UploadOutput, error) {
 	var partMiBs int64 = 10
 	uploader := manager.NewUploader(
 		ss.Client,
 		func(u *manager.Uploader) {
 			u.PartSize = partMiBs * 1024 * 1024
+			u.Concurrency = 8
 		},
 	)
 
 	output, err := uploader.Upload(
 		context.TODO(),
 		&s3.PutObjectInput{
-			Bucket: aws.String(bucketName),
+			Bucket: aws.String(ss.BucketName),
 			Key:    aws.String(fileName),
 			Body:   bytes.NewReader(largeFile),
 		},

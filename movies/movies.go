@@ -3,20 +3,21 @@ package movies
 import (
 	"app/aws"
 	"app/database/postgres"
-	moviesServices "app/movies/application/services"
+	"app/movies/application/services"
 	"app/movies/domain/factories"
 	"app/movies/infrastructures/persistence/postgres/repositories"
 	"app/movies/infrastructures/storage"
 	"app/movies/presenters/http/controllers"
 	"app/router"
 	"app/transactions"
+	"app/transcoder"
 	"app/translations"
 	"app/uuid"
 	"os"
 )
 
-func GetService(db *postgres.Db) *moviesServices.MoviesService {
-	return &moviesServices.MoviesService{
+func GetService(db *postgres.Db) *services.MoviesService {
+	return &services.MoviesService{
 		MoviesFactory: &factories.MoviesFactory{
 			UuidService: uuid.GetService(),
 		},
@@ -26,8 +27,9 @@ func GetService(db *postgres.Db) *moviesServices.MoviesService {
 		MoviesStorage: &storage.S3Storge{
 			S3Service: aws.CreateS3Service(os.Getenv("AWS_VIDEO_UPLOADS_BUCKET_NAME")),
 		},
-		TranslationsService: translations.GetService(db),
+		TranscoderService: transcoder.GetService(),
 		TransactionsService: transactions.GetService(db),
+		TranslationsService: translations.GetService(db),
 	}
 }
 

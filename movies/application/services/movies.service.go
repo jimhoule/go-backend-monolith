@@ -6,17 +6,21 @@ import (
 	"app/movies/domain/factories"
 	"app/movies/domain/models"
 	transactionsServices "app/transactions/application/services"
+	transcoderServices "app/transcoder/services"
 	"app/translations/application/constants"
 	translationsServices "app/translations/application/services"
 	"context"
+	"fmt"
+	"os"
 )
 
 type MoviesService struct {
 	MoviesFactory *factories.MoviesFactory
 	MoviesRepository ports.MoviesRepositoryPort
 	MoviesStorage ports.MoviesStoragePort
-	TranslationsService *translationsServices.TranslationsService
+	TranscoderService transcoderServices.TranscoderService
 	TransactionsService *transactionsServices.TransactionsService
+	TranslationsService *translationsServices.TranslationsService
 }
 
 func (ms *MoviesService) FindAll() ([]*models.Movie, error) {
@@ -189,10 +193,88 @@ func (ms *MoviesService) Create(createMoviePayload *payloads.CreateMoviePayload)
 	return movie.(*models.Movie), nil
 }
 
-func (ms *MoviesService) Upload(filePath string, file []byte) (bool, error) {
-	return ms.MoviesStorage.Upload(filePath, file)
+func (ms *MoviesService) Upload(uploadMoviePayload *payloads.UploadMoviePayload) (bool, error) {
+	// Uploads file to storage
+	_, err := ms.MoviesStorage.UploadLarge(
+		uploadMoviePayload.FilePath,
+		uploadMoviePayload.File,
+	)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
-func (ms *MoviesService) Download(filePath string) ([]byte, error) {
-	return ms.MoviesStorage.Download(filePath)
+func (ms *MoviesService) TranscodeDashAndUpload(transcodeDashAndUploadMoviePayload *payloads.TranscodeDashAndUploadMoviePayload) (bool, error) {
+	// Creates temp dir to store uploaded video
+	tempDirPath, err := os.MkdirTemp("", transcodeDashAndUploadMoviePayload.FileName)
+	if err != nil {
+		return false, err
+	}
+	defer os.RemoveAll(tempDirPath)
+
+	// Writes video into temp dir
+	err = os.WriteFile(
+		fmt.Sprintf(
+			"%s/%s.%s",
+			tempDirPath,
+			transcodeDashAndUploadMoviePayload.FileName,
+			transcodeDashAndUploadMoviePayload.FileExtension,
+		),
+		transcodeDashAndUploadMoviePayload.File,
+		0777,
+	)
+	if err != nil {
+		return false, err
+	}
+
+	// Transcodes video
+	err = ms.TranscoderService.TranscodeDash(
+		tempDirPath,
+		transcodeDashAndUploadMoviePayload.FileName,
+		transcodeDashAndUploadMoviePayload.FileExtension,
+	)
+	if err != nil {
+		return false, err
+	}
+
+	fmt.Println("TRANSCODED!!!!!!!!!!!!!!")
+
+	// Gets temp dir content
+	tempDirEntries, err := os.ReadDir(tempDirPath)
+	if err != nil {
+		return false, err
+	}
+
+
+	for _, tempDirEntry := range tempDirEntries {
+		tempDirEntryName := tempDirEntry.Name()
+
+		// Reads file from temp dir
+		tempFile, err := os.ReadFile(fmt.Sprintf("%s/%s", tempDirPath, tempDirEntryName))
+		if err != nil {
+			return false, err
+		}
+
+		// Gets storage upload file path
+		uploadFilePath := fmt.Sprintf("%s/dash/%s", transcodeDashAndUploadMoviePayload.FileName, tempDirEntryName)
+		// NOTE: Sets file path to root folder if temp dir entry is original video
+		if tempDirEntryName == fmt.Sprintf("%s.%s", transcodeDashAndUploadMoviePayload.FileName, transcodeDashAndUploadMoviePayload.FileExtension) {
+			uploadFilePath = fmt.Sprintf("%s/%s", transcodeDashAndUploadMoviePayload.FileName, tempDirEntryName)
+		}
+
+		// Uploads file to storage
+		_, err = ms.MoviesStorage.UploadLarge(
+			uploadFilePath,
+			tempFile,
+		)
+		if err != nil {
+			return false, err
+		}
+	}
+
+	fmt.Println("UPLOADED!!!!!!!!!!!!!!")
+
+	return true, nil
 }
