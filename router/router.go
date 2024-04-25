@@ -12,7 +12,7 @@ var mainRouter *MainRouter
 
 func Get() *MainRouter {
 	if mainRouter == nil {
-		mainRouter := chi.NewRouter()
+		mainRouter = chi.NewRouter()
 
 		mainRouter.Use(cors.Handler(cors.Options{
 			AllowedOrigins: []string{
@@ -38,8 +38,6 @@ func Get() *MainRouter {
 			AllowCredentials: true,
 			MaxAge: 300,
 		}))
-
-		return mainRouter
 	}
 
 	return mainRouter;
