@@ -8,11 +8,14 @@ import (
 	"app/movies/infrastructures/persistence/postgres/repositories"
 	"app/movies/infrastructures/storage"
 	"app/movies/presenters/http/controllers"
+	"app/movies/presenters/sockets/events"
+	"app/movies/presenters/sockets/handlers"
 	"app/router"
 	"app/transactions"
 	"app/transcoder"
 	"app/translations"
 	"app/uuid"
+	"app/websocket"
 	"os"
 )
 
@@ -33,7 +36,7 @@ func GetService(db *postgres.Db) *services.MoviesService {
 	}
 }
 
-func Init(mainRouter *router.MainRouter, db *postgres.Db) {
+func Init(mainRouter *router.MainRouter, websocketServer *websocket.Server, db *postgres.Db) {
 	moviesController := &controllers.MoviesController{
 		MoviesService: GetService(db),
 	}
@@ -44,4 +47,13 @@ func Init(mainRouter *router.MainRouter, db *postgres.Db) {
 	mainRouter.Post("/movies/uploads", moviesController.Upload)
 	mainRouter.Put("/movies/{id}", moviesController.Update)
 	mainRouter.Delete("/movies/{id}", moviesController.Delete)
+
+	moviesHandler := &handlers.MoviesHandler{
+		MoviesService: GetService(db),
+	}
+
+	websocketServer.On(
+		events.StartTranscodeDashAndUploadVideo,
+		moviesHandler.HandleTranscodeDashAndUploadVideo,
+	)
 }

@@ -206,7 +206,7 @@ func (ms *MoviesService) Upload(uploadMoviePayload *payloads.UploadMoviePayload)
 	return true, nil
 }
 
-func (ms *MoviesService) TranscodeDashAndUpload(transcodeDashAndUploadMoviePayload *payloads.TranscodeDashAndUploadMoviePayload) (bool, error) {
+func (ms *MoviesService) TranscodeDashAndUploadVideo(transcodeDashAndUploadMoviePayload *payloads.TranscodeDashAndUploadVideoPayload) (bool, error) {
 	// Creates temp dir to store uploaded video
 	tempDirPath, err := os.MkdirTemp("", transcodeDashAndUploadMoviePayload.FileName)
 	if err != nil {
@@ -234,12 +234,14 @@ func (ms *MoviesService) TranscodeDashAndUpload(transcodeDashAndUploadMoviePaylo
 		tempDirPath,
 		transcodeDashAndUploadMoviePayload.FileName,
 		transcodeDashAndUploadMoviePayload.FileExtension,
+		transcodeDashAndUploadMoviePayload.OnTranscodingProgressSent,
 	)
 	if err != nil {
 		return false, err
 	}
 
-	fmt.Println("TRANSCODED!!!!!!!!!!!!!!")
+	// Emits start of upload
+	transcodeDashAndUploadMoviePayload.OnUploadStarted()
 
 	// Gets temp dir content
 	tempDirEntries, err := os.ReadDir(tempDirPath)
@@ -273,8 +275,6 @@ func (ms *MoviesService) TranscodeDashAndUpload(transcodeDashAndUploadMoviePaylo
 			return false, err
 		}
 	}
-
-	fmt.Println("UPLOADED!!!!!!!!!!!!!!")
 
 	return true, nil
 }

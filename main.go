@@ -10,6 +10,7 @@ import (
 	"app/plans"
 	"app/profiles"
 	"app/router"
+	"app/websocket"
 	"fmt"
 	"log"
 	"net/http"
@@ -29,15 +30,19 @@ func main() {
 	// Gets database connection
 	db := postgres.Get()
 
+	// Gets websocket
+	websocketServer := websocket.Get()
+
 	// Gets router
 	mainRouter := router.Get()
+	mainRouter.HandleFunc("/ws", websocketServer.ServeWS)
 
 	// Inits modules
 	authentication.Init(mainRouter, db)
 	accounts.Init(mainRouter, db)
 	genres.Init(mainRouter, db)
 	languages.Init(mainRouter, db)
-	movies.Init(mainRouter, db)
+	movies.Init(mainRouter, websocketServer, db)
 	plans.Init(mainRouter, db)
 	profiles.Init(mainRouter, db)
 
