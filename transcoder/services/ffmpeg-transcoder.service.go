@@ -8,7 +8,12 @@ import (
 
 type FfmpegTranscoderService struct{}
 
-func (fts *FfmpegTranscoderService) TranscodeDash(dirPath string, fileName string, fileExtension string) error {
+func (fts *FfmpegTranscoderService) TranscodeDash(
+	dirPath string,
+	fileName string,
+	fileExtension string,
+	onTranscodingProgressSent func(text string),
+) error {
 	// Creates DASH files in temp dir based on video in same temp dir
 	command := exec.Command(
 		"ffmpeg",
@@ -80,6 +85,7 @@ func (fts *FfmpegTranscoderService) TranscodeDash(dirPath string, fileName strin
 	for scanner.Scan() {
 		text := scanner.Text()
 		fmt.Println(text)
+		onTranscodingProgressSent(text)
 	}
 
 	// Waits for command to exit

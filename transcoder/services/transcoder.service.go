@@ -1,5 +1,10 @@
 package services
 
 type TranscoderService interface {
-	TranscodeDash(dirPath string, fileName string, fileExtension string) error
+	TranscodeDash(
+		dirPath string,
+		fileName string,
+		fileExtension string,
+		onTranscodingProgressSent func(text string),
+	) error
 }
