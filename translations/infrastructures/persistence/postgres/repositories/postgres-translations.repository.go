@@ -1,13 +1,13 @@
 package repositories
 
 import (
-	"app/database/postgres"
+	"app/database"
 	"app/translations/domain/models"
 	"context"
 )
 
 type PostgresTranslationsRepository struct {
-	Db *postgres.Db
+	Db *database.Db
 }
 
 func (ptr *PostgresTranslationsRepository) FindAll() ([]*models.Translation, error) {
@@ -69,7 +69,7 @@ func (ptr *PostgresTranslationsRepository) FindByCompositeId(entityId string, la
 
 func (ptr *PostgresTranslationsRepository) UpsertBatch(ctx context.Context, translations []*models.Translation) ([]*models.Translation, error) {
 	// Creates batch
-	batch := &postgres.Batch{}
+	batch := &database.Batch{}
 	for _, translation := range translations {
 		query := `
 			INSERT INTO translations(entity_id, language_id, text, type) VALUES($1, $2, $3, $4)
@@ -113,7 +113,7 @@ func (ptr* PostgresTranslationsRepository) DeleteBatch(ctx context.Context, enti
 func (ptr* PostgresTranslationsRepository) CreateBatch(ctx context.Context, translations []*models.Translation) ([]*models.Translation, error) {
 	_, err := ptr.Db.Connection.CopyFrom(
 		context.Background(),
-		postgres.Identifier{"translations"},
+		database.Identifier{"translations"},
 		[]string{"entity_id", "language_id", "text", "type"},
 		ptr.Db.CopyFromSlice(len(translations), func(index int) ([]interface{}, error) {
 			translation := translations[index]

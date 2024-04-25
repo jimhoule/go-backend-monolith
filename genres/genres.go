@@ -1,7 +1,7 @@
 package genres
 
 import (
-	"app/database/postgres"
+	"app/database"
 	"app/genres/application/services"
 	"app/genres/domain/factories"
 	"app/genres/infrastructures/persistence/postgres/repositories"
@@ -12,7 +12,7 @@ import (
 	"app/uuid"
 )
 
-func GetService(db *postgres.Db) *services.GenresService {
+func GetService(db *database.Db) *services.GenresService {
 	return &services.GenresService{
 		GenresFactory: &factories.GenresFactory{
 			UuidService: uuid.GetService(),
@@ -25,7 +25,7 @@ func GetService(db *postgres.Db) *services.GenresService {
 	}
 }
 
-func Init(mainRouter *router.MainRouter, db *postgres.Db) {
+func Init(mainRouter *router.MainRouter, db *database.Db) {
 	genresController := &controllers.GenresController{
 		GenresService: GetService(db),
 	}

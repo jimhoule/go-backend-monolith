@@ -2,7 +2,7 @@ package movies
 
 import (
 	"app/aws"
-	"app/database/postgres"
+	"app/database"
 	"app/movies/application/services"
 	"app/movies/domain/factories"
 	"app/movies/infrastructures/persistence/postgres/repositories"
@@ -19,7 +19,7 @@ import (
 	"os"
 )
 
-func GetService(db *postgres.Db) *services.MoviesService {
+func GetService(db *database.Db) *services.MoviesService {
 	return &services.MoviesService{
 		MoviesFactory: &factories.MoviesFactory{
 			UuidService: uuid.GetService(),
@@ -36,7 +36,7 @@ func GetService(db *postgres.Db) *services.MoviesService {
 	}
 }
 
-func Init(mainRouter *router.MainRouter, websocketServer *websocket.Server, db *postgres.Db) {
+func Init(mainRouter *router.MainRouter, websocketServer *websocket.Server, db *database.Db) {
 	moviesController := &controllers.MoviesController{
 		MoviesService: GetService(db),
 	}

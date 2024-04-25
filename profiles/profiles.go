@@ -1,7 +1,7 @@
 package profiles
 
 import (
-	"app/database/postgres"
+	"app/database"
 	"app/profiles/application/services"
 	"app/profiles/domain/factories"
 	"app/profiles/infrastructures/persistence/postgres/repositories"
@@ -10,7 +10,7 @@ import (
 	"app/uuid"
 )
 
-func GetService(db *postgres.Db) *services.ProfilesService {
+func GetService(db *database.Db) *services.ProfilesService {
 	return &services.ProfilesService{
 		ProfilesFactory: &factories.ProfilesFactory{
 			UuidService: uuid.GetService(),
@@ -21,7 +21,7 @@ func GetService(db *postgres.Db) *services.ProfilesService {
 	}
 }
 
-func Init(mainRouter *router.MainRouter, db *postgres.Db) {
+func Init(mainRouter *router.MainRouter, db *database.Db) {
 	profilesController := &controllers.ProfilesController{
 		ProfilesService: GetService(db),
 	}

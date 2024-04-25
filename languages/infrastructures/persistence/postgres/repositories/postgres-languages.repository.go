@@ -1,13 +1,13 @@
 package repositories
 
 import (
-	"app/database/postgres"
+	"app/database"
 	"app/languages/domain/models"
 	"context"
 )
 
 type PostgresLanguagesRepository struct {
-	Db *postgres.Db
+	Db *database.Db
 }
 
 func (plr *PostgresLanguagesRepository) FindAll() ([]*models.Language, error) {
@@ -72,7 +72,7 @@ func (plr *PostgresLanguagesRepository) Delete(id string) (string, error) {
 
 func (plr *PostgresLanguagesRepository) Create(ctx context.Context, language *models.Language) (*models.Language, error) {
 	query := "INSERT INTO languages(id, code) VALUES(@id, @code)"
-	args := postgres.NamedArgs{
+	args := database.NamedArgs{
 		"id": language.Id,
 		"code": language.Code,
 	}

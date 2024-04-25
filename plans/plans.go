@@ -2,7 +2,7 @@ package plans
 
 import (
 	"app/authentication/presenters/http/middlewares"
-	"app/database/postgres"
+	"app/database"
 	"app/plans/application/services"
 	"app/plans/domain/factories"
 	"app/plans/infrastructures/persistence/postgres/repositories"
@@ -13,7 +13,7 @@ import (
 	"app/uuid"
 )
 
-func GetService(db *postgres.Db) *services.PlansService {
+func GetService(db *database.Db) *services.PlansService {
 	return &services.PlansService{
 		PlansFactory: &factories.PlansFactory{
 			UuidService: uuid.GetService(),
@@ -26,7 +26,7 @@ func GetService(db *postgres.Db) *services.PlansService {
 	}
 }
 
-func Init(mainRouter *router.MainRouter, db *postgres.Db) {
+func Init(mainRouter *router.MainRouter, db *database.Db) {
 	plansController := &controllers.PlansController{
 		PlansService: GetService(db),
 	}

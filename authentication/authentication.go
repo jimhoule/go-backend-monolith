@@ -5,12 +5,12 @@ import (
 	"app/authentication/application/services"
 	"app/authentication/presenters/http/controllers"
 	"app/crypto"
-	"app/database/postgres"
+	"app/database"
 	"app/router"
 	"app/tokens"
 )
 
-func GetService(db *postgres.Db) *services.AuthenticationService {
+func GetService(db *database.Db) *services.AuthenticationService {
 	return &services.AuthenticationService{
 		AccountsService: accounts.GetService(db),
 		TokensService: tokens.GetService(),
@@ -18,7 +18,7 @@ func GetService(db *postgres.Db) *services.AuthenticationService {
 	}
 }
 
-func Init(mainRouter *router.MainRouter, db *postgres.Db) {
+func Init(mainRouter *router.MainRouter, db *database.Db) {
 	authenticationController := &controllers.AuthenticationController{
 		AuthenticationService: GetService(db),
 	}

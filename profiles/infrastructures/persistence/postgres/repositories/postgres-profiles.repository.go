@@ -1,13 +1,13 @@
 package repositories
 
 import (
-	"app/database/postgres"
+	"app/database"
 	"app/profiles/domain/models"
 	"context"
 )
 
 type PostgresProfilesRepository struct {
-	Db *postgres.Db
+	Db *database.Db
 }
 
 func (ppr *PostgresProfilesRepository) FindAllByAccountId(accountId string) ([]*models.Profile, error) {
@@ -70,7 +70,7 @@ func (ppr *PostgresProfilesRepository) Delete(id string) (string, error) {
 
 func (ppr *PostgresProfilesRepository) Create(profile *models.Profile) (*models.Profile, error) {
 	query := "INSERT INTO profiles(id, name, account_id, language_id) VALUES(@id, @name, @accountId, @languageId)"
-	args := postgres.NamedArgs{
+	args := database.NamedArgs{
 		"id": profile.Id,
 		"name": profile.Name,
 		"accountId": profile.AccountId,

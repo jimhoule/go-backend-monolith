@@ -2,12 +2,12 @@ package repositories
 
 import (
 	"app/accounts/domain/models"
-	"app/database/postgres"
+	"app/database"
 	"context"
 )
 
 type PostgresAccountsRepository struct{
-	Db *postgres.Db
+	Db *database.Db
 }
 
 func (par *PostgresAccountsRepository) FindAll() ([]*models.Account, error) {
@@ -64,7 +64,7 @@ func  (par *PostgresAccountsRepository) Create(account *models.Account) (*models
 		INSERT INTO accounts (id, first_name, last_name, email, password, is_membership_cancelled, plan_id) 
 		VALUES (@id, @firstName, @lastName, @email, @password, @isMembershipCancelled, @planId)
 	`
-	args := postgres.NamedArgs{
+	args := database.NamedArgs{
 		"id": account.Id,
 		"firstName": account.FirstName,
 		"lastName": account.LastName,

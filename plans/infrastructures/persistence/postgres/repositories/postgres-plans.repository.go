@@ -1,13 +1,13 @@
 package repositories
 
 import (
-	"app/database/postgres"
+	"app/database"
 	"app/plans/domain/models"
 	"context"
 )
 
 type PostgresPlansRepository struct {
-	Db *postgres.Db
+	Db *database.Db
 }
 
 func (ppr *PostgresPlansRepository) FindAll() ([]*models.Plan, error) {

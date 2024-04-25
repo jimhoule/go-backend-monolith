@@ -1,12 +1,12 @@
 package repositories
 
 import (
-	"app/database/postgres"
+	"app/database"
 	"context"
 )
 
 type PostgresTransactionsRepository struct {
-	Db *postgres.Db
+	Db *database.Db
 }
 
 func (ptr *PostgresTransactionsRepository) Execute(

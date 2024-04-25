@@ -1,7 +1,7 @@
 package languages
 
 import (
-	"app/database/postgres"
+	"app/database"
 	"app/languages/application/services"
 	"app/languages/domain/factories"
 	"app/languages/infrastructures/persistence/postgres/repositories"
@@ -12,7 +12,7 @@ import (
 	"app/uuid"
 )
 
-func GetService(db *postgres.Db) *services.LanguagesService {
+func GetService(db *database.Db) *services.LanguagesService {
 	return &services.LanguagesService{
 		LanguagesFactory: &factories.LanguagesFactory{
 			UuidService: uuid.GetService(),
@@ -25,7 +25,7 @@ func GetService(db *postgres.Db) *services.LanguagesService {
 	}
 }
 
-func Init(mainRouter *router.MainRouter, db *postgres.Db) {
+func Init(mainRouter *router.MainRouter, db *database.Db) {
 	languagesController := &controllers.LanguagesController{
 		LanguagesService: GetService(db),
 	}

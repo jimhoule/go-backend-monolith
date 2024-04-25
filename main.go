@@ -3,7 +3,7 @@ package main
 import (
 	"app/accounts"
 	"app/authentication"
-	"app/database/postgres"
+	"app/database"
 	"app/genres"
 	"app/languages"
 	"app/movies"
@@ -28,7 +28,7 @@ func main() {
 	}
 
 	// Gets database connection
-	db := postgres.Get()
+	db := database.Get()
 
 	// Gets websocket
 	websocketServer := websocket.Get()

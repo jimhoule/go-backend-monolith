@@ -6,12 +6,12 @@ import (
 	"app/accounts/infrastructures/persistence/postgres/repositories"
 	"app/accounts/presenters/http/controllers"
 	"app/crypto"
-	"app/database/postgres"
+	"app/database"
 	"app/router"
 	"app/uuid"
 )
 
-func GetService(db *postgres.Db) *services.AccountsService {
+func GetService(db *database.Db) *services.AccountsService {
 	return &services.AccountsService{
 		AccountsFactory: &factories.AccountsFactory{
 			UuidService: uuid.GetService(),
@@ -23,7 +23,7 @@ func GetService(db *postgres.Db) *services.AccountsService {
 	}
 }
 
-func Init(mainRouter *router.MainRouter, db *postgres.Db) {
+func Init(mainRouter *router.MainRouter, db *database.Db) {
 	accountsController := &controllers.AccountsController{
 		AccountsService: GetService(db),
 	}

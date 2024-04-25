@@ -1,13 +1,13 @@
 package repositories
 
 import (
-	"app/database/postgres"
+	"app/database"
 	"app/genres/domain/models"
 	"context"
 )
 
 type PostgresGenresRepository struct {
-	Db *postgres.Db
+	Db *database.Db
 }
 
 func (pgr *PostgresGenresRepository) FindAll() ([]*models.Genre, error) {
@@ -57,7 +57,7 @@ func (pgr *PostgresGenresRepository) Delete(ctx context.Context, id string) (str
 
 func (pgr *PostgresGenresRepository) Create(ctx context.Context, genre *models.Genre) (*models.Genre, error) {
 	query := "INSERT INTO genres(id) VALUES(@id)"
-	args := postgres.NamedArgs{
+	args := database.NamedArgs{
 		"id": genre.Id,
 	}
 
