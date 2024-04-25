@@ -35,8 +35,6 @@ func Get() *Db {
 			CopyFromSlice: pgx.CopyFromSlice,
 			CopyFromRows: pgx.CopyFromRows,
 		}
-
-		return db
 	}
 
 	return db
