@@ -4,10 +4,9 @@ import (
 	"app/plans/application/payloads"
 	"app/plans/application/services"
 	"app/plans/presenters/http/dtos"
+	"app/router"
 	"app/utils/json"
 	"net/http"
-
-	"github.com/go-chi/chi/v5"
 )
 
 type PlansController struct {
@@ -25,7 +24,7 @@ func (pc *PlansController) FindAll(writer http.ResponseWriter, request *http.Req
 }
 
 func (pc *PlansController) FindById(writer http.ResponseWriter, request *http.Request) {
-	id := chi.URLParam(request, "id")
+	id := router.GetUrlParam(request, "id")
 	plan, err := pc.PlansService.FindById(id)
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusBadRequest, err)

@@ -4,10 +4,9 @@ import (
 	genrePayloads "app/genres/application/payloads"
 	"app/genres/application/services"
 	"app/genres/presenters/http/dtos"
+	"app/router"
 	"app/utils/json"
 	"net/http"
-
-	"github.com/go-chi/chi/v5"
 )
 
 type GenresController struct {
@@ -25,7 +24,7 @@ func (gc *GenresController) FindAll(writer http.ResponseWriter, request *http.Re
 }
 
 func (gc *GenresController) FindById(writer http.ResponseWriter, request *http.Request) {
-	id := chi.URLParam(request, "id")
+	id := router.GetUrlParam(request, "id")
 	genre, err := gc.GenresService.FindById(id)
 	if (err != nil) {
 		json.WriteHttpError(writer, http.StatusNotFound, err)
@@ -45,7 +44,7 @@ func (gc *GenresController) Update(writer http.ResponseWriter, request *http.Req
 	}
 
 	// Updates genre
-	id := chi.URLParam(request, "id")
+	id := router.GetUrlParam(request, "id")
 	genre, err := gc.GenresService.Update(id, &genrePayloads.UpdateGenrePayload{
 		UpdateLabelTranslationPayloads: updateGenreDto.UpdateLabelTranslationPayloads,
 	})
@@ -58,7 +57,7 @@ func (gc *GenresController) Update(writer http.ResponseWriter, request *http.Req
 }
 
 func (gc *GenresController) Delete(writer http.ResponseWriter, request *http.Request) {
-	id := chi.URLParam(request, "id")
+	id := router.GetUrlParam(request, "id")
 	gc.GenresService.Delete(id)
 
 	json.WriteHttpResponse(writer, http.StatusNoContent, id)

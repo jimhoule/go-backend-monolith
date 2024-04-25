@@ -1,6 +1,8 @@
 package router
 
 import (
+	"net/http"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 )
@@ -41,4 +43,8 @@ func Get() *MainRouter {
 	}
 
 	return mainRouter;
+}
+
+func GetUrlParam(request *http.Request, param string) string {
+	return chi.URLParam(request, param)
 }

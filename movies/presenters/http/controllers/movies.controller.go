@@ -4,14 +4,13 @@ import (
 	"app/movies/application/payloads"
 	"app/movies/application/services"
 	"app/movies/presenters/http/dtos"
+	"app/router"
 	"app/utils/json"
 	"bytes"
 	"fmt"
 	"io"
 	"net/http"
 	"strings"
-
-	"github.com/go-chi/chi/v5"
 )
 
 type MoviesController struct{
@@ -29,7 +28,7 @@ func (mc *MoviesController) FindAll(writer http.ResponseWriter, request *http.Re
 }
 
 func (mc *MoviesController) FindById(writer http.ResponseWriter, request *http.Request) {
-    id := chi.URLParam(request, "id")
+    id := router.GetUrlParam(request, "id")
     movie, err := mc.MoviesService.FindById(id)
     if err != nil {
         json.WriteHttpError(writer, http.StatusNotFound, err)
@@ -47,7 +46,7 @@ func (mc *MoviesController) Update(writer http.ResponseWriter, request *http.Req
         return
     }
 
-    id := chi.URLParam(request, "id")
+    id := router.GetUrlParam(request, "id")
     movie, err := mc.MoviesService.Update(id, &payloads.UpdateMoviePayload{
         GenreId: updateMovieDto.GenreId,
         UpdateTitleTranslationPayloads: updateMovieDto.UpdateTitleTranslationPayloads,
@@ -62,7 +61,7 @@ func (mc *MoviesController) Update(writer http.ResponseWriter, request *http.Req
 }
 
 func (mc *MoviesController) Delete(writer http.ResponseWriter, request *http.Request) {
-    id := chi.URLParam(request, "id")
+    id := router.GetUrlParam(request, "id")
     mc.MoviesService.Delete(id)
     
     json.WriteHttpResponse(writer, http.StatusNoContent, nil)

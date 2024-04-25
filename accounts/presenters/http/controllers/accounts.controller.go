@@ -2,10 +2,9 @@ package controllers
 
 import (
 	"app/accounts/application/services"
+	"app/router"
 	"app/utils/json"
 	"net/http"
-
-	"github.com/go-chi/chi/v5"
 )
 
 type AccountsController struct {
@@ -23,7 +22,7 @@ func (ac *AccountsController) FindAll(writer http.ResponseWriter, request *http.
 }
 
 func (ac *AccountsController) FindById(writer http.ResponseWriter, request *http.Request) {
-	id := chi.URLParam(request, "id");
+	id := router.GetUrlParam(request, "id");
 	account, err := ac.AccountsService.FindById(id);
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusBadRequest, err)

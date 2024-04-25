@@ -4,10 +4,9 @@ import (
 	"app/profiles/application/payloads"
 	"app/profiles/application/services"
 	"app/profiles/presenters/http/dtos"
+	"app/router"
 	"app/utils/json"
 	"net/http"
-
-	"github.com/go-chi/chi/v5"
 )
 
 type ProfilesController struct {
@@ -15,7 +14,7 @@ type ProfilesController struct {
 }
 
 func (pc *ProfilesController) FindAllByAccountId(writer http.ResponseWriter, request *http.Request) {
-	accountId := chi.URLParam(request, "accountId");
+	accountId := router.GetUrlParam(request, "accountId");
 	profiles, err := pc.ProfilesService.FindAllByAccountId(accountId);
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusBadRequest, err)
@@ -26,7 +25,7 @@ func (pc *ProfilesController) FindAllByAccountId(writer http.ResponseWriter, req
 }
 
 func (pc *ProfilesController) FindById(writer http.ResponseWriter, request *http.Request) {
-	id := chi.URLParam(request, "id");
+	id := router.GetUrlParam(request, "id");
 	profile, err := pc.ProfilesService.FindById(id);
 	if err != nil {
 		json.WriteHttpError(writer, http.StatusBadRequest, err)
@@ -46,7 +45,7 @@ func (pc *ProfilesController) Update(writer http.ResponseWriter, request *http.R
 	}
 
 	// Updates profile
-	id := chi.URLParam(request, "id");
+	id := router.GetUrlParam(request, "id");
 	profile, err := pc.ProfilesService.Update(
 		id,
 		&payloads.UpdateProfilePayload{
@@ -63,7 +62,7 @@ func (pc *ProfilesController) Update(writer http.ResponseWriter, request *http.R
 }
 
 func (pc *ProfilesController) Delete(writer http.ResponseWriter, request *http.Request) {
-	id := chi.URLParam(request, "id");
+	id := router.GetUrlParam(request, "id");
 	pc.ProfilesService.Delete(id);
 
 	json.WriteHttpResponse(writer, http.StatusNoContent, nil)
