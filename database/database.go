@@ -23,8 +23,7 @@ var db *Db
 func Get() *Db {
 	if db == nil {
 		//Creates a new Postgresql database connection
-		dsn := "host=localhost user=postgres password=password dbname=go-backend-monolith port=5432"
-		connection, err := pgx.Connect(context.Background(), dsn)
+		connection, err := pgx.Connect(context.Background(), os.Getenv("DB_DNS"))
 		if err != nil {
 			fmt.Printf("Unable to connect to database: %v\n", err)
 			os.Exit(1)
