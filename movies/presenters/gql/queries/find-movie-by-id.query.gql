@@ -1,0 +1,14 @@
+query FindMovieById($id: ID) {
+  FindMovieById(id: $id) {
+    id,
+    titles {
+      languageId,
+      text,
+    },
+    descriptions {
+      languageId,
+      text,
+    },
+    genreId,
+  } 
+}

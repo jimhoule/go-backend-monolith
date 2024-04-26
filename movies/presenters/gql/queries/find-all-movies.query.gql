@@ -1,0 +1,14 @@
+query FindAllMovies {
+  FindAllMovies {
+    id,
+    titles {
+      languageId,
+      text,
+    },
+    descriptions {
+      languageId,
+      text,
+    },
+    genreId,
+  }
+}
