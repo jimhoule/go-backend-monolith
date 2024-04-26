@@ -22,3 +22,6 @@ docker/volumes/*
 
 # envs
 .env
+
+# Files to be used with VSC Rest Client extension to make http requests (located anywhere in the project)
+*.http
