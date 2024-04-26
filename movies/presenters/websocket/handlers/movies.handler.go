@@ -3,8 +3,8 @@ package handlers
 import (
 	"app/movies/application/payloads"
 	"app/movies/application/services"
-	"app/movies/presenters/sockets/dtos"
-	"app/movies/presenters/sockets/events"
+	"app/movies/presenters/websocket/dtos"
+	"app/movies/presenters/websocket/events"
 	"app/websocket"
 	"encoding/base64"
 	"encoding/json"

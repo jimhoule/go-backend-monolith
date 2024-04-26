@@ -50,7 +50,7 @@ func main() {
 	profiles.Init(mainRouter, db)
 
 	// Mounts websocket server and gql server to router
-	mainRouter.HandleFunc("/ws", websocketServer.ServeWS)
+	mainRouter.Handle("/ws", websocketServer.ServeWS())
 	mainRouter.Handle("/graphql", gqlServer.ServeGQL())
 	mainRouter.Handle("/graphql/sandbox", gqlServer.ServeSandbox())
 

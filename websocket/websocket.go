@@ -129,31 +129,33 @@ type Server struct{
 }
 
 // Serves and allows connections
-func (s *Server) ServeWS(writer http.ResponseWriter, request *http.Request) {
-	fmt.Println("new connection")
-
-	connection, err := upgrader.Upgrade(writer, request, nil)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	// Sets incoming messages size limit (messages fron frontend)
-	// NOTE: Files are being sent from javascript frontend as utin8arrays
-	connection.SetReadLimit(50000000 * 8)
-
-	// Create new client
-	client := &Client{
-		Connection: connection,
-		Server:    s,
-		Egress:     make(chan Event),
-	}
-	// Add new client to server
-	s.AddClient(client)
-
-	// Starts read and write process
-	go client.ReadMessages()
-	go client.WriteMessages()
+func (s *Server) ServeWS() http.HandlerFunc {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Println("new connection")
+	
+		connection, err := upgrader.Upgrade(writer, request, nil)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+	
+		// Sets incoming messages size limit (messages fron frontend)
+		// NOTE: Files are being sent from javascript frontend as utin8arrays
+		connection.SetReadLimit(50000000 * 8)
+	
+		// Create new client
+		client := &Client{
+			Connection: connection,
+			Server:    s,
+			Egress:     make(chan Event),
+		}
+		// Add new client to server
+		s.AddClient(client)
+	
+		// Starts read and write process
+		go client.ReadMessages()
+		go client.WriteMessages()
+	})
 }
 
 // Adds event handler
