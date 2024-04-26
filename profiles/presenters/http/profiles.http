@@ -1,0 +1,30 @@
+### NOTE: To use this file VSC REST Client extension must be installed 
+
+### Finds all Profiles of an Acccount
+GET http://localhost:3000/profiles/account/account-id-goes-here
+
+### Finds a Profile by id
+GET http://localhost:3000/profiles/profile-id-goes-here
+
+### Creates a Profile
+POST http://localhost:3000/profiles
+Content-Type: application/json
+
+{
+    "name": "name",
+    "accountId": "accountId",
+    "languageId": "languageId"
+}
+
+### Updates a Profile
+PATCH http://localhost:3000/profiles/profile-id-goes-here
+Content-Type: application/json
+
+{
+    "name": "name",
+    "languageId": "languageId"
+}
+
+
+### Deletes a Profile
+DELETE http://localhost:3000/profiles/profile-id-goes-here

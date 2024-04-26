@@ -1,0 +1,55 @@
+### NOTE: To use this file VSC REST Client extension must be installed 
+
+### Finds all Languages
+GET http://localhost:3000/languages
+
+### Finds a Language by id
+GET http://localhost:3000/languages/language-id-goes-here
+
+### Creates a Language
+POST http://localhost:3000/languages
+Content-Type: application/json
+
+{
+    "code": "code",
+    "createLabelTranslationPayloads": [
+        {
+            "languageId": "languageId",
+            "text": "text"
+        },
+        {
+            "languageId": "languageId",
+            "text": "text"
+        },
+        {
+            "languageId": "languageId",
+            "text": "text"
+        }
+    ]
+}
+
+### Updates a Language
+PUT http://localhost:3000/languages/language-id-goes-here
+Content-Type: application/json
+
+{
+    "code": "code",
+    "updateLabelTranslationPayloads": [
+        {
+            "languageId": "languageId",
+            "text": "text"
+        },
+        {
+            "languageId": "languageId",
+            "text": "text"
+        },
+        {
+            "languageId": "languageId",
+            "text": "text"
+        }
+    ]
+}
+
+
+### Deletes a Language
+DELETE http://localhost:3000/languages/language-id-goes-here

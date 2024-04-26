@@ -5,8 +5,8 @@ POST http://localhost:3000/authentication/login
 Content-Type: application/json
 
 {
-    "email": "marc@example.com",
-    "password": "1234"
+    "email": "email",
+    "password": "password"
 }
 
 ### Registers
@@ -14,9 +14,9 @@ POST http://localhost:3000/authentication/register
 Content-Type: application/json
 
 {
-    "firstName": "Marc",
-    "lastName": "Laurin",
-    "email": "marc2@example.com",
-    "password": "1234",
-    "planId": "92885497-d1cd-4407-834a-141ee7ae1083"
+    "firstName": "firstName",
+    "lastName": "lastName",
+    "email": "email",
+    "password": "password",
+    "planId": "planId"
 }

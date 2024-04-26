@@ -4,4 +4,4 @@
 GET http://localhost:3000/accounts
 
 ### Finds an Account by id
-GET http://localhost:3000/accounts/3f3b7ca6-cb66-4ff4-ab60-9ef7bf383f96
+GET http://localhost:3000/accounts/account-id-goes-here

@@ -1,0 +1,38 @@
+### NOTE: To use this file VSC REST Client extension must be installed 
+
+### Finds all Plans
+GET http://localhost:3000/plans
+Authorization: authentication-strategy-goes-here
+
+### Finds a Plan by id
+GET http://localhost:3000/plans/plan-id-goes-here
+Authorization: authentication-strategy-goes-here
+
+### Creates a Plan
+POST http://localhost:3000/plans
+Authorization: authentication-strategy-goes-here
+Content-Type: application/json
+
+{
+    "price": "price",
+    "createLabelTranslationPayloads": [
+        {
+            "languageId": "languageId",
+            "text": "text",
+        },
+         {
+            "languageId": "languageId",
+            "text": "text",
+        }
+    ],
+    "createDescriptionTranslationPayloads": [
+        {
+            "languageId": "languageId",
+            "text": "text",
+        },
+         {
+            "languageId": "languageId",
+            "text": "text",
+        }
+    ]
+}
