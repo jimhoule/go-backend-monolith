@@ -5,6 +5,7 @@ import (
 	"app/authentication"
 	"app/database"
 	"app/genres"
+	"app/gql"
 	"app/languages"
 	"app/movies"
 	"app/plans"
@@ -33,18 +34,25 @@ func main() {
 	// Gets websocket
 	websocketServer := websocket.Get()
 
+	// Gets gql
+	gqlServer := gql.Get()
+
 	// Gets router
 	mainRouter := router.Get()
-	mainRouter.HandleFunc("/ws", websocketServer.ServeWS)
 
 	// Inits modules
 	authentication.Init(mainRouter, db)
 	accounts.Init(mainRouter, db)
 	genres.Init(mainRouter, db)
 	languages.Init(mainRouter, db)
-	movies.Init(mainRouter, websocketServer, db)
+	movies.Init(mainRouter, websocketServer, gqlServer, db)
 	plans.Init(mainRouter, db)
 	profiles.Init(mainRouter, db)
+
+	// Mounts websocket server and gql server to router
+	mainRouter.HandleFunc("/ws", websocketServer.ServeWS)
+	mainRouter.Handle("/graphql", gqlServer.ServeGQL())
+	mainRouter.Handle("/graphql/sandbox", gqlServer.ServeSandbox())
 
 	// Creates server
 	server := &http.Server{

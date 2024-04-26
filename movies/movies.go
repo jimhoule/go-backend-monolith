@@ -3,10 +3,12 @@ package movies
 import (
 	"app/aws"
 	"app/database"
+	"app/gql"
 	"app/movies/application/services"
 	"app/movies/domain/factories"
 	"app/movies/infrastructures/persistence/postgres/repositories"
 	"app/movies/infrastructures/storage"
+	"app/movies/presenters/gql/resolvers"
 	"app/movies/presenters/http/controllers"
 	"app/movies/presenters/sockets/events"
 	"app/movies/presenters/sockets/handlers"
@@ -36,7 +38,7 @@ func GetService(db *database.Db) *services.MoviesService {
 	}
 }
 
-func Init(mainRouter *router.MainRouter, websocketServer *websocket.Server, db *database.Db) {
+func Init(mainRouter *router.MainRouter, websocketServer *websocket.Server, gqlServer *gql.Server, db *database.Db) {
 	moviesController := &controllers.MoviesController{
 		MoviesService: GetService(db),
 	}
@@ -56,4 +58,14 @@ func Init(mainRouter *router.MainRouter, websocketServer *websocket.Server, db *
 		events.StartTranscodeDashAndUploadVideo,
 		moviesHandler.HandleTranscodeDashAndUploadVideo,
 	)
+
+	moviesResolver := &resolvers.MoviesResolver{
+		MoviesService: GetService(db),
+	}
+
+	findAllMoviesQuery := moviesResolver.GetFindAllMoviesQuery()
+	findMovieByIdQuery := moviesResolver.GetFindMovieByIdQuery()
+
+	gqlServer.Add(findAllMoviesQuery.Name, findAllMoviesQuery)
+	gqlServer.Add(findMovieByIdQuery.Name, findMovieByIdQuery)
 }
