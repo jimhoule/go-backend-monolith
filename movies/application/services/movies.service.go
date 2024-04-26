@@ -229,7 +229,7 @@ func (ms *MoviesService) TranscodeDashAndUploadVideo(transcodeDashAndUploadMovie
 		return false, err
 	}
 
-	// Transcodes video
+	// Creates DASH files in temp dir based on video in same temp dir
 	err = ms.TranscoderService.TranscodeDash(
 		tempDirPath,
 		transcodeDashAndUploadMoviePayload.FileName,

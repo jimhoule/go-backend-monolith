@@ -14,7 +14,6 @@ func (fts *FfmpegTranscoderService) TranscodeDash(
 	fileExtension string,
 	onTranscodingProgressSent func(text string),
 ) error {
-	// Creates DASH files in temp dir based on video in same temp dir
 	command := exec.Command(
 		"ffmpeg",
 		// Read input at native frame rate (This is equivalent to setting -readrate 1)
