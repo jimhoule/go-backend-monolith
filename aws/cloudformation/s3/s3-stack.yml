@@ -1,20 +1,20 @@
 Parameters:
-  AppName:
-    Description: 'App name'
-    Type: String
-
   Env:
     Description: Environment
+    Type: String
+
+  AppName:
+    Description: 'App name'
     Type: String
 
 Conditions:
   IsProd: !Equals [!Ref Env, prod]
 
 Resources:
-  TranscodedVideoStorage:
+  TranscodedVideosS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub '${AppName}-transcoded-video-${Env}'
+      BucketName: !Sub '${AppName}-transcoded-videos-${Env}'
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -22,7 +22,7 @@ Resources:
         RestrictPublicBuckets: true
       CorsConfiguration:
         CorsRules:
-          - Id: transcoded-video-storage-access-rule
+          - Id: !Sub '${AppName}-transcoded-videos-cors-rule-${Env}'
             AllowedHeaders:
               - '*'
             AllowedMethods:
@@ -42,3 +42,13 @@ Resources:
               - Server
               - Date
             MaxAge: 3600
+
+Outputs:
+  TranscodedVideosS3BucketId:
+    Value: !Ref TranscodedVideosS3Bucket
+
+  TranscodedVideosS3BucketArn:
+    Value: !GetAtt TranscodedVideosS3Bucket.Arn
+
+  TranscodedVideosS3BucketRegionalDomainName:
+    Value: !GetAtt TranscodedVideosS3Bucket.RegionalDomainName

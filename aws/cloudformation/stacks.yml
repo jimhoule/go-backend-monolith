@@ -9,7 +9,6 @@ Parameters:
   AppName:
     Description: 'App name'
     Type: String
-    Default: showtime
 
 Resources:
   S3Stack:
@@ -17,5 +16,29 @@ Resources:
     Properties:
       TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/s3/s3-stack.yml'
       Parameters:
-        AppName: !Ref AppName
         Env: !Ref Env
+        AppName: !Ref AppName
+
+  CloudfrontStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/cloudfront/cloudfront-stack.yml'
+      Parameters:
+        Env: !Ref Env
+        AppName: !Ref AppName
+        TranscodedVideosS3BucketRegionalDomainName: !GetAtt S3Stack.Outputs.TranscodedVideosS3BucketRegionalDomainName
+
+  PolicyStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/policy/policy-stack.yml'
+      Parameters:
+        Env: !Ref Env
+        AppName: !Ref AppName
+        TranscodedVideosS3BucketId: !GetAtt S3Stack.Outputs.TranscodedVideosS3BucketId
+        TranscodedVideosS3BucketArn: !GetAtt S3Stack.Outputs.TranscodedVideosS3BucketArn
+        TranscodedVideosCloudfrontDistributionId: !GetAtt CloudfrontStack.Outputs.TranscodedVideosCloudfrontDistributionId
+
+Outputs:
+  CloudfrontUrl:
+     Value: !Join ['', ['https://', !GetAtt CloudfrontStack.Outputs.TranscodedVideosCloudfrontDistributionDomainName]]

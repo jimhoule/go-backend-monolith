@@ -1,0 +1,66 @@
+Parameters:
+  Env:
+    Description: Environment
+    Type: String
+
+  AppName:
+    Description: 'App name'
+    Type: String
+
+  TranscodedVideosS3BucketRegionalDomainName:
+    Description: 'Regional domain name of transcoded videos s3 bucket used as distribution origin'
+    Type: String
+  
+
+Resources:
+  TranscodedVideosS3OriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties: 
+      OriginAccessControlConfig:
+        Name: !Sub '${AppName}-transcoded-videos-s3-origin-access-control-${Env}'
+        Description: 'Default Origin Access Control'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  TranscodedVideosCloudfrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    DependsOn:
+      - TranscodedVideosS3OriginAccessControl
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultRootObject: ''
+        HttpVersion: http2
+        IPV6Enabled: false
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+        Origins:
+          - Id: !Sub '${AppName}-transcoded-videos-s3-origin-${Env}'
+            DomainName: !Ref TranscodedVideosS3BucketRegionalDomainName
+            OriginAccessControlId: !Ref TranscodedVideosS3OriginAccessControl
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - DELETE
+            - GET
+            - HEAD
+            - OPTIONS
+            - PATCH
+            - POST
+            - PUT
+          Compress: true
+          TargetOriginId: !Sub '${AppName}-transcoded-videos-s3-origin-${Env}'
+          ViewerProtocolPolicy: redirect-to-https
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+
+Outputs:
+  TranscodedVideosCloudfrontDistributionId:
+    Value: !Ref TranscodedVideosCloudfrontDistribution
+
+  TranscodedVideosCloudfrontDistributionDomainName:
+    Value: !GetAtt TranscodedVideosCloudfrontDistribution.DomainName

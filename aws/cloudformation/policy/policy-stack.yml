@@ -1,0 +1,45 @@
+Parameters:
+  Env:
+    Description: Environment
+    Type: String
+
+  AppName:
+    Description: 'App name'
+    Type: String
+
+  TranscodedVideosS3BucketId:
+    Description: ''
+    Type: String
+
+  TranscodedVideosS3BucketArn:
+    Description: ''
+    Type: String
+
+  TranscodedVideosCloudfrontDistributionId:
+    Description: ''
+    Type: String
+
+Resources:
+  TranscodedVideosS3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref TranscodedVideosS3BucketId
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: s3:GetObject
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Resource: !Sub ${TranscodedVideosS3BucketArn}/*
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${TranscodedVideosCloudfrontDistributionId}
+          - Effect: Deny
+            Action: 's3:*'
+            Principal: '*'
+            Resource: 
+              - !Sub ${TranscodedVideosS3BucketArn}/*
+              - !Ref TranscodedVideosS3BucketArn
+            Condition:
+              Bool: 
+                aws:SecureTransport: false
