@@ -15,11 +15,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/joho/godotenv"
 )
-
-const httpPort = 3000
 
 func main() {
 	// Loads .env file
@@ -56,7 +55,7 @@ func main() {
 
 	// Creates server
 	server := &http.Server{
-		Addr: fmt.Sprintf(":%d", httpPort),
+		Addr: fmt.Sprintf(":%s", os.Getenv("APP_PORT")),
 		Handler: mainRouter,
 	}
 
