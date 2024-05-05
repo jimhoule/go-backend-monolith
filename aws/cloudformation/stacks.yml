@@ -10,6 +10,36 @@ Parameters:
     Description: 'App name'
     Type: String
 
+  Ec2InstanceType:
+    Description: 'Type of EC2 instance'
+    Type: String
+    AllowedValues:
+      - t2.micro
+
+  Ec2InstanceAmiId:
+    Description: 'Id of Amazon Machine Image (AMI)'
+    Type: String
+    AllowedValues:
+      - ami-0c4596ce1e7ae3e68
+
+  RdsInstanceType:
+    Description: 'RDS instance type'
+    Type: String
+    AllowedValues:
+      - db.t3.micro
+
+  RdsInstanceEngine:
+    Description: 'RDS instance database'
+    Type: String
+    AllowedValues:
+      - postgres
+
+  RdsInstanceEngineVersion:
+    Description: 'RDS instance database version'
+    Type: String
+    AllowedValues:
+      - 15.6
+
 Resources:
   S3Stack:
     Type: AWS::CloudFormation::Stack
@@ -39,6 +69,46 @@ Resources:
         TranscodedVideosS3BucketArn: !GetAtt S3Stack.Outputs.TranscodedVideosS3BucketArn
         TranscodedVideosCloudfrontDistributionId: !GetAtt CloudfrontStack.Outputs.TranscodedVideosCloudfrontDistributionId
 
+  VpcStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/vpc/vpc-stack.yml'
+      Parameters:
+        AppName: !Ref AppName
+
+  Ec2Stack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/ec2/ec2-stack.yml'
+      Parameters:
+        Env: !Ref Env
+        AppName: !Ref AppName
+        VpcId: !GetAtt VpcStack.Outputs.VpcId
+        PrivateAppSubnetId: !GetAtt VpcStack.Outputs.PrivateAppSubnetId
+        Ec2InstanceType: !Ref Ec2InstanceType
+        Ec2InstanceAmiId: !Ref Ec2InstanceAmiId
+
+  RdsStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/rds/rds-stack.yml'
+      Parameters:
+        Env: !Ref Env
+        AppName: !Ref AppName
+        VpcId: !GetAtt VpcStack.Outputs.VpcId
+        PrivateDataSubnetAId: !GetAtt VpcStack.Outputs.PrivateDataSubnetAId
+        PrivateDataSubnetBId: !GetAtt VpcStack.Outputs.PrivateDataSubnetBId
+        RdsInstanceType: !Ref RdsInstanceType
+        RdsInstanceEngine: !Ref RdsInstanceEngine
+        RdsInstanceEngineVersion: !Ref RdsInstanceEngineVersion
+
+
 Outputs:
   CloudfrontUrl:
      Value: !Join ['', ['https://', !GetAtt CloudfrontStack.Outputs.TranscodedVideosCloudfrontDistributionDomainName]]
+
+  VpcId:
+    Value: !GetAtt VpcStack.Outputs.VpcId
+
+  PrivateAppSubnetId:
+    Value: !GetAtt VpcStack.Outputs.PrivateAppSubnetId

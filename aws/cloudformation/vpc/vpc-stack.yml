@@ -1,0 +1,201 @@
+Parameters:
+  AppName:
+    Description: 'App name'
+    Type: String
+
+Resources:
+  # INTERNET GATEWAY
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-igw'
+
+  # PUBLIC ROUTING
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    DependsOn:
+      - Vpc
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-public-rt'
+
+  InternetGatewayRoute:
+    Type: AWS::EC2::Route
+    DependsOn:
+      - InternetGateway
+      - PublicRouteTable
+    Properties:
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+
+  # VPC
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-vpc'
+
+  VpcInternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    DependsOn:
+      - Vpc
+      - InternetGateway
+    Properties:
+      VpcId: !Ref Vpc
+      InternetGatewayId: !Ref InternetGateway
+
+  # PUBLIC SUBNET
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    DependsOn:
+      - Vpc
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Sub '${AWS::Region}a'
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-public-sn-${AWS::Region}a'
+
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DependsOn:
+      - PublicSubnet
+      - PublicRouteTable
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnetNatGatewayElasticIp:
+    Type: AWS::EC2::EIP
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-public-sn-ngw-eip'
+
+  PublicSubnetNatGateway:
+    Type: AWS::EC2::NatGateway
+    DependsOn:
+      - PublicSubnet
+      - PublicSubnetNatGatewayElasticIp
+    Properties:
+      AllocationId: !GetAtt PublicSubnetNatGatewayElasticIp.AllocationId
+      SubnetId: !Ref PublicSubnet
+      ConnectivityType: public
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-ngw'
+
+  # PRIVATE ROUTING
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    DependsOn:
+      - Vpc
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-private-rt'
+      
+  PrivateAppSubnetRoute:
+    Type: AWS::EC2::Route
+    DependsOn:
+      - PublicSubnetNatGateway
+      - PrivateRouteTable
+    Properties:
+      NatGatewayId: !Ref PublicSubnetNatGateway
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+
+  # PRIVATE APP SUBNET
+  PrivateAppSubnet:
+    Type: AWS::EC2::Subnet
+    DependsOn:
+      - Vpc
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Sub '${AWS::Region}a'
+      CidrBlock: 10.0.2.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-private-app-sn-${AWS::Region}a'
+
+  PrivateAppSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DependsOn:
+      - PrivateAppSubnet
+      - PrivateRouteTable
+    Properties:
+      SubnetId: !Ref PrivateAppSubnet
+      RouteTableId: !Ref PrivateRouteTable
+
+  # PRIVATE DATA SUBNET A
+  PrivateDataSubnetA:
+    Type: AWS::EC2::Subnet
+    DependsOn:
+      - Vpc
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Sub '${AWS::Region}a'
+      CidrBlock: 10.0.3.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-private-data-sn-${AWS::Region}a'
+
+  PrivateDataSubnetARouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DependsOn:
+      - PrivateDataSubnetA
+      - PrivateRouteTable
+    Properties:
+      SubnetId: !Ref PrivateDataSubnetA
+      RouteTableId: !Ref PrivateRouteTable
+
+  # PRIVATE DATA SUBNET B
+  PrivateDataSubnetB:
+    Type: AWS::EC2::Subnet
+    DependsOn:
+      - Vpc
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Sub '${AWS::Region}b'
+      CidrBlock: 10.0.4.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-private-data-sn-${AWS::Region}b'
+
+  PrivateDataSubnetBRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DependsOn:
+      - PrivateDataSubnetB
+      - PrivateRouteTable
+    Properties:
+      SubnetId: !Ref PrivateDataSubnetB
+      RouteTableId: !Ref PrivateRouteTable
+
+Outputs:
+  VpcId:
+    Value: !Ref Vpc
+
+  PrivateAppSubnetId:
+    Value: !Ref PrivateAppSubnet
+
+  PrivateDataSubnetAId:
+    Value: !Ref PublicSubnet
+
+  PrivateDataSubnetBId:
+    Value: !Ref PrivateDataSubnetB

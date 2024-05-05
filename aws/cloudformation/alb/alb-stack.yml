@@ -1,0 +1,95 @@
+Parameters:
+  Env:
+    Description: Environment
+    Type: String
+
+  AppName:
+    Description: 'App name'
+    Type: String
+
+  VpcId:
+    Description: 'Vpc ID'
+    Type: String
+
+  PrivateAppSubnetId:
+    Description: 'Private app subnet ID'
+    Type: String
+
+Mappings:
+  EnvMap:
+    dev:
+      Port: 80
+      Protocol: HTTP
+
+    prod:
+      Port: 443
+      Protocol: HTTPS
+
+Resources:
+  ApplicationLoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VpcId
+      GroupName: !Sub '${AppName}-alb-sg-${Env}'
+      GroupDescription: !Sub 'Security group for ${AppName} ${Env} application load balancer'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !FindInMap [EnvMap, !Ref Env, Port]
+          ToPort: !FindInMap [EnvMap, !Ref Env, Port]
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key : Name
+          Value: !Sub '${AppName}-alb-sg-${Env}'
+
+  ApplicationLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    DependsOn:
+      - ApplicationLoadBalancerSecurityGroup
+    Properties:
+      Name: !Sub '${AppName}-alb-${Env}'
+      Scheme: internet-facing
+      # NOTE: At least two subnets in two different Availability Zones must be specified
+      Subnets:
+        - !Ref PrivateAppSubnetId
+      SecurityGroups:
+        - !Ref ApplicationLoadBalancerSecurityGroup
+      Tags:
+        - Key : Name
+          Value: !Sub '${AppName}-alb-${Env}'
+
+  ApplicationLoadBalancerTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId: !Ref VpcId
+      Name: !Sub '${AppName}-alb-tg-${Env}'
+      Port: !FindInMap [EnvMap, !Ref Env, Port]
+      Protocol: !FindInMap [EnvMap, !Ref Env, Protocol]
+      HealthCheckPath: '/app/health'
+      HealthCheckIntervalSeconds: 60
+      HealthyThresholdCount: 2
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: 60
+      Tags:
+        - Key : Name
+          Value: !Sub '${AppName}-alb-tg-${Env}'
+
+  ApplicationLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    DependsOn:
+      - ApplicationLoadBalancer
+      - ApplicationLoadBalancerTargetGroup
+    Properties:
+      LoadBalancerArn: !Ref ApplicationLoadBalancer
+      Port: !FindInMap [EnvMap, !Ref Env, Port]
+      Protocol: !FindInMap [EnvMap, !Ref Env, Protocol]
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ApplicationLoadBalancerTargetGroup
+
+Outputs:
+  ApplicationLoadBalancerDnsName:
+    Value: !GetAtt ApplicationLoadBalancer.DNSName

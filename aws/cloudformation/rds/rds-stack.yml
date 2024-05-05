@@ -1,0 +1,118 @@
+Parameters:
+  Env:
+    Description: Environment
+    Type: String
+
+  AppName:
+    Description: 'App name'
+    Type: String
+
+  VpcId:
+    Description: 'Vpc ID'
+    Type: String
+
+  PrivateDataSubnetAId:
+    Description: 'Private data subnet A ID'
+    Type: String
+
+  PrivateDataSubnetBId:
+    Description: 'Private data subnet B ID'
+    Type: String
+
+  RdsInstanceType:
+    Description: 'RDS instance type'
+    Type: String
+
+  RdsInstanceEngine:
+    Description: 'RDS instance database driver'
+    Type: String
+
+  RdsInstanceEngineVersion:
+    Description: 'RDS instance database driver'
+    Type: String
+
+Resources:
+  RdsInstanceUsername:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub '${AppName}-rds-username-${Env}'
+      Description: !Sub '${AppName} rds instance username for ${Env} environment'
+      SecretString: !Sub '${AppName}user${Env}'
+
+  RdsInstancePassword:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub '${AppName}-rds-password-${Env}'
+      Description: !Sub '${AppName} rds instance password for ${Env} environment'
+      GenerateSecretString:
+        ExcludePunctuation: true
+        RequireEachIncludedType: true
+        ExcludeCharacters: '"@/\'
+
+  RdsInstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VpcId
+      GroupName: !Sub '${AppName}-rds-sg-${Env}'
+      GroupDescription: !Sub 'Security group for ${AppName} ${Env} rds instance'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key : Name
+          Value: !Sub '${AppName}-rds-sg-${Env}'
+
+  # NOTE: Subnets must cover at least 2 Availability Zones
+  # NOTE: Without subnet group, the Rds instance will be a non Vpc instance
+  RdsInstanceSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupName: !Sub '${AppName}-rds-sng-${Env}'
+      DBSubnetGroupDescription: !Sub 'Subnet group for ${AppName} ${Env} rds instance'
+      SubnetIds:
+        - !Ref PrivateDataSubnetAId
+        - !Ref PrivateDataSubnetBId
+      Tags:
+        - Key : Name
+          Value: !Sub '${AppName}-rds-sng-${Env}'
+
+  RdsInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DeletionProtection: false
+      MultiAZ: false
+      AvailabilityZone: !Sub '${AWS::Region}a'
+      # NOTE: The amount of storage in gibibytes (GiB) to be initially allocated for the database instance
+      # NOTE: The minimum value is 20 GiB and the maximum value is 6,144 GiB
+      AllocatedStorage: 20
+      # NOTE: The number of days for which automated backups are retained
+      # NOTE: Setting this parameter to a positive number enables backups
+      # NOTE: Setting this parameter to 0 disables automated backups
+      BackupRetentionPeriod: 0
+      Engine: !Ref RdsInstanceEngine
+      EngineVersion: !Ref RdsInstanceEngineVersion
+      # NOTE: Free tier eligible
+      DBInstanceClass: !Ref RdsInstanceType
+      DBInstanceIdentifier: !Sub '${AppName}-rds-${Env}'
+      # NOTE: For postgres, must begin with a letter. Subsequent characters can be letters, underscores, or digits (0-9)
+      # NOTE: For postgres, must contain 1 to 63 characters
+      # NOTE: For postgres, can't be a word reserved by the specified database engine
+      DBName: !Sub '${AppName}_${Env}'
+      DBSubnetGroupName: !Ref RdsInstanceSubnetGroup
+      # NOTE: For postgres, must be 1 to 30 letters or numbers
+      # NOTE: For postgres, first character must be a letter
+      # NOTE: For postgres, can't be a reserved word for the chosen database engine
+      MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref RdsInstanceUsername, ':SecretString}}']]
+      MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref RdsInstancePassword, ':SecretString}}']]
+      Port: 5432
+      PubliclyAccessible: true
+      VPCSecurityGroups:
+        - !Ref RdsInstanceSecurityGroup
+      Tags:
+        - Key : Name
+          Value: !Sub '${AppName}-rds-${Env}'
