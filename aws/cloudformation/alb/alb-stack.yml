@@ -11,8 +11,24 @@ Parameters:
     Description: 'Vpc ID'
     Type: String
 
-  PrivateAppSubnetId:
-    Description: 'Private app subnet ID'
+  PrivateAppSubnetAId:
+    Description: 'Private app subnet A ID'
+    Type: String
+
+  PrivateAppSubnetBId:
+    Description: 'Private app subnet B ID'
+    Type: String
+
+  Ec2InstanceAId:
+    Description: 'Ec2 instance A ID'
+    Type: String
+
+  Ec2InstanceBId:
+    Description: 'Ec2 instance A ID'
+    Type: String
+
+  ApplicationLoadBalancerSecurityGroupId:
+    Description: 'Application load balancer security group ID'
     Type: String
 
 Mappings:
@@ -26,36 +42,17 @@ Mappings:
       Protocol: HTTPS
 
 Resources:
-  ApplicationLoadBalancerSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      VpcId: !Ref VpcId
-      GroupName: !Sub '${AppName}-alb-sg-${Env}'
-      GroupDescription: !Sub 'Security group for ${AppName} ${Env} application load balancer'
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: !FindInMap [EnvMap, !Ref Env, Port]
-          ToPort: !FindInMap [EnvMap, !Ref Env, Port]
-          CidrIp: 0.0.0.0/0
-      SecurityGroupEgress:
-        - IpProtocol: -1
-          CidrIp: 0.0.0.0/0
-      Tags:
-        - Key : Name
-          Value: !Sub '${AppName}-alb-sg-${Env}'
-
   ApplicationLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    DependsOn:
-      - ApplicationLoadBalancerSecurityGroup
     Properties:
       Name: !Sub '${AppName}-alb-${Env}'
       Scheme: internet-facing
       # NOTE: At least two subnets in two different Availability Zones must be specified
       Subnets:
-        - !Ref PrivateAppSubnetId
+        - !Ref PrivateAppSubnetAId
+        - !Ref PrivateAppSubnetBId
       SecurityGroups:
-        - !Ref ApplicationLoadBalancerSecurityGroup
+        - !Ref ApplicationLoadBalancerSecurityGroupId
       Tags:
         - Key : Name
           Value: !Sub '${AppName}-alb-${Env}'
@@ -67,9 +64,18 @@ Resources:
       Name: !Sub '${AppName}-alb-tg-${Env}'
       Port: !FindInMap [EnvMap, !Ref Env, Port]
       Protocol: !FindInMap [EnvMap, !Ref Env, Protocol]
+      ProtocolVersion: HTTP1
+      IpAddressType: ipv4
       HealthCheckPath: '/app/health'
       HealthCheckIntervalSeconds: 60
       HealthyThresholdCount: 2
+      TargetType: instance
+      Targets:
+        - Id: !Ref Ec2InstanceAId
+          Port: !FindInMap [EnvMap, !Ref Env, Port]
+
+        - Id: !Ref Ec2InstanceBId
+          Port: !FindInMap [EnvMap, !Ref Env, Port]
       TargetGroupAttributes:
         - Key: deregistration_delay.timeout_seconds
           Value: 60

@@ -7,12 +7,24 @@ Parameters:
     Description: 'App name'
     Type: String
 
-  VpcId:
-    Description: 'Vpc ID'
+  PrivateAppSubnetAId:
+    Description: 'Private app subnet A ID'
     Type: String
 
-  PrivateAppSubnetId:
-    Description: 'Private app subnet ID'
+  PrivateAppSubnetBId:
+    Description: 'Private app subnet B ID'
+    Type: String
+
+  RdsInstanceSecurityGroupId:
+    Description: 'EC2 instance security group ID'
+    Type: String
+
+  Ec2InstanceSecurityGroupId:
+    Description: 'EC2 instance security group ID'
+    Type: String
+
+  Ec2InstanceConnectEndpointSecurityGroupId:
+    Description: 'EC2 instance connect endpoint security group ID'
     Type: String
 
   Ec2InstanceType:
@@ -23,75 +35,59 @@ Parameters:
     Description: 'ID of Amazon Machine Image (AMI)'
     Type: String
 
+  Ec2InstanceRootVolumeType:
+    Description: 'Type of EC2 instance root volume'
+    Type: String
+
+  Ec2InstanceRootVolumeSize:
+    Description: 'Size of EC2 instance root volume'
+    Type: String
+
 Resources:
-  Ec2InstanceSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
+  # EC2 INSTANCE A
+  Ec2InstanceConnectEndpointA:
+    Type: AWS::EC2::InstanceConnectEndpoint
     Properties:
-      VpcId: !Ref VpcId
-      GroupName: !Sub '${AppName}-ec2-sg-${Env}'
-      GroupDescription: 'Security group for ${AppName} ${Env} ec2 instance'
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 3000
-          ToPort: 3000
-          CidrIp:  0.0.0.0/0
-        # NOTE: RDP (remote windows) connection
-        - IpProtocol: tcp
-          FromPort: 3389
-          ToPort: 3389
-          CidrIp:  0.0.0.0/0
-        # NOTE: HTTPS connection
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          CidrIp:  0.0.0.0/0
-        # NOTE: HTTP connection
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp:  0.0.0.0/0
-        # NOTE: SSH (remote linux) or SFTP connection
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp:  0.0.0.0/0
-        # NOTE: FTP connection
-        - IpProtocol: tcp
-          FromPort: 21
-          ToPort: 21
-          CidrIp:  0.0.0.0/0
-      SecurityGroupEgress:
-        - IpProtocol: -1
-          CidrIp: 0.0.0.0/0
-      Tags:
+      PreserveClientIp: false
+      SecurityGroupIds: 
+        - !Ref Ec2InstanceConnectEndpointSecurityGroupId
+      SubnetId: !Ref PrivateAppSubnetAId
+      Tags: 
         - Key: Name
-          Value: !Sub '${AppName}-ec2-sg-${Env}'
+          Value: !Sub '${AppName}-ec2-eice-${AWS::Region}a-${Env}'
 
   # NOTE: When you create a new key pair using AWS CloudFormation, the private key is saved to AWS Systems Manager Parameter Store
   # NOTE: /ec2/keypair/key_pair_id
-  Ec2InstanceKeyPair:
+  Ec2InstanceKeyPairA:
     Type: AWS::EC2::KeyPair
     Properties:
       KeyFormat: pem
       KeyType: rsa
-      KeyName: !Sub '${AppName}-ec2-kp-${Env}'
+      KeyName: !Sub '${AppName}-ec2-kp-${AWS::Region}a-${Env}'
 
-  Ec2Instance:
+  Ec2InstanceA:
     Type: AWS::EC2::Instance
     DependsOn:
-      - Ec2InstanceSecurityGroup
-      - Ec2InstanceKeyPair
+      - Ec2InstanceKeyPairA
     Properties:
       # NOTE: Ubuntu Server 24.04 LTS (HVM), SSD Volume Type (Free tier eligible)
       ImageId: !Ref Ec2InstanceAmiId
-      SubnetId: !Ref PrivateAppSubnetId
+      SubnetId: !Ref PrivateAppSubnetAId
       # NOTE: The key used to access the instance
       # NOTE: If you do not specify a key pair, you can't connect to the instance unless you choose an AMI that is configured to allow users another way to log in
-      KeyName: !Ref Ec2InstanceKeyPair
+      KeyName: !Ref Ec2InstanceKeyPairA
       # NOTE: Eligible free tier
       InstanceType: !Ref Ec2InstanceType
+      # NOTE: Root volume
+      BlockDeviceMappings:
+        - DeviceName: "/dev/sda1"
+          Ebs:
+            DeleteOnTermination: true
+            # NOTE: Size is in GB
+            VolumeSize: !Ref Ec2InstanceRootVolumeSize
+            VolumeType: !Ref Ec2InstanceRootVolumeType
       SecurityGroupIds:
-        - !Ref Ec2InstanceSecurityGroup
+        - !Ref Ec2InstanceSecurityGroupId
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
@@ -100,14 +96,62 @@ Resources:
           sudo apt-get update -y
           sudo apt install -y golang-go
           sudo apt install -y git-all
+          sudo apt install -y ffmpeg
+          sudo apt install -y postgresql
       Tags:
         - Key: Name
-          Value: !Sub '${AppName}-ec2-${Env}'
+          Value: !Sub '${AppName}-ec2-${AWS::Region}a-${Env}'
 
-  Ec2InstanceElasticIp:
-    Type: AWS::EC2::EIP
-    DependsOn:
-      - Ec2Instance
+  # EC2 INSTANCE B
+  # NOTE: When you create a new key pair using AWS CloudFormation, the private key is saved to AWS Systems Manager Parameter Store
+  # NOTE: /ec2/keypair/key_pair_id
+  Ec2InstanceKeyPairB:
+    Type: AWS::EC2::KeyPair
     Properties:
-      InstanceId: !Ref Ec2Instance
-      Domain: vpc
+      KeyFormat: pem
+      KeyType: rsa
+      KeyName: !Sub '${AppName}-ec2-kp-${AWS::Region}b-${Env}'
+
+  Ec2InstanceB:
+    Type: AWS::EC2::Instance
+    DependsOn:
+      - Ec2InstanceKeyPairB
+    Properties:
+      # NOTE: Ubuntu Server 24.04 LTS (HVM), SSD Volume Type (Free tier eligible)
+      ImageId: !Ref Ec2InstanceAmiId
+      SubnetId: !Ref PrivateAppSubnetBId
+      # NOTE: The key used to access the instance
+      # NOTE: If you do not specify a key pair, you can't connect to the instance unless you choose an AMI that is configured to allow users another way to log in
+      KeyName: !Ref Ec2InstanceKeyPairB
+      # NOTE: Eligible free tier
+      InstanceType: !Ref Ec2InstanceType
+      # NOTE: Root volume
+      BlockDeviceMappings:
+        - DeviceName: "/dev/sda1"
+          Ebs:
+            DeleteOnTermination: true
+            # NOTE: Size is in GB
+            VolumeSize: !Ref Ec2InstanceRootVolumeSize
+            VolumeType: !Ref Ec2InstanceRootVolumeType
+      SecurityGroupIds:
+        - !Ref Ec2InstanceSecurityGroupId
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+
+          # good practice to update existing packages
+          sudo apt-get update -y
+          sudo apt install -y golang-go
+          sudo apt install -y git-all
+          sudo apt install -y ffmpeg
+          sudo apt install -y postgresql
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-ec2-${AWS::Region}b-${Env}'
+
+Outputs:
+  Ec2InstanceAId:
+    Value: !Ref Ec2InstanceA
+
+  Ec2InstanceBId:
+    Value: !Ref Ec2InstanceB

@@ -1,0 +1,132 @@
+Parameters:
+  Env:
+    Description: Environment
+    Type: String
+
+  AppName:
+    Description: 'App name'
+    Type: String
+
+  VpcId:
+    Description: 'Vpc ID'
+    Type: String
+
+Resources:
+  ApplicationLoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VpcId
+      GroupName: !Sub '${AppName}-alb-sg-${Env}'
+      GroupDescription: !Sub 'Security group for ${AppName} ${Env} application load balancer'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp:  0.0.0.0/0
+          Description: 'HTTPS connection ingress (inbound)'
+
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp:  0.0.0.0/0
+          Description: 'HTTP connection ingress (inbound)'
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key : Name
+          Value: !Sub '${AppName}-alb-sg-${Env}'
+
+  RdsInstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VpcId
+      GroupName: !Sub '${AppName}-rds-sg-${Env}'
+      GroupDescription: !Sub 'Security group for ${AppName} ${Env} rds instance'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp:  0.0.0.0/0
+          Description: 'DB connection ingress (inbound)'
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key : Name
+          Value: !Sub '${AppName}-rds-sg-${Env}'
+
+  Ec2InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VpcId
+      GroupName: !Sub '${AppName}-ec2-sg-${Env}'
+      GroupDescription: 'Security group for ${AppName} ec2 instance in ${Env} environment'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3389
+          ToPort: 3389
+          CidrIp:  0.0.0.0/0
+          Description: 'RDP connection ingress (inbound)'
+
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp:  0.0.0.0/0
+          Description: 'HTTPS connection ingress (inbound)'
+
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp:  0.0.0.0/0
+          Description: 'HTTP connection ingress (inbound)'
+
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp:  0.0.0.0/0
+          Description: 'SSH connection ingress (inbound)'
+
+        - IpProtocol: tcp
+          FromPort: 21
+          ToPort: 21
+          CidrIp:  0.0.0.0/0
+          Description: 'FTP connection ingress (inbound)'
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-ec2-sg-${Env}'
+
+  Ec2InstanceConnectEndpointSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VpcId
+      GroupName: !Sub '${AppName}-ec2-eice-sg-${Env}'
+      GroupDescription: 'Security group for ${AppName} ec2 instance connect endpoint in ${Env} environment'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp:  0.0.0.0/0
+          Description: 'SSH connection ingress (inbound)'
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-ec2-eice-sg-${Env}'
+
+Outputs:
+  ApplicationLoadBalancerSecurityGroupId:
+    Value: !Ref ApplicationLoadBalancerSecurityGroup
+
+  RdsInstanceSecurityGroupId:
+    Value: !Ref RdsInstanceSecurityGroup
+
+  Ec2InstanceSecurityGroupId:
+    Value: !Ref Ec2InstanceSecurityGroup
+
+  Ec2InstanceConnectEndpointSecurityGroupId:
+    Value: !Ref Ec2InstanceConnectEndpointSecurityGroup

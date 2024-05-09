@@ -1,4 +1,8 @@
 Parameters:
+  Env:
+    Description: Environment
+    Type: String
+
   AppName:
     Description: 'App name'
     Type: String
@@ -10,7 +14,7 @@ Resources:
     Properties:
       Tags:
         - Key: Name
-          Value: !Sub '${AppName}-igw'
+          Value: !Sub '${AppName}-igw-${Env}'
 
   # PUBLIC ROUTING
   PublicRouteTable:
@@ -21,7 +25,7 @@ Resources:
       VpcId: !Ref Vpc
       Tags:
         - Key: Name
-          Value: !Sub '${AppName}-public-rt'
+          Value: !Sub '${AppName}-public-rt-${Env}'
 
   InternetGatewayRoute:
     Type: AWS::EC2::Route
@@ -37,13 +41,15 @@ Resources:
   Vpc:
     Type: AWS::EC2::VPC
     Properties:
+      # NOTE: With this cidr block we can create subnets between 10.0.0.0/24 and 10.0.255.0/24
+      # NOTE: /16 means the first two bytes (10.0.) are network and user can choose how to partition the 3rd and 4th octets for subnet and hosts
       CidrBlock: 10.0.0.0/16
       EnableDnsSupport: true
       EnableDnsHostnames: true
       InstanceTenancy: default
       Tags:
         - Key: Name
-          Value: !Sub '${AppName}-vpc'
+          Value: !Sub '${AppName}-vpc-${Env}'
 
   VpcInternetGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -54,51 +60,99 @@ Resources:
       VpcId: !Ref Vpc
       InternetGatewayId: !Ref InternetGateway
 
-  # PUBLIC SUBNET
-  PublicSubnet:
+  # PUBLIC SUBNET A
+  PublicSubnetA:
     Type: AWS::EC2::Subnet
     DependsOn:
       - Vpc
     Properties:
       VpcId: !Ref Vpc
       AvailabilityZone: !Sub '${AWS::Region}a'
+      # NOTE: Must be a subset of the vpc cidr block
       CidrBlock: 10.0.1.0/24
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub '${AppName}-public-sn-${AWS::Region}a'
+          Value: !Sub '${AppName}-public-sn-${AWS::Region}a-${Env}'
 
-  PublicSubnetRouteTableAssociation:
+  PublicSubnetRouteTableAssociationA:
     Type: AWS::EC2::SubnetRouteTableAssociation
     DependsOn:
-      - PublicSubnet
+      - PublicSubnetA
       - PublicRouteTable
     Properties:
-      SubnetId: !Ref PublicSubnet
+      SubnetId: !Ref PublicSubnetA
       RouteTableId: !Ref PublicRouteTable
 
-  PublicSubnetNatGatewayElasticIp:
+  # NAT GATEWAY A
+  NatGatewayElasticIpA:
     Type: AWS::EC2::EIP
     Properties:
       Tags:
         - Key: Name
-          Value: !Sub '${AppName}-public-sn-ngw-eip'
+          Value: !Sub '${AppName}-ngw-eip-${AWS::Region}a-${Env}'
 
-  PublicSubnetNatGateway:
+  NatGatewayA:
     Type: AWS::EC2::NatGateway
     DependsOn:
-      - PublicSubnet
-      - PublicSubnetNatGatewayElasticIp
+      - PublicSubnetA
+      - NatGatewayElasticIpA
     Properties:
-      AllocationId: !GetAtt PublicSubnetNatGatewayElasticIp.AllocationId
-      SubnetId: !Ref PublicSubnet
+      AllocationId: !GetAtt NatGatewayElasticIpA.AllocationId
+      SubnetId: !Ref PublicSubnetA
       ConnectivityType: public
       Tags:
         - Key: Name
-          Value: !Sub '${AppName}-ngw'
+          Value: !Sub '${AppName}-ngw-${AWS::Region}a-${Env}'
 
-  # PRIVATE ROUTING
-  PrivateRouteTable:
+  # PUBLIC SUBNET B
+  PublicSubnetB:
+    Type: AWS::EC2::Subnet
+    DependsOn:
+      - Vpc
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Sub '${AWS::Region}b'
+      # NOTE: Must be a subset of the vpc cidr block
+      CidrBlock: 10.0.2.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-public-sn-${AWS::Region}b-${Env}'
+
+  PublicSubnetRouteTableAssociationB:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DependsOn:
+      - PublicSubnetB
+      - PublicRouteTable
+    Properties:
+      SubnetId: !Ref PublicSubnetB
+      RouteTableId: !Ref PublicRouteTable
+
+  # NAT GATEWAY B
+  NatGatewayElasticIpB:
+    Type: AWS::EC2::EIP
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-ngw-eip-${AWS::Region}b-${Env}'
+
+  NatGatewayB:
+    Type: AWS::EC2::NatGateway
+    DependsOn:
+      - PublicSubnetB
+      - NatGatewayElasticIpB
+    Properties:
+      AllocationId: !GetAtt NatGatewayElasticIpB.AllocationId
+      SubnetId: !Ref PublicSubnetB
+      ConnectivityType: public
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-ngw-${AWS::Region}b-${Env}'
+
+  # PRIVATE ROUTING A
+  # NOTE: We need to create a route table for each nat gateway as multiple routes in one table route cannot have the same destination cidr block 
+  PrivateRouteTableA:
     Type: AWS::EC2::RouteTable
     DependsOn:
       - Vpc
@@ -106,40 +160,87 @@ Resources:
       VpcId: !Ref Vpc
       Tags:
         - Key: Name
-          Value: !Sub '${AppName}-private-rt'
+          Value: !Sub '${AppName}-private-rt-${AWS::Region}a-${Env}'
       
-  PrivateAppSubnetRoute:
+  NatGatewayRouteA:
     Type: AWS::EC2::Route
     DependsOn:
-      - PublicSubnetNatGateway
-      - PrivateRouteTable
+      - NatGatewayA
+      - PrivateRouteTableA
     Properties:
-      NatGatewayId: !Ref PublicSubnetNatGateway
-      RouteTableId: !Ref PrivateRouteTable
+      NatGatewayId: !Ref NatGatewayA
+      RouteTableId: !Ref PrivateRouteTableA
       DestinationCidrBlock: 0.0.0.0/0
 
-  # PRIVATE APP SUBNET
-  PrivateAppSubnet:
+  # PRIVATE ROUTING B
+  # NOTE: We need to create a route table for each nat gateway as multiple routes in one table route cannot have the same destination cidr block 
+  PrivateRouteTableB:
+    Type: AWS::EC2::RouteTable
+    DependsOn:
+      - Vpc
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-private-rt-${AWS::Region}b-${Env}'
+
+  NatGatewayRouteB:
+    Type: AWS::EC2::Route
+    DependsOn:
+      - NatGatewayB
+      - PrivateRouteTableB
+    Properties:
+      NatGatewayId: !Ref NatGatewayB
+      RouteTableId: !Ref PrivateRouteTableB
+      DestinationCidrBlock: 0.0.0.0/0
+
+  # PRIVATE APP SUBNET A
+  PrivateAppSubnetA:
     Type: AWS::EC2::Subnet
     DependsOn:
       - Vpc
     Properties:
       VpcId: !Ref Vpc
       AvailabilityZone: !Sub '${AWS::Region}a'
-      CidrBlock: 10.0.2.0/24
+      # NOTE: Must be a subset of the vpc cidr block
+      CidrBlock: 10.0.3.0/24
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub '${AppName}-private-app-sn-${AWS::Region}a'
+          Value: !Sub '${AppName}-private-app-sn-${AWS::Region}a-${Env}'
 
-  PrivateAppSubnetRouteTableAssociation:
+  PrivateAppSubnetRouteTableAssociationA:
     Type: AWS::EC2::SubnetRouteTableAssociation
     DependsOn:
-      - PrivateAppSubnet
-      - PrivateRouteTable
+      - PrivateAppSubnetA
+      - PrivateRouteTableA
     Properties:
-      SubnetId: !Ref PrivateAppSubnet
-      RouteTableId: !Ref PrivateRouteTable
+      SubnetId: !Ref PrivateAppSubnetA
+      RouteTableId: !Ref PrivateRouteTableA
+
+  # PRIVATE APP SUBNET B
+  PrivateAppSubnetB:
+    Type: AWS::EC2::Subnet
+    DependsOn:
+      - Vpc
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Sub '${AWS::Region}b'
+      # NOTE: Must be a subset of the vpc cidr block
+      CidrBlock: 10.0.4.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub '${AppName}-private-app-sn-${AWS::Region}b-${Env}'
+
+  PrivateAppSubnetRouteTableAssociationB:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    DependsOn:
+      - PrivateAppSubnetB
+      - PrivateRouteTableB
+    Properties:
+      SubnetId: !Ref PrivateAppSubnetB
+      RouteTableId: !Ref PrivateRouteTableB
 
   # PRIVATE DATA SUBNET A
   PrivateDataSubnetA:
@@ -149,20 +250,21 @@ Resources:
     Properties:
       VpcId: !Ref Vpc
       AvailabilityZone: !Sub '${AWS::Region}a'
-      CidrBlock: 10.0.3.0/24
+      # NOTE: Must be a subset of the vpc cidr block
+      CidrBlock: 10.0.5.0/24
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub '${AppName}-private-data-sn-${AWS::Region}a'
+          Value: !Sub '${AppName}-private-data-sn-${AWS::Region}a-${Env}'
 
-  PrivateDataSubnetARouteTableAssociation:
+  PrivateDataSubnetRouteTableAssociationA:
     Type: AWS::EC2::SubnetRouteTableAssociation
     DependsOn:
       - PrivateDataSubnetA
-      - PrivateRouteTable
+      - PrivateRouteTableA
     Properties:
       SubnetId: !Ref PrivateDataSubnetA
-      RouteTableId: !Ref PrivateRouteTable
+      RouteTableId: !Ref PrivateRouteTableA
 
   # PRIVATE DATA SUBNET B
   PrivateDataSubnetB:
@@ -172,30 +274,34 @@ Resources:
     Properties:
       VpcId: !Ref Vpc
       AvailabilityZone: !Sub '${AWS::Region}b'
-      CidrBlock: 10.0.4.0/24
+      # NOTE: Must be a subset of the vpc cidr block
+      CidrBlock: 10.0.6.0/24
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub '${AppName}-private-data-sn-${AWS::Region}b'
+          Value: !Sub '${AppName}-private-data-sn-${AWS::Region}b-${Env}'
 
-  PrivateDataSubnetBRouteTableAssociation:
+  PrivateDataSubnetRouteTableAssociationB:
     Type: AWS::EC2::SubnetRouteTableAssociation
     DependsOn:
       - PrivateDataSubnetB
-      - PrivateRouteTable
+      - PrivateRouteTableB
     Properties:
       SubnetId: !Ref PrivateDataSubnetB
-      RouteTableId: !Ref PrivateRouteTable
+      RouteTableId: !Ref PrivateRouteTableB
 
 Outputs:
   VpcId:
     Value: !Ref Vpc
 
-  PrivateAppSubnetId:
-    Value: !Ref PrivateAppSubnet
+  PrivateAppSubnetAId:
+    Value: !Ref PrivateAppSubnetA
+
+  PrivateAppSubnetBId:
+    Value: !Ref PrivateAppSubnetB
 
   PrivateDataSubnetAId:
-    Value: !Ref PublicSubnet
+    Value: !Ref PrivateDataSubnetA
 
   PrivateDataSubnetBId:
     Value: !Ref PrivateDataSubnetB

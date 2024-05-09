@@ -7,16 +7,16 @@ Parameters:
     Description: 'App name'
     Type: String
 
-  VpcId:
-    Description: 'Vpc ID'
-    Type: String
-
   PrivateDataSubnetAId:
     Description: 'Private data subnet A ID'
     Type: String
 
   PrivateDataSubnetBId:
     Description: 'Private data subnet B ID'
+    Type: String
+
+  RdsInstanceSecurityGroupId:
+    Description: 'RDS instance security group ID'
     Type: String
 
   RdsInstanceType:
@@ -48,24 +48,6 @@ Resources:
         ExcludePunctuation: true
         RequireEachIncludedType: true
         ExcludeCharacters: '"@/\'
-
-  RdsInstanceSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      VpcId: !Ref VpcId
-      GroupName: !Sub '${AppName}-rds-sg-${Env}'
-      GroupDescription: !Sub 'Security group for ${AppName} ${Env} rds instance'
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 5432
-          ToPort: 5432
-          CidrIp: 0.0.0.0/0
-      SecurityGroupEgress:
-        - IpProtocol: -1
-          CidrIp: 0.0.0.0/0
-      Tags:
-        - Key : Name
-          Value: !Sub '${AppName}-rds-sg-${Env}'
 
   # NOTE: Subnets must cover at least 2 Availability Zones
   # NOTE: Without subnet group, the Rds instance will be a non Vpc instance
@@ -112,7 +94,7 @@ Resources:
       Port: 5432
       PubliclyAccessible: true
       VPCSecurityGroups:
-        - !Ref RdsInstanceSecurityGroup
+        - !Ref RdsInstanceSecurityGroupId
       Tags:
         - Key : Name
           Value: !Sub '${AppName}-rds-${Env}'
