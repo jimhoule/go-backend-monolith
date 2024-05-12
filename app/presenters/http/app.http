@@ -1,0 +1,4 @@
+### NOTE: To use this file VSC REST Client extension must be installed 
+
+### Diagnoses App
+GET http://localhost:3000/app/health

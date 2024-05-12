@@ -2,6 +2,7 @@ package main
 
 import (
 	"app/accounts"
+	"app/app"
 	"app/authentication"
 	"app/database"
 	"app/genres"
@@ -42,6 +43,7 @@ func main() {
 	// Inits modules
 	authentication.Init(mainRouter, db)
 	accounts.Init(mainRouter, db)
+	app.Init(mainRouter, db)
 	genres.Init(mainRouter, db)
 	languages.Init(mainRouter, db)
 	movies.Init(mainRouter, websocketServer, gqlServer, db)
