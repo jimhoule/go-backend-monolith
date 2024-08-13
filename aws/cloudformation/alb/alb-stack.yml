@@ -11,12 +11,12 @@ Parameters:
     Description: 'Vpc ID'
     Type: String
 
-  PrivateAppSubnetAId:
-    Description: 'Private app subnet A ID'
+  PublicSubnetAId:
+    Description: 'Public subnet A ID'
     Type: String
 
-  PrivateAppSubnetBId:
-    Description: 'Private app subnet B ID'
+  PublicSubnetBId:
+    Description: 'Public subnet B ID'
     Type: String
 
   Ec2InstanceAId:
@@ -49,8 +49,8 @@ Resources:
       Scheme: internet-facing
       # NOTE: At least two subnets in two different Availability Zones must be specified
       Subnets:
-        - !Ref PrivateAppSubnetAId
-        - !Ref PrivateAppSubnetBId
+        - !Ref PublicSubnetAId
+        - !Ref PublicSubnetBId
       SecurityGroups:
         - !Ref ApplicationLoadBalancerSecurityGroupId
       Tags:

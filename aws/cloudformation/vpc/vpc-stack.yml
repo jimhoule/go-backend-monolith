@@ -294,6 +294,12 @@ Outputs:
   VpcId:
     Value: !Ref Vpc
 
+  PublicSubnetAId:
+    Value: !Ref PublicSubnetA
+
+  PublicSubnetBId:
+    Value: !Ref PublicSubnetB
+
   PrivateAppSubnetAId:
     Value: !Ref PrivateAppSubnetA
 

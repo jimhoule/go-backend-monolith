@@ -81,72 +81,72 @@ Resources:
         TranscodedVideosS3BucketArn: !GetAtt S3Stack.Outputs.TranscodedVideosS3BucketArn
         TranscodedVideosCloudfrontDistributionId: !GetAtt CloudfrontStack.Outputs.TranscodedVideosCloudfrontDistributionId
 
-  VpcStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/vpc/vpc-stack.yml'
-      Parameters:
-        Env: !Ref Env
-        AppName: !Ref AppName
+  # VpcStack:
+  #   Type: AWS::CloudFormation::Stack
+  #   Properties:
+  #     TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/vpc/vpc-stack.yml'
+  #     Parameters:
+  #       Env: !Ref Env
+  #       AppName: !Ref AppName
 
-  SgStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/sg/sg-stack.yml'
-      Parameters:
-        Env: !Ref Env
-        AppName: !Ref AppName
-        VpcId: !GetAtt VpcStack.Outputs.VpcId
+  # SgStack:
+  #   Type: AWS::CloudFormation::Stack
+  #   Properties:
+  #     TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/sg/sg-stack.yml'
+  #     Parameters:
+  #       Env: !Ref Env
+  #       AppName: !Ref AppName
+  #       VpcId: !GetAtt VpcStack.Outputs.VpcId
 
-  Ec2Stack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/ec2/ec2-stack.yml'
-      Parameters:
-        Env: !Ref Env
-        AppName: !Ref AppName
-        PrivateAppSubnetAId: !GetAtt VpcStack.Outputs.PrivateAppSubnetAId
-        PrivateAppSubnetBId: !GetAtt VpcStack.Outputs.PrivateAppSubnetBId
-        RdsInstanceSecurityGroupId: !GetAtt SgStack.Outputs.RdsInstanceSecurityGroupId
-        Ec2InstanceSecurityGroupId: !GetAtt SgStack.Outputs.Ec2InstanceSecurityGroupId
-        Ec2InstanceConnectEndpointSecurityGroupId: !GetAtt SgStack.Outputs.Ec2InstanceConnectEndpointSecurityGroupId
-        Ec2InstanceType: !Ref Ec2InstanceType
-        Ec2InstanceAmiId: !Ref Ec2InstanceAmiId
-        Ec2InstanceRootVolumeType: !Ref Ec2InstanceRootVolumeType
-        Ec2InstanceRootVolumeSize: !Ref Ec2InstanceRootVolumeSize
+  # Ec2Stack:
+  #   Type: AWS::CloudFormation::Stack
+  #   Properties:
+  #     TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/ec2/ec2-stack.yml'
+  #     Parameters:
+  #       Env: !Ref Env
+  #       AppName: !Ref AppName
+  #       PrivateAppSubnetAId: !GetAtt VpcStack.Outputs.PrivateAppSubnetAId
+  #       PrivateAppSubnetBId: !GetAtt VpcStack.Outputs.PrivateAppSubnetBId
+  #       RdsInstanceSecurityGroupId: !GetAtt SgStack.Outputs.RdsInstanceSecurityGroupId
+  #       Ec2InstanceSecurityGroupId: !GetAtt SgStack.Outputs.Ec2InstanceSecurityGroupId
+  #       Ec2InstanceConnectEndpointSecurityGroupId: !GetAtt SgStack.Outputs.Ec2InstanceConnectEndpointSecurityGroupId
+  #       Ec2InstanceType: !Ref Ec2InstanceType
+  #       Ec2InstanceAmiId: !Ref Ec2InstanceAmiId
+  #       Ec2InstanceRootVolumeType: !Ref Ec2InstanceRootVolumeType
+  #       Ec2InstanceRootVolumeSize: !Ref Ec2InstanceRootVolumeSize
 
-  AlbStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/alb/alb-stack.yml'
-      Parameters:
-        Env: !Ref Env
-        AppName: !Ref AppName
-        VpcId: !GetAtt VpcStack.Outputs.VpcId
-        PrivateAppSubnetAId: !GetAtt VpcStack.Outputs.PrivateAppSubnetAId
-        PrivateAppSubnetBId: !GetAtt VpcStack.Outputs.PrivateAppSubnetBId
-        Ec2InstanceAId: !GetAtt Ec2Stack.Outputs.Ec2InstanceAId
-        Ec2InstanceBId: !GetAtt Ec2Stack.Outputs.Ec2InstanceBId
-        ApplicationLoadBalancerSecurityGroupId: !GetAtt SgStack.Outputs.ApplicationLoadBalancerSecurityGroupId
+  # AlbStack:
+  #   Type: AWS::CloudFormation::Stack
+  #   Properties:
+  #     TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/alb/alb-stack.yml'
+  #     Parameters:
+  #       Env: !Ref Env
+  #       AppName: !Ref AppName
+  #       VpcId: !GetAtt VpcStack.Outputs.VpcId
+  #       PublicSubnetAId: !GetAtt VpcStack.Outputs.PublicSubnetAId
+  #       PublicSubnetBId: !GetAtt VpcStack.Outputs.PublicSubnetBId
+  #       Ec2InstanceAId: !GetAtt Ec2Stack.Outputs.Ec2InstanceAId
+  #       Ec2InstanceBId: !GetAtt Ec2Stack.Outputs.Ec2InstanceBId
+  #       ApplicationLoadBalancerSecurityGroupId: !GetAtt SgStack.Outputs.ApplicationLoadBalancerSecurityGroupId
 
-  RdsStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/rds/rds-stack.yml'
-      Parameters:
-        Env: !Ref Env
-        AppName: !Ref AppName
-        PrivateDataSubnetAId: !GetAtt VpcStack.Outputs.PrivateDataSubnetAId
-        PrivateDataSubnetBId: !GetAtt VpcStack.Outputs.PrivateDataSubnetBId
-        RdsInstanceSecurityGroupId: !GetAtt SgStack.Outputs.RdsInstanceSecurityGroupId
-        RdsInstanceType: !Ref RdsInstanceType
-        RdsInstanceEngine: !Ref RdsInstanceEngine
-        RdsInstanceEngineVersion: !Ref RdsInstanceEngineVersion
+  # RdsStack:
+  #   Type: AWS::CloudFormation::Stack
+  #   Properties:
+  #     TemplateURL: !Sub 'https://${AppName}-cloudformation.s3.${AWS::Region}.amazonaws.com/rds/rds-stack.yml'
+  #     Parameters:
+  #       Env: !Ref Env
+  #       AppName: !Ref AppName
+  #       PrivateDataSubnetAId: !GetAtt VpcStack.Outputs.PrivateDataSubnetAId
+  #       PrivateDataSubnetBId: !GetAtt VpcStack.Outputs.PrivateDataSubnetBId
+  #       RdsInstanceSecurityGroupId: !GetAtt SgStack.Outputs.RdsInstanceSecurityGroupId
+  #       RdsInstanceType: !Ref RdsInstanceType
+  #       RdsInstanceEngine: !Ref RdsInstanceEngine
+  #       RdsInstanceEngineVersion: !Ref RdsInstanceEngineVersion
 
 
 Outputs:
   CloudfrontUrl:
      Value: !Join ['', ['https://', !GetAtt CloudfrontStack.Outputs.TranscodedVideosCloudfrontDistributionDomainName]]
 
-  ApplicationLoadBalancerUrl:
-    Value: !Join ['', ['http://', !GetAtt AlbStack.Outputs.ApplicationLoadBalancerDnsName]]
+  # ApplicationLoadBalancerUrl:
+  #   Value: !Join ['', ['http://', !GetAtt AlbStack.Outputs.ApplicationLoadBalancerDnsName]]

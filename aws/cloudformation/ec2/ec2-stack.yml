@@ -94,6 +94,9 @@ Resources:
 
           # good practice to update existing packages
           sudo apt-get update -y
+
+          sudo apt remove -y apache2
+
           sudo apt install -y golang-go
           sudo apt install -y git-all
           sudo apt install -y ffmpeg
@@ -141,6 +144,9 @@ Resources:
 
           # good practice to update existing packages
           sudo apt-get update -y
+
+          sudo apt remove -y apache2
+
           sudo apt install -y golang-go
           sudo apt install -y git-all
           sudo apt install -y ffmpeg
